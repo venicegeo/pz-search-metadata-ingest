@@ -1,0 +1,46 @@
+package piazza.services.ingest;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.core.geo.GeoPoint;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import piazza.services.ingest.model.Metadata;
+import piazza.services.ingest.model.NumericKeyValue;
+import piazza.services.ingest.model.TextKeyValue;
+import piazza.services.ingest.repository.MetadataRepository;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("/elasticsearch-test-connection.xml")
+public class IngestServiceApplicationTests {
+
+	@Autowired
+	MetadataRepository repository;
+
+	@Test
+	public void loadData() {
+		Metadata data = new Metadata();
+		data.setUuid(UUID.randomUUID().toString());
+		data.setUserId("Alfred E. Newman");
+		data.setDate(new Date());
+		data.setClassification("Unclassified");
+		List<NumericKeyValue> numerics = new ArrayList<NumericKeyValue>();
+		numerics.add(new NumericKeyValue("velocity", 55.5));
+		numerics.add(new NumericKeyValue("angle", 90.0));
+		data.setNumericKeyValue(numerics);
+		List<TextKeyValue> text = new ArrayList<TextKeyValue>();
+		text.add(new TextKeyValue("comment", "testing 1.. 2.. 3.."));
+		data.setTextKeyValue(text);
+//		data.setLocationPoint(new GeoPoint (40.0, -170));
+//		repository.save(data);
+		System.out.println("Hello World" + "/n" + repository.toString());
+	}
+
+}
