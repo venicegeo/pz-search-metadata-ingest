@@ -8,4 +8,4 @@ popd > /dev/null
 source $base/vars.sh
 
 # Send a null Job status check
-[ `curl -s -o /dev/null -w "%{http_code}" http://$APP-$SHA.$DOMAIN` = 200 ]
+[ `curl -s -o /dev/null -w "%{http_code}" http://$APP.$DOMAIN` = 200 ]
