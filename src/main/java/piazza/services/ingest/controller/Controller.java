@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 
+
 import piazza.services.ingest.repository.DataResourceContainer;
 //import piazza.services.ingest.model.Metadata;
 import piazza.services.ingest.repository.MetadataRepository;
@@ -27,6 +28,11 @@ public class Controller {
 		return entry;
 	}
 */
+	@RequestMapping(value="/", method=RequestMethod.GET)
+	public String checkme(){
+		return ("Hello pz-search-metadata-ingest.  Let\'s have some metadata ingest for search!");
+	}
+	
 	@RequestMapping(value="/pzmetadata/ingest", method=RequestMethod.POST, consumes="application/json")
 	public @ResponseBody DataResource createEntry(@RequestBody DataResource entry){
 		DataResourceContainer dr = new DataResourceContainer( entry );
