@@ -33,7 +33,7 @@ public class Controller {
 		return ("Hello pz-search-metadata-ingest.  Let\'s have some metadata ingest for search!");
 	}
 	
-	@RequestMapping(value="/pzmetadata/ingest", method=RequestMethod.POST, consumes="application/json")
+	@RequestMapping(value="/api/v1/data", method=RequestMethod.POST, consumes="application/json")
 	public @ResponseBody DataResource createEntry(@RequestBody DataResource entry){
 		DataResourceContainer dr = new DataResourceContainer( entry );
 		repository.save(dr);
