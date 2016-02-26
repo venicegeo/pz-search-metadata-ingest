@@ -1,4 +1,41 @@
 {
+    "dataId": "Alfred E. Newman",
+    "dataType": {
+        "type": "wfs",
+        "url": "http://geoserver.dev:8080/geoserver/wfs",
+        "featureType": "piazza:shelters",
+        "version": "1.0.0"
+    },
+    "metadata": {
+        "name": "My Test Shapefile",
+        "availability": "nope",
+        "description": "This is a test.",
+        "classType": "unclassified",
+	    "numericKeyValueList": [
+	      {
+	        "key": "velocity",
+	        "value": 55.5
+	      },
+	      {
+	        "key": "angle",
+	        "value": 90
+	      }
+	    ],
+	    "textKeyValueList": [
+	      {
+	        "key": "comment",
+	        "value": "testing 1.. 2.. 3.."
+	      }
+	    ]
+    },
+    "spatialMetadata": {
+        "epsgCode": 1984
+    }
+}
+
+//**** below is obsolete for reference
+
+{
    "userId": "Alfred E. Newman",
    "date": "2014-09-15",
    "classification": "Secret",
