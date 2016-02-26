@@ -30,7 +30,7 @@ public class Controller {
 */
 	@RequestMapping(value="/", method=RequestMethod.GET)
 	public String checkme(){
-		return ("Hello pz-search-metadata-ingest.  Let\'s have some metadata ingest for search!");
+		return ("Hello pz-search-metadata-ingest.  Let\'s have some metadata for search!");
 	}
 	
 	@RequestMapping(value="/api/v1/data", method=RequestMethod.POST, consumes="application/json")

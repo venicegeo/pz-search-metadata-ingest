@@ -32,6 +32,8 @@
    "comment": "explicit comment testing 1.. 2.. 3.."
 }
 
+//**** below is obsolete for reference
+
 {
     "dataId": "Alfred E. Newman",
     "dataType": {
