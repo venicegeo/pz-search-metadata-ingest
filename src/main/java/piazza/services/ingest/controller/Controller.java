@@ -19,6 +19,8 @@ import piazza.services.ingest.repository.MetadataRepository;
 @RestController
 public class Controller {
 	
+	private final String API_ROOT = "${api.basepath}";
+
 	@Autowired
 	MetadataRepository repository;
 /*
@@ -33,7 +35,7 @@ public class Controller {
 		return ("Hello pz-search-metadata-ingest.  Let\'s have some metadata for search!");
 	}
 	
-	@RequestMapping(value="/api/v1/data", method=RequestMethod.POST, consumes="application/json")
+	@RequestMapping(value = API_ROOT + "/data", method = RequestMethod.POST, consumes="application/json")
 	public @ResponseBody DataResource createEntry(@RequestBody DataResource entry){
 		DataResourceContainer dr = new DataResourceContainer( entry );
 		repository.save(dr);
