@@ -1,9 +1,81 @@
 curl -XPOST https://search-venice-es-pjebjkdaueu2gukocyccj4r5m4.us-east-1.es.amazonaws.com/pzmetadata/locationPointtt -d'{ "dataId": "Alfred E. Newman", "dataType": { "id": "findme", "type": "wfs", "url": "http://geoserver.dev:8080/geoserver/wfs", "featureType": "piazza:shelters", "version": "1.0.0" }, "metadata": { "name": "My Test Shapefile", "availability": "nope", "description": "This is a test.", "classType": "unclassified", "numericKeyValueList": [ { "key": "velocity", "value": 55.5 }, { "key": "angle", "value": 90 } ], "textKeyValueList": [ { "key": "comment", "value": "testing 1.. 2.. 3.." } ] }, "spatialMetadata": { "epsgCode": 1984 } }'
 
+curl -XPOST https://search-venice-es-pjebjkdaueu2gukocyccj4r5m4.us-east-1.es.amazonaws.com/pzmetadata/locationPointtt -d'{ "dataId": "Alfred E. Newman", "dataType": { "id": "PatrickUUID", "type": "wfs", "url": "http://geoserver.dev:8080/geoserver/wfs", "featureType": "piazza:shelters", "version": "1.0.0" }, "metadata": { "name": "London", "availability": "nope", "description": "London BBOX combined with random WFS; hmmm.", "classType": "unclassified", "numericKeyValueList": [ { "key": "velocity", "value": 55.5 }, { "key": "angle", "value": 90 } ], "textKeyValueList": [ { "key": "comment", "value": "I wanted a pony, but my parents got me a kitten!! %^&*%!!" } ] }, "spatialMetadata": { "epsgCode": 1984, "minY": 51.28, "maxY": 51.69, "minX": -0.51, "maxX": 0.334 } }'
+
+
+curl -XGET 'https://search-venice-es-pjebjkdaueu2gukocyccj4r5m4.us-east-1.es.amazonaws.com/pzmetadata/_search?pretty=true' -d '
+  {
+      "query" : {
+          "matchAll" : {}
+       }
+  }'
+  
+ 
+curl -XGET 'https://search-venice-es-pjebjkdaueu2gukocyccj4r5m4.us-east-1.es.amazonaws.com/pzmetadata/_search?pretty=true' -d ' 
+{ 
+   "query" : { "match" : { "id" : "PatrickUUID" } } 
+}'
+ 
+curl -XGET 'https://search-venice-es-pjebjkdaueu2gukocyccj4r5m4.us-east-1.es.amazonaws.com/pzmetadata/_search?pretty=true' -d '
+  {
+      "query" : {
+         "match" : {
+             "dataId" : "Alfred E. Newman"
+          }
+       }
+  }'
+  
+  curl -XGET 'https://search-venice-es-pjebjkdaueu2gukocyccj4r5m4.us-east-1.es.amazonaws.com/pzmetadata/_search?pretty=true' -d '
+  {
+      "query" : {
+         "match" : {
+             "comment" : "kitten"
+          }
+       }
+  }'
+  
+curl -XGET 'https://search-venice-es-pjebjkdaueu2gukocyccj4r5m4.us-east-1.es.amazonaws.com/pzmetadata/_search?pretty=true' -d '
+  {
+      "query" : {
+         "match" : {
+             "_all" : "kitten"
+          }
+       }
+  }'
+  
+  curl -XGET 'https://search-venice-es-pjebjkdaueu2gukocyccj4r5m4.us-east-1.es.amazonaws.com/pzmetadata/_search?pretty=true' -d '
+  {
+      "query" : {
+         "match" : {
+             "_all" : "kiten"
+          }
+       }
+  }'  
+  
+  curl -XGET 'https://search-venice-es-pjebjkdaueu2gukocyccj4r5m4.us-east-1.es.amazonaws.com/pzmetadata/_search?pretty=true' -d '
+  {
+     "query" : {
+        "fuzzy_like_this" : {
+          "like_text" : "text like this one"
+        }
+     }
+  }'
+  
+  curl -XGET 'https://search-venice-es-pjebjkdaueu2gukocyccj4r5m4.us-east-1.es.amazonaws.com/pzmetadata/_search?pretty=true' -d '
+  {
+     "query" : {
+        "fuzzy_like_this" : {
+          "like_text" : "kiten"
+        }
+     }
+  }'
+  
+  
+
 {
     "dataId": "Alfred E. Newman",
     "dataType": {
-    	"id": "findme",
+       "id": "findme",
         "type": "wfs",
         "url": "http://geoserver.dev:8080/geoserver/wfs",
         "featureType": "piazza:shelters",
@@ -14,22 +86,22 @@ curl -XPOST https://search-venice-es-pjebjkdaueu2gukocyccj4r5m4.us-east-1.es.ama
         "availability": "nope",
         "description": "This is a test.",
         "classType": "unclassified",
-	    "numericKeyValueList": [
-	      {
-	        "key": "velocity",
-	        "value": 55.5
-	      },
-	      {
-	        "key": "angle",
-	        "value": 90
-	      }
-	    ],
-	    "textKeyValueList": [
-	      {
-	        "key": "comment",
-	        "value": "testing 1.. 2.. 3.."
-	      }
-	    ]
+       "numericKeyValueList": [
+         {
+           "key": "velocity",
+           "value": 55.5
+         },
+         {
+           "key": "angle",
+           "value": 90
+         }
+       ],
+       "textKeyValueList": [
+         {
+           "key": "comment",
+           "value": "testing 1.. 2.. 3.."
+         }
+       ]
     },
     "spatialMetadata": {
         "epsgCode": 1984
@@ -39,7 +111,7 @@ curl -XPOST https://search-venice-es-pjebjkdaueu2gukocyccj4r5m4.us-east-1.es.ama
 {
     "dataId": "Alfred E. Newman",
     "dataType": {
-    	"id": "PatrickUUID",
+       "id": "PatrickUUID",
         "type": "wfs",
         "url": "http://geoserver.dev:8080/geoserver/wfs",
         "featureType": "piazza:shelters",
@@ -50,22 +122,22 @@ curl -XPOST https://search-venice-es-pjebjkdaueu2gukocyccj4r5m4.us-east-1.es.ama
         "availability": "nope",
         "description": "London BBOX combined with random WFS; hmmm.",
         "classType": "unclassified",
-	    "numericKeyValueList": [
-	      {
-	        "key": "velocity",
-	        "value": 55.5
-	      },
-	      {
-	        "key": "angle",
-	        "value": 90
-	      }
-	    ],
-	    "textKeyValueList": [
-	      {
-	        "key": "comment",
-	        "value": "I wanted a pony, but my parents got me a kitten!! %^&*%!!"
-	      }
-	    ]
+       "numericKeyValueList": [
+         {
+           "key": "velocity",
+           "value": 55.5
+         },
+         {
+           "key": "angle",
+           "value": 90
+         }
+       ],
+       "textKeyValueList": [
+         {
+           "key": "comment",
+           "value": "I wanted a pony, but my parents got me a kitten!! %^&*%!!"
+         }
+       ]
     },
     "spatialMetadata": {
         "epsgCode": 1984,
@@ -127,22 +199,22 @@ curl -XPOST https://search-venice-es-pjebjkdaueu2gukocyccj4r5m4.us-east-1.es.ama
         "availability": "nope",
         "description": "This is a test.",
         "classType": "unclassified",
-	    "numericKeyValueList": [
-	      {
-	        "key": "velocity",
-	        "value": 55.5
-	      },
-	      {
-	        "key": "angle",
-	        "value": 90
-	      }
-	    ],
-	    "textKeyValueList": [
-	      {
-	        "key": "comment",
-	        "value": "testing 1.. 2.. 3.."
-	      }
-	    ]
+       "numericKeyValueList": [
+         {
+           "key": "velocity",
+           "value": 55.5
+         },
+         {
+           "key": "angle",
+           "value": 90
+         }
+       ],
+       "textKeyValueList": [
+         {
+           "key": "comment",
+           "value": "testing 1.. 2.. 3.."
+         }
+       ]
     },
     "spatialMetadata": {
         "epsgCode": 1984
