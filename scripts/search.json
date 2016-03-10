@@ -1,0 +1,36 @@
+{
+	"dataId" : "Alfred E. Newman",
+	"dataType" : {
+		"id" : "PatrickUUID",
+		"type" : "wfs",
+		"url" : "http://geoserver.dev:8080/geoserver/wfs",
+		"featureType" : "piazza:shelters",
+		"version" : "1.0.0"
+	},
+	"metadata" : {
+		"name" : "London",
+		"availability" : "nope",
+		"description" : "London BBOX combined with random WFS; hmmm.",
+		"classType" : "unclassified",
+		"numericKeyValueList" : [{
+				"key" : "velocity",
+				"value" : 55.5
+			}, {
+				"key" : "angle",
+				"value" : 90
+			}
+		],
+		"textKeyValueList" : [{
+				"key" : "comment",
+				"value" : "I wanted a pony, but my parents got me a kitten!! %^&*%!!"
+			}
+		]
+	},
+	"spatialMetadata" : {
+		"epsgCode" : 1984,
+		"minY" : 51.28,
+		"maxY" : 51.69,
+		"minX" : -0.51,
+		"maxX" : 0.334
+	}
+}

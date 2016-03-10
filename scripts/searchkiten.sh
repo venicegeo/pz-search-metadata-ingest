@@ -1,0 +1,1 @@
+curl -X POST -H 'Content-type: application/json' -d @searchkiten.json http://pz-search-query.cf.piazzageo.io/api/v1/data

@@ -1,0 +1,7 @@
+{
+	"query" : {
+		"fuzzy_like_this" : {
+			"like_text" : "kiten"
+		}
+	}
+}
