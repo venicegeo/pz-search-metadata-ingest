@@ -119,7 +119,7 @@ curl -XGET 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata/_se
         "name": "My Test Shapefile",
         "availability": "nope",
         "description": "This is a test.",
-        "classType": "unclassified",
+        "classType": { "classification": "unclassified" },
        "numericKeyValueList": [
          {
            "key": "velocity",
@@ -143,7 +143,7 @@ curl -XGET 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata/_se
 }
 
 {
-    "dataId": "Alfred E. Newman",
+    "dataId": "Alfred A. Newman",
     "dataType": {
        "id": "PatrickUUID",
         "type": "wfs",
@@ -155,7 +155,7 @@ curl -XGET 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata/_se
         "name": "London",
         "availability": "nope",
         "description": "London BBOX combined with random WFS; hmmm.",
-        "classType": "unclassified",
+        "classType": { "classification": "unclassified" },
        "numericKeyValueList": [
          {
            "key": "velocity",
