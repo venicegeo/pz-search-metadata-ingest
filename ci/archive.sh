@@ -7,11 +7,11 @@ popd > /dev/null
 # gather some data about the repo
 source $root/ci/vars.sh
 
-# Path to output JAR
-src=$root/target/$APP*.$EXT
-
 # Build Spring-boot JAR
-[ -f $src ] || mvn clean package -U
+mvn clean package -U
+
+# Path to output JAR
+src=$(find $root/target/. -name $APP*.$EXT -a ! -name '*tests.jar')
 
 # stage the artifact for a mvn deploy
 mv $src $root/$APP.$EXT
