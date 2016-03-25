@@ -8,7 +8,7 @@ popd > /dev/null
 source $root/ci/vars.sh
 
 # Path to output JAR
-src=$root/target/pz-search-metadata-ingest*.jar
+src=$root/target/$APP*.$EXT
 
 # Build Spring-boot JAR
 [ -f $src ] || mvn clean package -U
