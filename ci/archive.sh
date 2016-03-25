@@ -11,7 +11,7 @@ source $root/ci/vars.sh
 src=$root/target/ingest-service*.jar
 
 # Build Spring-boot JAR
-[ -f $src ] || mvn clean package
+[ -f $src ] || mvn clean package -U
 
 # stage the artifact for a mvn deploy
 mv $src $root/$APP.$EXT
