@@ -1,8 +1,57 @@
+// Gateway test data for search
+{     "apiKey": "my-api-key-38n987",     "jobType": {         "type": "search-query",         "data": { "query" : { "match" : { "_all" : "testing" } } }     } }
+// Gateway test data for search
+{ "apiKey": "my-api-key-38n987", "jobType": { "type": "search-metadata-ingest", "data": { "dataId": "WOW" } } }
+
+{     "apiKey": "my-api-key-38n987",     "jobType": {         "type": "search-metadata-ingest",         "data": {
+    "dataId": "WOW",
+    "dataType": {
+       "id": "PatrickUUID",
+        "type": "wfs",
+        "url": "http://geoserver.dev:8080/geoserver/wfs",
+        "featureType": "piazza:shelters",
+        "version": "1.0.0"
+    },
+    "metadata": {
+        "name": "London",
+        "availability": "nope",
+        "description": "London BBOX combined with random WFS; hmmm.",
+        "classType": { "classification": "unclassified" },
+       "numericKeyValueList": [
+         {
+           "key": "velocity",
+           "value": 55.5
+         },
+         {
+           "key": "angle",
+           "value": 90
+         }
+       ],
+       "textKeyValueList": [
+         {
+           "key": "comment",
+           "value": "I wanted a pony, but my parents got me a dog!! %^&*%!!"
+         }
+       ]
+    },
+    "spatialMetadata": {
+        "epsgCode": 1984,
+        "minY": 51.28,
+        "maxY": 51.69,
+        "minX": -0.51,
+        "maxX": 0.334
+    }
+} } }
+
+
 curl -XPOST https://search-venice-es-pjebjkdaueu2gukocyccj4r5m4.us-east-1.es.amazonaws.com/pzmetadata/locationPointtt -d'{ "dataId": "Alfred E. Newman", "dataType": { "id": "findme", "type": "wfs", "url": "http://geoserver.dev:8080/geoserver/wfs", "featureType": "piazza:shelters", "version": "1.0.0" }, "metadata": { "name": "My Test Shapefile", "availability": "nope", "description": "This is a test.", "classType": "unclassified", "numericKeyValueList": [ { "key": "velocity", "value": 55.5 }, { "key": "angle", "value": 90 } ], "textKeyValueList": [ { "key": "comment", "value": "testing 1.. 2.. 3.." } ] }, "spatialMetadata": { "epsgCode": 1984 } }'
 
 curl -XPOST https://search-venice-es-pjebjkdaueu2gukocyccj4r5m4.us-east-1.es.amazonaws.com/pzmetadata/locationPointtt -d'{ "dataId": "Alfred E. Newman", "dataType": { "id": "PatrickUUID", "type": "wfs", "url": "http://geoserver.dev:8080/geoserver/wfs", "featureType": "piazza:shelters", "version": "1.0.0" }, "metadata": { "name": "London", "availability": "nope", "description": "London BBOX combined with random WFS; hmmm.", "classType": "unclassified", "numericKeyValueList": [ { "key": "velocity", "value": 55.5 }, { "key": "angle", "value": 90 } ], "textKeyValueList": [ { "key": "comment", "value": "I wanted a pony, but my parents got me a kitten!! %^&*%!!" } ] }, "spatialMetadata": { "epsgCode": 1984, "minY": 51.28, "maxY": 51.69, "minX": -0.51, "maxX": 0.334 } }'
 
 curl -XPOST http://pz-search-metadata-ingest.cf.piazzageo.io/api/v1/data -d'{ "dataId": "Alfred E. Newman", "dataType": { "id": "findme", "type": "wfs", "url": "http://geoserver.dev:8080/geoserver/wfs", "featureType": "piazza:shelters", "version": "1.0.0" }, "metadata": { "name": "My Test Shapefile", "availability": "nope", "description": "This is a test.", "classType": "unclassified", "numericKeyValueList": [ { "key": "velocity", "value": 55.5 }, { "key": "angle", "value": 90 } ], "textKeyValueList": [ { "key": "comment", "value": "testing 1.. 2.. 3.." } ] }, "spatialMetadata": { "epsgCode": 1984 } }'
+
+curl -XPOST -d'{ "dataId": "cURL E. Newman", "dataType": { "id": "findme", "type": "wfs", "url": "http://geoserver.dev:8080/geoserver/wfs", "featureType": "piazza:shelters", "version": "1.0.0" }, "metadata": { "name": "My Test Shapefile", "availability": "nope", "description": "This is a test.", "classType": "unclassified", "numericKeyValueList": [ { "key": "velocity", "value": 55.5 }, { "key": "angle", "value": 90 } ], "textKeyValueList": [ { "key": "comment", "value": "testing 1.. 2.. 3.." } ] }, "spatialMetadata": { "epsgCode": 1984 } }' http://pz-search-metadata-ingest.cf.piazzageo.io/api/v1/data
+curl -X POST -H 'Accept: application/json' -d @ingest.json http://pz-search-metadata-ingest.cf.piazzageo.io/api/v1/data 
 
 curl --data '{ "dataId": "Alfred E. Newman", "dataType": { "id": "findme", "type": "wfs", "url": "http://geoserver.dev:8080/geoserver/wfs", "featureType": "piazza:shelters", "version": "1.0.0" }, "metadata": { "name": "My Test Shapefile", "availability": "nope", "description": "This is a test.", "classType": "unclassified", "numericKeyValueList": [ { "key": "velocity", "value": 55.5 }, { "key": "angle", "value": 90 } ], "textKeyValueList": [ { "key": "comment", "value": "testing 1.. 2.. 3.." } ] }, "spatialMetadata": { "epsgCode": 1984 } }' http://pz-search-metadata-ingest.cf.piazzageo.io/api/v1/data
 
@@ -116,7 +165,7 @@ curl -XGET 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata/_se
         "name": "My Test Shapefile",
         "availability": "nope",
         "description": "This is a test.",
-        "classType": "unclassified",
+        "classType": { "classification": "unclassified" },
        "numericKeyValueList": [
          {
            "key": "velocity",
@@ -140,7 +189,7 @@ curl -XGET 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata/_se
 }
 
 {
-    "dataId": "Alfred E. Newman",
+    "dataId": "Alfred A. Newman",
     "dataType": {
        "id": "PatrickUUID",
         "type": "wfs",
@@ -152,7 +201,7 @@ curl -XGET 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata/_se
         "name": "London",
         "availability": "nope",
         "description": "London BBOX combined with random WFS; hmmm.",
-        "classType": "unclassified",
+        "classType": { "classification": "unclassified" },
        "numericKeyValueList": [
          {
            "key": "velocity",
