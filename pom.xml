@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>piazza.services.ingest</groupId>
-	<artifactId>ingest-service</artifactId>
+	<artifactId>pz-search-metadata-ingest</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
@@ -35,7 +35,7 @@
 		<dependency>
 			<groupId>io.piazzageo</groupId>
 			<artifactId>pz-jobcommon</artifactId>
-			<version>Sprint01-27-g29ee48b</version>
+			<version>LATEST</version>
 		</dependency>
 
 		<dependency>
