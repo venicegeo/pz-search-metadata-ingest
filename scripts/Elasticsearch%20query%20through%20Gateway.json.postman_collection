@@ -1,0 +1,97 @@
+{
+	"id": "19908654-ebf2-8d5a-64c3-7311363d8d79",
+	"name": "Elasticsearch query through Gateway",
+	"description": "",
+	"order": [
+		"1aee0799-32c2-57dc-a81a-b825d4f3a1dc",
+		"38e16a2d-e033-0ab6-9be2-fbaa86b72910",
+		"3273b23b-5140-0e84-6244-c13bb2c7bf0f"
+	],
+	"folders": [],
+	"timestamp": 1459170467288,
+	"owner": "",
+	"remoteLink": "",
+	"public": false,
+	"requests": [
+		{
+			"id": "1aee0799-32c2-57dc-a81a-b825d4f3a1dc",
+			"headers": "",
+			"url": "https://pz-gateway.stage.geointservices.io/job",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "POST",
+			"collectionId": "19908654-ebf2-8d5a-64c3-7311363d8d79",
+			"data": [
+				{
+					"key": "body",
+					"value": "{     \"apiKey\": \"my-api-key-38n987\",     \"jobType\": {         \"type\": \"search-query\",         \"data\": { \"query\" : { \"match\" : { \"_all\" : \"FileWatcher\" } } }     } }",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"name": "https://pz-gateway.stage.geointservices.io/job",
+			"description": "all record search for \"FileWatcher\" string; metadata from Ingest test of Patrick 3/28/16",
+			"descriptionFormat": "html",
+			"time": 1459170467288,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {}
+		},
+		{
+			"id": "3273b23b-5140-0e84-6244-c13bb2c7bf0f",
+			"headers": "",
+			"url": "https://pz-gateway.stage.geointservices.io/job",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "POST",
+			"collectionId": "19908654-ebf2-8d5a-64c3-7311363d8d79",
+			"data": [
+				{
+					"key": "body",
+					"value": "{     \"apiKey\": \"my-api-key-38n987\",     \"jobType\": {         \"type\": \"search-query\",         \"data\": {      \"query\" : {         \"fuzzy_like_this\" : {           \"like_text\" : \"kiten\"         }      }   }     } }",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"name": "https://pz-gateway.stage.geointservices.io/job",
+			"description": "fuzzy \"kiten\" for finding kitten",
+			"descriptionFormat": "html",
+			"time": 1459177225059,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {}
+		},
+		{
+			"id": "38e16a2d-e033-0ab6-9be2-fbaa86b72910",
+			"headers": "",
+			"url": "https://pz-gateway.stage.geointservices.io/job",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "POST",
+			"data": [
+				{
+					"key": "body",
+					"value": "{     \"apiKey\": \"my-api-key-38n987\",     \"jobType\": {         \"type\": \"search-query\",         \"data\": {      \"query\" : {         \"fuzzy_like_this\" : {           \"like_text\" : \"kiten\"         }      }   }     } }",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"version": 2,
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1459177197766,
+			"name": "https://pz-gateway.stage.geointservices.io/job",
+			"description": "kitten",
+			"collectionId": "19908654-ebf2-8d5a-64c3-7311363d8d79",
+			"responses": []
+		}
+	]
+}
