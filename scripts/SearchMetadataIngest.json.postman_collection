@@ -1,0 +1,126 @@
+{
+	"id": "99bc9adc-fcd3-5677-5910-53dbce9fe231",
+	"name": "SearchMetadataIngest",
+	"description": "",
+	"order": [
+		"98b4fec0-eee7-ab53-a55f-54bdd31953a9",
+		"d73a0eca-a5fd-f0cc-3bb7-200e16762def",
+		"6a74488f-07f2-bb8e-cd33-d1839655fb57",
+		"e9c12971-1a74-413e-b8bd-9b9205f33404"
+	],
+	"folders": [],
+	"timestamp": 1459182244027,
+	"owner": "",
+	"remoteLink": "",
+	"public": false,
+	"requests": [
+		{
+			"id": "6a74488f-07f2-bb8e-cd33-d1839655fb57",
+			"headers": "",
+			"url": "https://pz-gateway.stage.geointservices.io/job",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "POST",
+			"collectionId": "99bc9adc-fcd3-5677-5910-53dbce9fe231",
+			"data": [
+				{
+					"key": "body",
+					"value": "{     \"apiKey\": \"my-api-key-38n987\",     \"jobType\": {         \"type\": \"search-metadata-ingest\",         \"data\":{     \"dataId\": \"Alfred A. Newman\",     \"dataType\": {        \"id\": \"PatrickUUID\",         \"type\": \"wfs\",         \"url\": \"http://geoserver.dev:8080/geoserver/wfs\",         \"featureType\": \"piazza:shelters\",         \"version\": \"1.0.0\"     },     \"metadata\": {         \"name\": \"London\",         \"availability\": \"nope\",         \"description\": \"London BBOX combined with random WFS; hmmm.\",         \"classType\": { \"classification\": \"unclassified\" },        \"numericKeyValueList\": [          {            \"key\": \"velocity\",            \"value\": 55.5          },          {            \"key\": \"angle\",            \"value\": 90          }        ],        \"textKeyValueList\": [          {            \"key\": \"comment\",            \"value\": \"I wanted a pony, but my parents got me a kitten!! %^&*%!!\"          }        ]     },     \"spatialMetadata\": {         \"epsgCode\": 1984,         \"minY\": 51.28,         \"maxY\": 51.69,         \"minX\": -0.51,         \"maxX\": 0.334     } } } }",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"name": "https://pz-gateway.stage.geointservices.io/job",
+			"description": "dummy London data record with \"kitten\"",
+			"descriptionFormat": "html",
+			"time": 1459182547692,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {}
+		},
+		{
+			"id": "98b4fec0-eee7-ab53-a55f-54bdd31953a9",
+			"headers": "",
+			"url": "https://pz-gateway.stage.geointservices.io/job",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "POST",
+			"collectionId": "99bc9adc-fcd3-5677-5910-53dbce9fe231",
+			"data": [
+				{
+					"key": "body",
+					"value": "{     \"apiKey\": \"my-api-key-38n987\",     \"jobType\": {         \"type\": \"search-metadata-ingest\",         \"data\": {     \"dataId\": \"WOW\",     \"dataType\": {        \"id\": \"PatrickUUID\",         \"type\": \"wfs\",         \"url\": \"http://geoserver.dev:8080/geoserver/wfs\",         \"featureType\": \"piazza:shelters\",         \"version\": \"1.0.0\"     },     \"metadata\": {         \"name\": \"London\",         \"availability\": \"nope\",         \"description\": \"London BBOX combined with random WFS; hmmm.\",         \"classType\": { \"classification\": \"unclassified\" },        \"numericKeyValueList\": [          {            \"key\": \"velocity\",            \"value\": 55.5          },          {            \"key\": \"angle\",            \"value\": 90          }        ],        \"textKeyValueList\": [          {            \"key\": \"comment\",            \"value\": \"I wanted a pony, but my parents got me a dog!! %^&*%!!\"          }        ]     },     \"spatialMetadata\": {         \"epsgCode\": 1984,         \"minY\": 51.28,         \"maxY\": 51.69,         \"minX\": -0.51,         \"maxX\": 0.334     } } } }",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"name": "https://pz-gateway.stage.geointservices.io/job",
+			"description": "add dummy data record with \"kitten\"",
+			"descriptionFormat": "html",
+			"time": 1459182244027,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {}
+		},
+		{
+			"id": "d73a0eca-a5fd-f0cc-3bb7-200e16762def",
+			"headers": "",
+			"url": "https://pz-gateway.stage.geointservices.io/job",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "POST",
+			"collectionId": "99bc9adc-fcd3-5677-5910-53dbce9fe231",
+			"data": [
+				{
+					"key": "body",
+					"value": "{     \"apiKey\": \"my-api-key-38n987\",     \"jobType\": {         \"type\": \"search-metadata-ingest\",         \"data\":{   \"dataId\": \"dc1787d7-7a5e-4d51-a86c-a171ee103723\",   \"dataType\": {     \"type\": \"shapefile\",     \"location\": {       \"type\": \"s3\",       \"bucketName\": \"external-public-access-test\",       \"fileName\": \"point-shapefile.zip\",       \"domainName\": \"s3.amazonaws.com\"     }   },   \"spatialMetadata\": {     \"coordinateReferenceSystem\": \"GEOGCS[\\\"GCS_WGS_1984\\\", \\n  DATUM[\\\"D_WGS_1984\\\", \\n    SPHEROID[\\\"WGS_1984\\\", 6378137.0, 298.257223563]], \\n  PRIMEM[\\\"Greenwich\\\", 0.0], \\n  UNIT[\\\"degree\\\", 0.017453292519943295], \\n  AXIS[\\\"Longitude\\\", EAST], \\n  AXIS[\\\"Latitude\\\", NORTH]]\",     \"epsgCode\": 4326,     \"minX\": -109.86515258861945,     \"minY\": 32.47219946485272,     \"maxX\": -100.63284388599796,     \"maxY\": 40.6813399349672   },   \"metadata\": {     \"description\": \"NOT Ingested automatically by FileWatcher.\",     \"classType\": {       \"classification\": \"unclassified\"     }   } } } }",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"name": "https://pz-gateway.stage.geointservices.io/job",
+			"description": "explicitly add data record from Patrick's ingest job",
+			"descriptionFormat": "html",
+			"time": 1459182402454,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {}
+		},
+		{
+			"id": "e9c12971-1a74-413e-b8bd-9b9205f33404",
+			"headers": "",
+			"url": "https://pz-gateway.stage.geointservices.io/job",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "POST",
+			"collectionId": "99bc9adc-fcd3-5677-5910-53dbce9fe231",
+			"data": [
+				{
+					"key": "body",
+					"value": "{     \"apiKey\": \"my-api-key-38n987\",     \"jobType\": {         \"type\": \"search-metadata-ingest\",         \"data\":{     \"dataId\": \"Alfred E. Newman\",     \"dataType\": {        \"id\": \"findme\",         \"type\": \"wfs\",         \"url\": \"http://geoserver.dev:8080/geoserver/wfs\",         \"featureType\": \"piazza:shelters\",         \"version\": \"1.0.0\"     },     \"metadata\": {         \"name\": \"My Test Shapefile\",         \"availability\": \"nope\",         \"description\": \"This is a test.\",         \"classType\": { \"classification\": \"unclassified\" },        \"numericKeyValueList\": [          {            \"key\": \"velocity\",            \"value\": 55.5          },          {            \"key\": \"angle\",            \"value\": 90          }        ],        \"textKeyValueList\": [          {            \"key\": \"comment\",            \"value\": \"testing 1.. 2.. 3..\"          }        ]     },     \"spatialMetadata\": {         \"epsgCode\": 1984     } } } }",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"name": "https://pz-gateway.stage.geointservices.io/job",
+			"description": "dummy data record with \"testing 1.. 2.. 3..\" and \"epsgCode\": 1984",
+			"descriptionFormat": "html",
+			"time": 1459182614984,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {}
+		}
+	]
+}
