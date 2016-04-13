@@ -51,7 +51,6 @@ public class Controller {
 	 * endpoint ingesting SearchMetadataIngestJob containing data/metadata resource object
 	 * @return dataResource object ingested
 	 */
-	@SuppressWarnings("unchecked")
 	@RequestMapping(value = API_ROOT + "/data", method = RequestMethod.POST, consumes = "application/json")
 	public DataResourceResponse ingestMetadataJob(@RequestBody(required = true) SearchMetadataIngestJob mdingestJob)  throws Exception {
 		

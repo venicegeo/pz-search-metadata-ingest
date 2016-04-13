@@ -1,0 +1,248 @@
+curl -XPUT 'http://localhost:9200/pzmetadata' -d '{
+    "mappings": {
+        "DataResource": {
+            "properties": {
+                "geoLocation" : {
+                    "properties" : {
+                       "locationCenterPoint": {
+                            "type": "geo_point"
+                        },
+                        "locationGeoShape": {
+                          "type": "geo_shape"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+'
+
+curl -XDELETE 'http://localhost:9200/pzmetadata/'
+
+curl -XGET 'http://localhost:9200/pzmetadata/_search?pretty=true' -d '
+  {
+      "query" : {
+          "matchAll" : {}
+       }
+  }'
+
+curl -XPOST http://localhost:9200/pzmetadata/DataResource/dataResource -d '
+{
+    "dataId": "Alfred E. Newman",
+    "dataType": {
+        "id": "findme",
+        "type": "wfs",
+        "url": "http://geoserver.dev:8080/geoserver/wfs",
+        "featureType": "piazza:shelters",
+        "version": "1.0.0"
+    },
+    "metadata": {
+        "name": "My Test Shapefile",
+        "availability": "nope",
+        "description": "This is a test.",
+        "classType": "unclassified",
+        "numericKeyValueList": [
+          {
+            "key": "velocity",
+            "value": 55.5
+          },
+          {
+            "key": "angle",
+            "value": 90
+          }
+        ],
+        "textKeyValueList": [
+          {
+            "key": "comment",
+            "value": "testing 1.. 2.. 3.."
+          }
+        ]
+    },
+    "spatialMetadata": {
+        "epsgCode": 1984
+    }
+}
+' 
+  
+  
+"pzmetadata" : {
+	"mappings" : {
+		"DataResource" : {
+			"properties" : {
+				"dataResource" : {
+					"properties" : {
+						"dataId" : {
+							"type" : "string"
+						},
+						"dataType" : {
+							"properties" : {
+								"featureType" : {
+									"type" : "string"
+								},
+								"type" : {
+									"type" : "string"
+								},
+								"url" : {
+									"type" : "string"
+								},
+								"version" : {
+									"type" : "string"
+								}
+							}
+						},
+						"metadata" : {
+							"properties" : {
+								"availability" : {
+									"type" : "string"
+								},
+								"classType" : {
+									"type" : "string"
+								},
+								"description" : {
+									"type" : "string"
+								},
+								"name" : {
+									"type" : "string"
+								},
+								"numericKeyValueList" : {
+									"properties" : {
+										"key" : {
+											"type" : "string"
+										},
+										"value" : {
+											"type" : "double"
+										}
+									}
+								},
+								"textKeyValueList" : {
+									"properties" : {
+										"key" : {
+											"type" : "string"
+										},
+										"value" : {
+											"type" : "string"
+										}
+									}
+								}
+							}
+						},
+						"spatialMetadata" : {
+							"properties" : {
+								"epsgCode" : {
+									"type" : "long"
+								},
+								"maxX" : {
+									"type" : "double"
+								},
+								"maxY" : {
+									"type" : "double"
+								},
+								"minX" : {
+									"type" : "double"
+								},
+								"minY" : {
+									"type" : "double"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+{
+	"pzmetadata" : {
+		"aliases" : {},
+		"mappings" : {
+			"DataResource" : {
+				"properties" : {
+					"dataResource" : {
+						"properties" : {
+							"dataId" : {
+								"type" : "string"
+							},
+							"dataType" : {
+								"properties" : {
+									"featureType" : {
+										"type" : "string"
+									},
+									"type" : {
+										"type" : "string"
+									},
+									"url" : {
+										"type" : "string"
+									},
+									"version" : {
+										"type" : "string"
+									}
+								}
+							},
+							"metadata" : {
+								"properties" : {
+									"availability" : {
+										"type" : "string"
+									},
+									"classType" : {
+										"type" : "string"
+									},
+									"description" : {
+										"type" : "string"
+									},
+									"name" : {
+										"type" : "string"
+									},
+									"numericKeyValueList" : {
+										"properties" : {
+											"key" : {
+												"type" : "string"
+											},
+											"value" : {
+												"type" : "double"
+											}
+										}
+									},
+									"textKeyValueList" : {
+										"properties" : {
+											"key" : {
+												"type" : "string"
+											},
+											"value" : {
+												"type" : "string"
+											}
+										}
+									}
+								}
+							},
+							"spatialMetadata" : {
+								"properties" : {
+									"epsgCode" : {
+										"type" : "long"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"settings" : {
+			"index" : {
+				"refresh_interval" : "1s",
+				"number_of_shards" : "5",
+				"creation_date" : "1456168916906",
+				"store" : {
+					"type" : "fs"
+				},
+				"uuid" : "6G-X9nJhTCCZ9644GcTcRg",
+				"version" : {
+					"created" : "1050299"
+				},
+				"number_of_replicas" : "1"
+			}
+		},
+		"warmers" : {}
+
+	}
+}
