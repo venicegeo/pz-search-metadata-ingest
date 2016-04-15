@@ -60,6 +60,12 @@
             <artifactId>woodstox-core-asl</artifactId>
             <version>4.4.1</version>
         </dependency>
+        
+		<dependency>
+			<groupId>javax.vecmath</groupId>
+			<artifactId>vecmath</artifactId>
+			<version>1.5.2</version>
+		</dependency>
 	</dependencies>
 
 	<build>

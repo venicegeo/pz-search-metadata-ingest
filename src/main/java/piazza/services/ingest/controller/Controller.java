@@ -1,16 +1,21 @@
 package piazza.services.ingest.controller;
 
 import model.data.DataResource;
+import model.job.metadata.SpatialMetadata;
 import model.job.type.SearchMetadataIngestJob;
 import util.PiazzaLogger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 
 
 
@@ -18,6 +23,7 @@ import model.response.DataResourceResponse;
 import piazza.services.ingest.repository.DataResourceContainer;
 //import piazza.services.ingest.model.Metadata;
 import piazza.services.ingest.repository.MetadataRepository;
+import piazza.services.ingest.util.GeometryUtils;
 
 @RestController
 public class Controller {
@@ -47,6 +53,30 @@ public class Controller {
 		return entry;
 	}
 	
+	@RequestMapping(value = API_ROOT + "/datanew", method = RequestMethod.POST, consumes="application/json")
+	public @ResponseBody DataResourceContainer createEntryNew(@RequestBody DataResource entry){
+		DataResourceContainer drc = new DataResourceContainer( entry );
+		try {
+			SpatialMetadata sm = entry.getSpatialMetadata();
+			Double minX = sm.getMinX();
+			Double maxX = sm.getMaxX();
+			Double minY = sm.getMinY();
+			Double maxY = sm.getMaxY();
+			GeoPoint gp = new GeoPoint( maxY-minY, maxX-minX );
+			drc.setLocationCenterPoint(gp);
+			
+			Coordinate NW = new Coordinate(minX, maxY);
+			Coordinate SE = new Coordinate(maxX, minY);
+			Geometry bboxGeometry = GeometryUtils.createBoundingBox( NW, SE);
+			drc.setBoundingArea(bboxGeometry);
+		} catch (Exception exception) {
+			String message = String.format("Error augmenting with geolocation center point and bbox", exception.getMessage());
+		}
+		repository.save(drc);
+		//repository.save(entry);
+		return drc;
+	}
+	
 	/* 
 	 * endpoint ingesting SearchMetadataIngestJob containing data/metadata resource object
 	 * @return dataResource object ingested
@@ -73,6 +103,19 @@ public class Controller {
 		try {
 			dr = mdingestJob.getData();
 			DataResourceContainer drc = new DataResourceContainer( dr );
+			SpatialMetadata sm = dr.getSpatialMetadata();
+			Double minX = sm.getMinX();
+			Double maxX = sm.getMaxX();
+			Double minY = sm.getMinY();
+			Double maxY = sm.getMaxY();
+			GeoPoint gp = new GeoPoint( maxY-minY, maxX-minX );
+			drc.setLocationCenterPoint(gp);
+			
+			Coordinate NW = new Coordinate(minX, maxY);
+			Coordinate SE = new Coordinate(maxX, minY);
+			Geometry bboxGeometry = GeometryUtils.createBoundingBox( NW, SE);
+			drc.setBoundingArea(bboxGeometry);
+			
 			repository.save(drc);
 			
 		} catch (Exception exception) {
