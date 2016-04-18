@@ -71,7 +71,7 @@ public class Controller {
 			drc.setBoundingArea(bboxGeometry);
 		} catch (Exception exception) {
 			String message = String.format("Error augmenting with geolocation center point and bbox", exception.getMessage());
-		}
+			System.out.println(message);		}
 		repository.save(drc);
 		//repository.save(entry);
 		return drc;

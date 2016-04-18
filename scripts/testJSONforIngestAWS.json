@@ -1,3 +1,50 @@
+curl -XPOST http://localhost:9200/pzmetadata/DataResourceContainer -d '
+{
+    "dataId": "Alfred E. Newman",
+    "dataType": {
+        "id": "findme",
+        "type": "wfs",
+        "url": "http://geoserver.dev:8080/geoserver/wfs",
+        "featureType": "piazza:shelters",
+        "version": "1.0.0"
+    },
+    "metadata": {
+        "name": "My Test Shapefile",
+        "availability": "nope",
+        "description": "This is a test.",
+        "classType": "unclassified",
+        "numericKeyValueList": [
+          {
+            "key": "velocity",
+            "value": 55.5
+          },
+          {
+            "key": "angle",
+            "value": 90
+          }
+        ],
+        "textKeyValueList": [
+          {
+            "key": "comment",
+            "value": "testing 1.. 2.. 3.."
+          }
+        ]
+    },
+    "spatialMetadata": {
+        "epsgCode": 1984
+    },
+    "geoLocation" : {
+       "locationCenterPoint": { "41.11,-71.33" },
+        "boundingArea" : {
+            "type" : "polygon",
+            "coordinates" : [
+                [ [-177.0, 10.0], [176.0, 15.0], [172.0, 0.0], [176.0, -15.0], [-177.0, -10.0], [-177.0, 10.0] ],
+                [ [178.2, 8.2], [-178.8, 8.2], [-180.8, -8.8], [178.2, 8.8] ]
+            ]
+        }
+    }
+}
+'
 // Gateway test data for search
 {     "userName": "my-api-key-38n987",     "jobType": {         "type": "search-query",         "data": { "query" : { "match" : { "_all" : "testing" } } }     } }
 // Gateway test data for search
@@ -137,6 +184,21 @@ curl -XGET 'https://search-venice-es-pjebjkdaueu2gukocyccj4r5m4.us-east-1.es.ama
   
   
   
+curl -XGET 'localhost:9200/pzmetadata/_search?pretty=true' -d '
+  {
+      "query" : {
+         "match" : {
+             "_all" : "kitten"
+          }
+       }
+  }'
+curl -XGET 'localhost:9200/pzmetadata/_search?pretty=true' -d '
+  {
+      "query" : {
+          "matchAll" : {}
+       }
+  }'
+    
 curl -XGET 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata/_search?pretty=true' -d '
   {
       "query" : {

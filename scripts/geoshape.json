@@ -1,13 +1,80 @@
+
+yes!!!!
+curl -XPUT 'http://localhost:9200/pzmetadata' -d '
+{
+    "mappings": {
+        "metadata": {
+            "properties": {
+               "locationCenterPoint": {
+                    "type": "geo_point"
+                }
+            }
+        }
+    }
+}
+'
+curl -XPOST http://localhost:9200/pzmetadata/metadata -d '
+{
+     "geoLocation" : {
+       "locationCenterPoint": {
+            
+                "lat" : 41.11,
+                "lon" : -71.30
+ 
+       }
+     }
+}'
+
+curl -XPOST 'http://localhost:9200/pzmetadata/DataResourceContainer' -d '
+{ "geoLocation" : {
+	"locationCenterPoint": {"lat": "61", "lon": "-149"},
+   "userId": "smith",
+    "date": 1454593198502
+}
+}'  
+
+curl -XPOST 'http://localhost:9200/pzmetadata/DataResourceContainer' -d '
+{ "geoLocation" : {
+        "boundingArea" : {
+            "type" : "polygon",
+            "coordinates" : [
+                [ [-177.0, 10.0], [176.0, 15.0], [172.0, 0.0], [176.0, -15.0], [-177.0, -10.0], [-177.0, 10.0] ],
+                [ [178.2, 8.2], [-178.8, 8.2], [-180.8, -8.8], [178.2, 8.2] ]
+            ]
+        }
+}
+}'  
+
+curl -XPOST 'http://localhost:9200/pzmetadata/DataResourceContainer' -d '
+{ "geoLocation" : {
+	"locationCenterPoint": "62, -150",
+        "boundingArea" : {
+            "type" : "polygon",
+            "coordinates" : [
+                [ [-100.0, 10.0], [176.0, 15.0], [172.0, 0.0], [176.0, -15.0], [-177.0, -10.0], [-100.0, 10.0] ]
+            ]
+        }
+}
+}'
+
+
+curl -XPOST 'http://localhost:9200/pzmetadata/DataResourceContainer' -d '
+{ "locationCenterPoint": "62, -150",
+   "userId": "smith",
+    "date": 1454593198502
+}'
+
+
 curl -XPUT 'http://localhost:9200/pzmetadata' -d '{
     "mappings": {
-        "DataResource": {
+        "DataResourceContainer": {
             "properties": {
                 "geoLocation" : {
                     "properties" : {
                        "locationCenterPoint": {
                             "type": "geo_point"
                         },
-                        "locationGeoShape": {
+                        "boundingArea": {
                           "type": "geo_shape"
                         }
                     }
@@ -20,6 +87,13 @@ curl -XPUT 'http://localhost:9200/pzmetadata' -d '{
 
 curl -XDELETE 'http://localhost:9200/pzmetadata/'
 
+
+curl -XGET 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata/_search?pretty=true' -d '
+  {
+      "query" : {
+          "matchAll" : {}
+       }
+  }'
 curl -XGET 'http://localhost:9200/pzmetadata/_search?pretty=true' -d '
   {
       "query" : {
@@ -27,7 +101,7 @@ curl -XGET 'http://localhost:9200/pzmetadata/_search?pretty=true' -d '
        }
   }'
 
-curl -XPOST http://localhost:9200/pzmetadata/DataResource/dataResource -d '
+curl -XPOST http://localhost:9200/pzmetadata/DataResourceContainer -d '
 {
     "dataId": "Alfred E. Newman",
     "dataType": {
@@ -61,188 +135,272 @@ curl -XPOST http://localhost:9200/pzmetadata/DataResource/dataResource -d '
     },
     "spatialMetadata": {
         "epsgCode": 1984
+    },
+    "geoLocation" : {
+       "locationCenterPoint": { "41.11,-71.33" },
+        "boundingArea" : {
+            "type" : "polygon",
+            "coordinates" : [
+                [ [-177.0, 10.0], [176.0, 15.0], [172.0, 0.0], [176.0, -15.0], [-177.0, -10.0], [-177.0, 10.0] ],
+                [ [178.2, 8.2], [-178.8, 8.2], [-180.8, -8.8], [178.2, 8.8] ]
+            ]
+        }
     }
 }
-' 
-  
+'
+
+curl -XPOST http://localhost:9200/pzmetadata/DataResourceContainer -d '
+{
+     "geoLocation" : {
+       "locationCenterPoint": {
+            
+                "lat" : 41.11,
+                "lon" : -71.30
+ 
+       }
+     }
+}'
+
+curl -XPOST http://localhost:9200/pzmetadata/DataResourceContainer -d '
+{
+     "geoLocation" : {
+       "locationCenterPoint": "41.22,-70.33" 
+     }
+}'
+       
+curl -XPOST http://localhost:9200/pzmetadata/DataResourceContainer -d '
+{
+     "geoLocation" : {
+       "locationCenterPoint": {
+           "location":{ "41.11,-71.33" }
+       },
+        "boundingArea" : {
+            "type" : "polygon",
+            "coordinates" : [
+                [ [-177.0, 10.0], [176.0, 15.0], [172.0, 0.0], [176.0, -15.0], [-177.0, -10.0], [-177.0, 10.0] ],
+                [ [178.2, 8.2], [-178.8, 8.2], [-180.8, -8.8], [178.2, 8.8] ]
+            ]
+        }
+    }
+}
+'
+curl -XPOST http://localhost:9200/pzmetadata/DataResourceContainer -d '
+{
+     "geoLocation" : {
+       "locationCenterPoint": {
+           "location":{             
+                "lat" : 41.11,
+                "lon" : -71.30
+            }
+       },
+        "boundingArea" : {
+            "type" : "polygon",
+            "coordinates" : [
+                [ [-177.0, 10.0], [176.0, 15.0], [172.0, 0.0], [176.0, -15.0], [-177.0, -10.0], [-177.0, 10.0] ],
+                [ [178.2, 8.2], [-178.8, 8.2], [-180.8, -8.8], [178.2, 8.8] ]
+            ]
+        }
+    }
+}
+'
+
+/////////  mapping for geoloc
+  "pzmetadata" : {
+    "mappings" : {
+      "DataResourceContainer" : {
+        "properties" : {
+          "geoLocation" : {
+            "properties" : {
+              "boundingArea" : {
+                "type" : "geo_shape"
+              },
+              "locationCenterPoint" : {
+                "type" : "geo_point"
+              }
+            }
+          }
+        }
+      }
+    }
+  }  
   
 "pzmetadata" : {
-	"mappings" : {
-		"DataResource" : {
-			"properties" : {
-				"dataResource" : {
-					"properties" : {
-						"dataId" : {
-							"type" : "string"
-						},
-						"dataType" : {
-							"properties" : {
-								"featureType" : {
-									"type" : "string"
-								},
-								"type" : {
-									"type" : "string"
-								},
-								"url" : {
-									"type" : "string"
-								},
-								"version" : {
-									"type" : "string"
-								}
-							}
-						},
-						"metadata" : {
-							"properties" : {
-								"availability" : {
-									"type" : "string"
-								},
-								"classType" : {
-									"type" : "string"
-								},
-								"description" : {
-									"type" : "string"
-								},
-								"name" : {
-									"type" : "string"
-								},
-								"numericKeyValueList" : {
-									"properties" : {
-										"key" : {
-											"type" : "string"
-										},
-										"value" : {
-											"type" : "double"
-										}
-									}
-								},
-								"textKeyValueList" : {
-									"properties" : {
-										"key" : {
-											"type" : "string"
-										},
-										"value" : {
-											"type" : "string"
-										}
-									}
-								}
-							}
-						},
-						"spatialMetadata" : {
-							"properties" : {
-								"epsgCode" : {
-									"type" : "long"
-								},
-								"maxX" : {
-									"type" : "double"
-								},
-								"maxY" : {
-									"type" : "double"
-								},
-								"minX" : {
-									"type" : "double"
-								},
-								"minY" : {
-									"type" : "double"
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+    "mappings" : {
+        "DataResource" : {
+            "properties" : {
+                "dataResource" : {
+                    "properties" : {
+                        "dataId" : {
+                            "type" : "string"
+                        },
+                        "dataType" : {
+                            "properties" : {
+                                "featureType" : {
+                                    "type" : "string"
+                                },
+                                "type" : {
+                                    "type" : "string"
+                                },
+                                "url" : {
+                                    "type" : "string"
+                                },
+                                "version" : {
+                                    "type" : "string"
+                                }
+                            }
+                        },
+                        "metadata" : {
+                            "properties" : {
+                                "availability" : {
+                                    "type" : "string"
+                                },
+                                "classType" : {
+                                    "type" : "string"
+                                },
+                                "description" : {
+                                    "type" : "string"
+                                },
+                                "name" : {
+                                    "type" : "string"
+                                },
+                                "numericKeyValueList" : {
+                                    "properties" : {
+                                        "key" : {
+                                            "type" : "string"
+                                        },
+                                        "value" : {
+                                            "type" : "double"
+                                        }
+                                    }
+                                },
+                                "textKeyValueList" : {
+                                    "properties" : {
+                                        "key" : {
+                                            "type" : "string"
+                                        },
+                                        "value" : {
+                                            "type" : "string"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "spatialMetadata" : {
+                            "properties" : {
+                                "epsgCode" : {
+                                    "type" : "long"
+                                },
+                                "maxX" : {
+                                    "type" : "double"
+                                },
+                                "maxY" : {
+                                    "type" : "double"
+                                },
+                                "minX" : {
+                                    "type" : "double"
+                                },
+                                "minY" : {
+                                    "type" : "double"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 {
-	"pzmetadata" : {
-		"aliases" : {},
-		"mappings" : {
-			"DataResource" : {
-				"properties" : {
-					"dataResource" : {
-						"properties" : {
-							"dataId" : {
-								"type" : "string"
-							},
-							"dataType" : {
-								"properties" : {
-									"featureType" : {
-										"type" : "string"
-									},
-									"type" : {
-										"type" : "string"
-									},
-									"url" : {
-										"type" : "string"
-									},
-									"version" : {
-										"type" : "string"
-									}
-								}
-							},
-							"metadata" : {
-								"properties" : {
-									"availability" : {
-										"type" : "string"
-									},
-									"classType" : {
-										"type" : "string"
-									},
-									"description" : {
-										"type" : "string"
-									},
-									"name" : {
-										"type" : "string"
-									},
-									"numericKeyValueList" : {
-										"properties" : {
-											"key" : {
-												"type" : "string"
-											},
-											"value" : {
-												"type" : "double"
-											}
-										}
-									},
-									"textKeyValueList" : {
-										"properties" : {
-											"key" : {
-												"type" : "string"
-											},
-											"value" : {
-												"type" : "string"
-											}
-										}
-									}
-								}
-							},
-							"spatialMetadata" : {
-								"properties" : {
-									"epsgCode" : {
-										"type" : "long"
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"settings" : {
-			"index" : {
-				"refresh_interval" : "1s",
-				"number_of_shards" : "5",
-				"creation_date" : "1456168916906",
-				"store" : {
-					"type" : "fs"
-				},
-				"uuid" : "6G-X9nJhTCCZ9644GcTcRg",
-				"version" : {
-					"created" : "1050299"
-				},
-				"number_of_replicas" : "1"
-			}
-		},
-		"warmers" : {}
+    "pzmetadata" : {
+        "aliases" : {},
+        "mappings" : {
+            "DataResource" : {
+                "properties" : {
+                    "dataResource" : {
+                        "properties" : {
+                            "dataId" : {
+                                "type" : "string"
+                            },
+                            "dataType" : {
+                                "properties" : {
+                                    "featureType" : {
+                                        "type" : "string"
+                                    },
+                                    "type" : {
+                                        "type" : "string"
+                                    },
+                                    "url" : {
+                                        "type" : "string"
+                                    },
+                                    "version" : {
+                                        "type" : "string"
+                                    }
+                                }
+                            },
+                            "metadata" : {
+                                "properties" : {
+                                    "availability" : {
+                                        "type" : "string"
+                                    },
+                                    "classType" : {
+                                        "type" : "string"
+                                    },
+                                    "description" : {
+                                        "type" : "string"
+                                    },
+                                    "name" : {
+                                        "type" : "string"
+                                    },
+                                    "numericKeyValueList" : {
+                                        "properties" : {
+                                            "key" : {
+                                                "type" : "string"
+                                            },
+                                            "value" : {
+                                                "type" : "double"
+                                            }
+                                        }
+                                    },
+                                    "textKeyValueList" : {
+                                        "properties" : {
+                                            "key" : {
+                                                "type" : "string"
+                                            },
+                                            "value" : {
+                                                "type" : "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "spatialMetadata" : {
+                                "properties" : {
+                                    "epsgCode" : {
+                                        "type" : "long"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "settings" : {
+            "index" : {
+                "refresh_interval" : "1s",
+                "number_of_shards" : "5",
+                "creation_date" : "1456168916906",
+                "store" : {
+                    "type" : "fs"
+                },
+                "uuid" : "6G-X9nJhTCCZ9644GcTcRg",
+                "version" : {
+                    "created" : "1050299"
+                },
+                "number_of_replicas" : "1"
+            }
+        },
+        "warmers" : {}
 
-	}
+    }
 }
