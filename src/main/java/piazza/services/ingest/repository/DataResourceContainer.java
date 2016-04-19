@@ -38,7 +38,7 @@ public class DataResourceContainer {
 	{
 		dataResource = dr;
 	}
-
+	
 	public GeoPoint getLocationCenterPoint() {
 		return locationCenterPoint;
 	}

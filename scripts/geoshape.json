@@ -1,3 +1,21 @@
+curl -XGET 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata/_mapping?pretty=true'
+curl -XDELETE 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata/'
+curl -XGET 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata/DataResourceContainer/_mapping?pretty=true'
+curl -XDELETE 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata/DataResourceContainer'
+curl -XPUT 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata' -d '{
+    "mappings": {
+        "DataResourceContainer": {
+                    "properties" : {
+                       "locationCenterPoint": {
+                            "type": "geo_point"
+                        },
+                        "boundingArea": {
+                          "type": "geo_shape"
+                        }
+                    }
+        }
+    }
+}
 
 yes!!!!
 curl -XPUT 'http://localhost:9200/pzmetadata' -d '
@@ -13,21 +31,71 @@ curl -XPUT 'http://localhost:9200/pzmetadata' -d '
     }
 }
 '
-curl -XPOST http://localhost:9200/pzmetadata/metadata -d '
+
+curl -XGET 'http://localhost:9200/pzmetadata/DataResourceContainer/_search?pretty=true' -d '
 {
-     "geoLocation" : {
-       "locationCenterPoint": {
-            
-                "lat" : 41.11,
-                "lon" : -71.30
- 
-       }
-     }
+  "query": {
+    "filtered" : {
+        "query" : {
+            "match_all" : {}
+        },
+        "filter" : {
+            "geo_distance" : {
+                "distance" : "200km",
+                "locationCenterPoint" : {
+                    "lat" : 0.40,
+                    "lon" : 0.80
+                }
+            }
+        }
+    }
+  }
 }'
+...OR, without query, defaults to match_all
+curl -XGET 'http://localhost:9200/pzmetadata/DataResourceContainer/_search?pretty=true' -d '
+{
+  "query": {
+    "filtered" : {
+        "filter" : {
+            "geo_distance" : {
+                "distance" : "20km",
+                "locationCenterPoint" : {
+                    "lat" : 51.4,
+                    "lon" : 0.0
+                }
+            }
+        }
+    }
+  }
+}'
+
+curl -XGET 'http://localhost:9200/pzmetadata/DataResourceContainer/_search?pretty=true' -d '
+{
+    "query":{
+        "filtered": {
+            "query": {
+                "match_all": {}
+            },
+            "filter": {
+                "geo_shape": {
+                    "boundingArea": {
+                        "shape": {
+                            "type": "envelope",
+                            "coordinates" : [[-0.52, 52], [0.35, 50]]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}'
+
+
+
 
 curl -XPOST 'http://localhost:9200/pzmetadata/DataResourceContainer' -d '
 { "geoLocation" : {
-	"locationCenterPoint": {"lat": "61", "lon": "-149"},
+    "locationCenterPoint": {"lat": "61", "lon": "-149"},
    "userId": "smith",
     "date": 1454593198502
 }
@@ -47,7 +115,7 @@ curl -XPOST 'http://localhost:9200/pzmetadata/DataResourceContainer' -d '
 
 curl -XPOST 'http://localhost:9200/pzmetadata/DataResourceContainer' -d '
 { "geoLocation" : {
-	"locationCenterPoint": "62, -150",
+    "locationCenterPoint": "62, -150",
         "boundingArea" : {
             "type" : "polygon",
             "coordinates" : [
@@ -64,7 +132,7 @@ curl -XPOST 'http://localhost:9200/pzmetadata/DataResourceContainer' -d '
     "date": 1454593198502
 }'
 
-
+////with nested class for geoLocation
 curl -XPUT 'http://localhost:9200/pzmetadata' -d '{
     "mappings": {
         "DataResourceContainer": {
@@ -84,6 +152,23 @@ curl -XPUT 'http://localhost:9200/pzmetadata' -d '{
     }
 }
 '
+////without nested class for geoLocation
+curl -XPUT 'http://localhost:9200/pzmetadata' -d '{
+    "mappings": {
+        "DataResourceContainer": {
+                    "properties" : {
+                       "locationCenterPoint": {
+                            "type": "geo_point"
+                        },
+                        "boundingArea": {
+                          "type": "geo_shape"
+                        }
+                    }
+        }
+    }
+}
+'
+
 
 curl -XDELETE 'http://localhost:9200/pzmetadata/'
 

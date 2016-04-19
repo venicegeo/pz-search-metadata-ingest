@@ -33,15 +33,13 @@ curl -XPOST http://localhost:9200/pzmetadata/DataResourceContainer -d '
     "spatialMetadata": {
         "epsgCode": 1984
     },
-    "geoLocation" : {
-       "locationCenterPoint": { "41.11,-71.33" },
-        "boundingArea" : {
-            "type" : "polygon",
-            "coordinates" : [
-                [ [-177.0, 10.0], [176.0, 15.0], [172.0, 0.0], [176.0, -15.0], [-177.0, -10.0], [-177.0, 10.0] ],
-                [ [178.2, 8.2], [-178.8, 8.2], [-180.8, -8.8], [178.2, 8.8] ]
-            ]
-        }
+   "locationCenterPoint": { "41.11,-71.33" },
+    "boundingArea" : {
+        "type" : "polygon",
+        "coordinates" : [
+            [ [-177.0, 10.0], [176.0, 15.0], [172.0, 0.0], [176.0, -15.0], [-177.0, -10.0], [-177.0, 10.0] ],
+            [ [178.2, 8.2], [-178.8, 8.2], [-180.8, -8.8], [178.2, 8.8] ]
+        ]
     }
 }
 '
@@ -388,5 +386,81 @@ curl -XGET 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata/_se
     },
     "spatialMetadata": {
         "epsgCode": 1984
+    }
+}
+
+
+4/18/16 input at REST endpoint localhost:8580/api/v1/datanew
+{
+    "dataId": "WWW",
+    "dataType": {
+       "id": "PatrickUUID",
+        "type": "wfs",
+        "url": "http://geoserver.dev:8080/geoserver/wfs",
+        "featureType": "piazza:shelters",
+        "version": "1.0.0"
+    },
+    "metadata": {
+        "name": "London",
+        "availability": "nope",
+        "description": "London BBOX combined with random WFS; hmmm.",
+        "classType": { "classification": "unclassified" },
+       "numericKeyValueList": [
+         {
+           "key": "velocity",
+           "value": 55.5
+         },
+         {
+           "key": "angle",
+           "value": 90
+         }
+       ],
+       "textKeyValueList": [
+         {
+           "key": "comment",
+           "value": "I wanted a pony, but my parents got me a kitten!! %^&*%!!"
+         }
+       ]
+    },
+    "spatialMetadata": {
+        "epsgCode": 1984,
+        "minY": 51.28,
+        "maxY": 51.69,
+        "minX": -0.51,
+        "maxX": 0.334
+    }
+}
+
+// geospatial info not included, exception raised and caught, data indexed with null for geo stuff
+{
+    "dataId": "NO-GEO",
+    "dataType": {
+       "id": "PatrickUUID",
+        "type": "wfs",
+        "url": "http://geoserver.dev:8080/geoserver/wfs",
+        "featureType": "piazza:shelters",
+        "version": "1.0.0"
+    },
+    "metadata": {
+        "name": "London",
+        "availability": "nope",
+        "description": "London BBOX combined with random WFS; hmmm.",
+        "classType": { "classification": "unclassified" },
+       "numericKeyValueList": [
+         {
+           "key": "velocity",
+           "value": 55.5
+         },
+         {
+           "key": "angle",
+           "value": 90
+         }
+       ],
+       "textKeyValueList": [
+         {
+           "key": "comment",
+           "value": "I wanted a pony, but my parents got me a kitten!! %^&*%!!"
+         }
+       ]
     }
 }

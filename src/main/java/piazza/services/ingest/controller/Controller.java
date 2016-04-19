@@ -62,7 +62,7 @@ public class Controller {
 			Double maxX = sm.getMaxX();
 			Double minY = sm.getMinY();
 			Double maxY = sm.getMaxY();
-			GeoPoint gp = new GeoPoint( maxY-minY, maxX-minX );
+			GeoPoint gp = new GeoPoint( (maxY+minY)/2, (maxX+minX)/2 );
 			drc.setLocationCenterPoint(gp);
 			
 			Coordinate NW = new Coordinate(minX, maxY);
@@ -71,7 +71,8 @@ public class Controller {
 			drc.setBoundingArea(bboxGeometry);
 		} catch (Exception exception) {
 			String message = String.format("Error augmenting with geolocation center point and bbox", exception.getMessage());
-			System.out.println(message);		}
+			System.out.println(message);		
+		}
 		repository.save(drc);
 		//repository.save(entry);
 		return drc;
@@ -99,31 +100,39 @@ public class Controller {
 			throw new Exception(message);
 		}
 		
-		DataResource dr;
 		try {
+			DataResource dr;
 			dr = mdingestJob.getData();
 			DataResourceContainer drc = new DataResourceContainer( dr );
-			SpatialMetadata sm = dr.getSpatialMetadata();
-			Double minX = sm.getMinX();
-			Double maxX = sm.getMaxX();
-			Double minY = sm.getMinY();
-			Double maxY = sm.getMaxY();
-			GeoPoint gp = new GeoPoint( maxY-minY, maxX-minX );
-			drc.setLocationCenterPoint(gp);
-			
-			Coordinate NW = new Coordinate(minX, maxY);
-			Coordinate SE = new Coordinate(maxX, minY);
-			Geometry bboxGeometry = GeometryUtils.createBoundingBox( NW, SE);
-			drc.setBoundingArea(bboxGeometry);
+			try {
+				SpatialMetadata sm = dr.getSpatialMetadata();
+				Double minX = sm.getMinX();
+				Double maxX = sm.getMaxX();
+				Double minY = sm.getMinY();
+				Double maxY = sm.getMaxY();
+				GeoPoint gp = new GeoPoint( (maxY+minY)/2, (maxX+minX)/2 );
+				drc.setLocationCenterPoint(gp);
+				
+				Coordinate NW = new Coordinate(minX, maxY);
+				Coordinate SE = new Coordinate(maxX, minY);
+				Geometry bboxGeometry = GeometryUtils.createBoundingBox( NW, SE);
+				drc.setBoundingArea(bboxGeometry);
+				
+			} catch (Exception exception) {
+				String message = String.format("Error Augmenting JSON Doc with goelocation info, perhaps null values input: %s", exception.getMessage());
+				logger.log(message, PiazzaLogger.ERROR);
+				throw new Exception(message);
+			}
 			
 			repository.save(drc);
+			return new DataResourceResponse( dr );
 			
 		} catch (Exception exception) {
 			String message = String.format("Error completing JSON Doc indexing in Elasticsearch from SearchMetadataIngestJob: %s", exception.getMessage());
 			logger.log(message, PiazzaLogger.ERROR);
 			throw new Exception(message);
 		}
-		return new DataResourceResponse( dr );
+		
 	}
 	
 	

@@ -1,6 +1,5 @@
 package piazza.services.ingest.repository;
 
-import model.data.DataResource;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 
