@@ -15,7 +15,7 @@ curl -XPUT 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata' -d
                     }
         }
     }
-}
+}'
 
 yes!!!!
 curl -XPUT 'http://localhost:9200/pzmetadata' -d '

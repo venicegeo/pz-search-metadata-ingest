@@ -49,9 +49,9 @@ curl -XPOST http://localhost:9200/pzmetadata/DataResourceContainer -d '
 { "userName": "my-api-key-38n987", "jobType": { "type": "search-metadata-ingest", "data": { "dataId": "WOW" } } }
 
 {     "userName": "my-api-key-38n987",     "jobType": {         "type": "search-metadata-ingest",         "data": {
-    "dataId": "WOW",
+    "dataId": "KittenTest",
     "dataType": {
-       "id": "PatrickUUID",
+       "id": "DummyUUID",
         "type": "wfs",
         "url": "http://geoserver.dev:8080/geoserver/wfs",
         "featureType": "piazza:shelters",
@@ -75,7 +75,7 @@ curl -XPOST http://localhost:9200/pzmetadata/DataResourceContainer -d '
        "textKeyValueList": [
          {
            "key": "comment",
-           "value": "I wanted a pony, but my parents got me a dog!! %^&*%!!"
+           "value": "I wanted a pony, but my parents got me a kitten!! %^&*%!!"
          }
        ]
     },
@@ -85,6 +85,43 @@ curl -XPOST http://localhost:9200/pzmetadata/DataResourceContainer -d '
         "maxY": 51.69,
         "minX": -0.51,
         "maxX": 0.334
+    }
+} } }
+
+{     "userName": "my-api-key-38n987",     "jobType": {         "type": "search-metadata-ingest",         "data": {
+    "dataId": "NOGEOtest",
+    "dataType": {
+       "id": "NOGEO",
+        "type": "wfs",
+        "url": "http://geoserver.dev:8080/geoserver/wfs",
+        "featureType": "piazza:shelters",
+        "version": "1.0.0"
+    },
+    "metadata": {
+        "name": "London",
+        "availability": "nope",
+        "description": "London BBOX combined with random WFS; hmmm.",
+        "classType": { "classification": "unclassified" },
+       "numericKeyValueList": [
+         {
+           "key": "velocity",
+           "value": 55.5
+         },
+         {
+           "key": "angle",
+           "value": 90
+         }
+       ],
+       "textKeyValueList": [
+         {
+           "key": "comment",
+           "value": "I wanted a pony, but my parents got me a kitten!! %^&*%!!"
+         },
+         {
+           "key": "anothercomment",
+           "value": "Let's see if a doc without geolocation stuff works!!"
+         }
+       ]
     }
 } } }
 

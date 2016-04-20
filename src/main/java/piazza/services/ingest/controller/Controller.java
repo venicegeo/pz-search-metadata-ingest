@@ -119,9 +119,8 @@ public class Controller {
 				drc.setBoundingArea(bboxGeometry);
 				
 			} catch (Exception exception) {
-				String message = String.format("Error Augmenting JSON Doc with goelocation info, perhaps null values input: %s", exception.getMessage());
+				String message = String.format("Error Augmenting JSON Doc with geolocation info, perhaps null values input: %s", exception.getMessage());
 				logger.log(message, PiazzaLogger.ERROR);
-				throw new Exception(message);
 			}
 			
 			repository.save(drc);
