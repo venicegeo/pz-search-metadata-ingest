@@ -51,7 +51,6 @@ curl -XPOST http://localhost:9200/pzmetadata/DataResourceContainer -d '
 {     "userName": "my-api-key-38n987",     "jobType": {         "type": "search-metadata-ingest",         "data": {
     "dataId": "KittenTest",
     "dataType": {
-       "id": "DummyUUID",
         "type": "wfs",
         "url": "http://geoserver.dev:8080/geoserver/wfs",
         "featureType": "piazza:shelters",
@@ -91,7 +90,6 @@ curl -XPOST http://localhost:9200/pzmetadata/DataResourceContainer -d '
 {     "userName": "my-api-key-38n987",     "jobType": {         "type": "search-metadata-ingest",         "data": {
     "dataId": "NOGEOtest",
     "dataType": {
-       "id": "NOGEO",
         "type": "wfs",
         "url": "http://geoserver.dev:8080/geoserver/wfs",
         "featureType": "piazza:shelters",
@@ -125,6 +123,34 @@ curl -XPOST http://localhost:9200/pzmetadata/DataResourceContainer -d '
     }
 } } }
 
+
+curl -XDELETE 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata/DataResourceContainer/_query' -d '{
+    "query" : {
+        "match" : { "dataId" : "KittenTest" }
+    }
+}
+'
+curl -XGET 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata/DataResourceContainer/_search?pretty=true' -d '
+{
+  "query": {
+    "match" : { "dataId" : "KittenTest" }
+  }
+}'
+curl -XGET 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata/DataResourceContainer/_search?pretty=true' -d '
+{
+  "query": {
+    "match" : { "type" : "wfs" }
+  }
+}'
+
+curl -XGET 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata/_search?pretty=true' -d '
+  {
+      "query" : {
+         "match" : {
+             "_all" : "kitten"
+          }
+       }
+  }'
 
 {     "userName": "my-api-key-38n987",     "jobType": {         "type": "search-metadata-ingest",         "data":{
   "dataId": "dc1787d7-7a5e-4d51-a86c-a171ee103723",

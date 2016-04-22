@@ -6,6 +6,10 @@ import model.job.type.SearchMetadataIngestJob;
 import util.PiazzaLogger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,7 +48,17 @@ public class Controller {
 	public String checkme(){
 		return ("Hello pz-search-metadata-ingest.  Let\'s have some metadata for search!");
 	}
-	
+
+	/**
+	 * Statistics from Spring Boot
+	 * 
+	 * @return json as statistics
+	 */
+	@RequestMapping(value = "/admin/stats",  method = RequestMethod.GET)
+	public void stats(HttpServletResponse response) throws IOException {
+		 response.sendRedirect("/metrics");
+	}
+
 	@RequestMapping(value = API_ROOT + "/dataold", method = RequestMethod.POST, consumes="application/json")
 	public @ResponseBody DataResource createEntry(@RequestBody DataResource entry){
 		DataResourceContainer dr = new DataResourceContainer( entry );

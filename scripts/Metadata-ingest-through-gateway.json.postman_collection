@@ -1,0 +1,70 @@
+{
+	"id": "7745c0cc-350e-6ca9-26f0-0d0f66968391",
+	"name": "Metadata-ingest-through-gateway",
+	"description": "",
+	"order": [
+		"81221266-9088-33bf-50fb-d2e40b8d207a",
+		"49667589-31d8-1553-8f69-54874264e3ce"
+	],
+	"folders": [],
+	"timestamp": 1461179880783,
+	"owner": "486145",
+	"remoteLink": "",
+	"public": false,
+	"requests": [
+		{
+			"id": "49667589-31d8-1553-8f69-54874264e3ce",
+			"headers": "",
+			"url": "https://pz-gateway.stage.geointservices.io/job",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "POST",
+			"collectionId": "7745c0cc-350e-6ca9-26f0-0d0f66968391",
+			"data": [
+				{
+					"key": "body",
+					"value": "{     \"userName\": \"my-api-key-38n987\",     \"jobType\": {         \"type\": \"search-metadata-ingest\",         \"data\": {     \"dataId\": \"KittenTest\",     \"dataType\": {         \"type\": \"wfs\",         \"url\": \"http://geoserver.dev:8080/geoserver/wfs\",         \"featureType\": \"piazza:shelters\",         \"version\": \"1.0.0\"     },     \"metadata\": {         \"name\": \"London\",         \"availability\": \"nope\",         \"description\": \"London BBOX combined with random WFS; hmmm.\",         \"classType\": { \"classification\": \"unclassified\" },        \"numericKeyValueList\": [          {            \"key\": \"velocity\",            \"value\": 55.5          },          {            \"key\": \"angle\",            \"value\": 90          }        ],        \"textKeyValueList\": [          {            \"key\": \"comment\",            \"value\": \"I wanted a pony, but my parents got me a kitten!! %^&*%!!\"          }        ]     },     \"spatialMetadata\": {         \"epsgCode\": 1984,         \"minY\": 51.28,         \"maxY\": 51.69,         \"minX\": -0.51,         \"maxX\": 0.334     } } } }",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"name": "https://pz-gateway.stage.geointservices.io/job",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1461179925322,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {}
+		},
+		{
+			"id": "81221266-9088-33bf-50fb-d2e40b8d207a",
+			"headers": "",
+			"url": "https://pz-gateway.stage.geointservices.io/job",
+			"pathVariables": {},
+			"preRequestScript": "",
+			"method": "POST",
+			"collectionId": "7745c0cc-350e-6ca9-26f0-0d0f66968391",
+			"data": [
+				{
+					"key": "body",
+					"value": "{     \"userName\": \"my-api-key-38n987\",     \"jobType\": {         \"type\": \"search-metadata-ingest\",         \"data\": {     \"dataId\": \"NOGEOtest\",     \"dataType\": {         \"type\": \"wfs\",         \"url\": \"http://geoserver.dev:8080/geoserver/wfs\",         \"featureType\": \"piazza:shelters\",         \"version\": \"1.0.0\"     },     \"metadata\": {         \"name\": \"London\",         \"availability\": \"nope\",         \"description\": \"London BBOX combined with random WFS; hmmm.\",         \"classType\": { \"classification\": \"unclassified\" },        \"numericKeyValueList\": [          {            \"key\": \"velocity\",            \"value\": 55.5          },          {            \"key\": \"angle\",            \"value\": 90          }        ],        \"textKeyValueList\": [          {            \"key\": \"comment\",            \"value\": \"I wanted a pony, but my parents got me a kitten!! %^&*%!!\"          },          {            \"key\": \"anothercomment\",            \"value\": \"Let's see if a doc without geolocation stuff works!!\"          }        ]     } } } }",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"name": "https://pz-gateway.stage.geointservices.io/job",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1461179880780,
+			"version": 2,
+			"responses": [],
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {}
+		}
+	]
+}
