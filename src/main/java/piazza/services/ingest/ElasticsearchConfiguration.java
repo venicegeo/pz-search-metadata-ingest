@@ -8,12 +8,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
+//import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+//import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 @Configuration
 @EnableAutoConfiguration
-@EnableElasticsearchRepositories(basePackages="piazza.services.ingest.repository", repositoryImplementationPostfix="CustomImpl")
+//@EnableElasticsearchRepositories(basePackages="piazza.services.ingest.repository", repositoryImplementationPostfix="CustomImpl")
 public class ElasticsearchConfiguration {
 	
 	@Value("${elasticsearch.clustername}")
