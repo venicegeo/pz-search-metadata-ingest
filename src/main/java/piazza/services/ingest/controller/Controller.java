@@ -186,7 +186,7 @@ public class Controller {
 			return new ServiceResponse( objService );
 			
 		} catch (Exception exception) {
-			String message = String.format("Error completing JSON Doc indexing in Elasticsearch from SearchMetadataIngestJob: %s", exception.getMessage());
+			String message = String.format("Error completing JSON Doc indexing in Elasticsearch from ServiceMetadataIngestJob: %s", exception.getMessage());
 			logger.log(message, PiazzaLogger.ERROR);
 			throw new Exception(message);
 		}
