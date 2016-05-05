@@ -3,6 +3,7 @@ package piazza.services.ingest.controller;
 import model.data.DataResource;
 import model.job.metadata.SpatialMetadata;
 import model.job.type.SearchMetadataIngestJob;
+import model.job.type.ServiceMetadataIngestJob;
 import util.PiazzaLogger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -25,9 +26,13 @@ import com.vividsolutions.jts.geom.Geometry;
 
 
 import model.response.DataResourceResponse;
+import model.response.ServiceResponse;
+import model.service.metadata.Service;
 import piazza.services.ingest.repository.DataResourceContainer;
 //import piazza.services.ingest.model.Metadata;
 //import piazza.services.ingest.repository.MetadataRepository;
+//import piazza.services.ingest.repository.ServiceContainer;
+//import piazza.services.ingest.repository.ServiceMetadataRepository;
 import piazza.services.ingest.util.GeometryUtils;
 
 @RestController
@@ -38,6 +43,9 @@ public class Controller {
 
 //	@Autowired
 //	MetadataRepository repository;
+	
+//	@Autowired
+//	ServiceMetadataRepository servicerepository;
 /*
 	@RequestMapping(value="/metadata_v1/ingest", method=RequestMethod.POST, consumes="application/json")
 	public @ResponseBody Metadata createEntry(@RequestBody Metadata entry){
@@ -149,6 +157,41 @@ public class Controller {
 		
 	}
 	
-	
-
+	/* 
+	 * endpoint ingesting ServiceMetadataIngestJob containing data/metadata resource object
+	 * @return dataResource object ingested
+	 */
+	@RequestMapping(value = API_ROOT + "/service", method = RequestMethod.POST, consumes = "application/json")
+	public ServiceResponse ingestServiceMetadataJob(@RequestBody(required = true) ServiceMetadataIngestJob smdingestJob)  throws Exception {
+		
+		/*    Block for debug purposes if needed
+		// get reconstituted JSON Doc out of job object parameter
+		*/
+		String reconJSONdoc;
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			reconJSONdoc = mapper.writeValueAsString( smdingestJob.getData() );
+			System.out.println("The Re-Constituted JSON Doc:\n");
+			System.out.println( reconJSONdoc );
+		} catch (Exception exception) {
+			String message = String.format("Error Reconstituting JSON Doc from ServiceMetadataIngestJob: %s", exception.getMessage());
+			logger.log(message, PiazzaLogger.ERROR);
+			throw new Exception(message);
+		}
+		
+		try {
+			Service objService;
+			objService = smdingestJob.getData();
+			ServiceContainer sc = new ServiceContainer( objService );
+			servicerepository.save(sc);
+			return new ServiceResponse( objService );
+			
+		} catch (Exception exception) {
+			String message = String.format("Error completing JSON Doc indexing in Elasticsearch from ServiceMetadataIngestJob: %s", exception.getMessage());
+			logger.log(message, PiazzaLogger.ERROR);
+			throw new Exception(message);
+		}
+		
+	}
+		
 }
