@@ -25,6 +25,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+			<!--   <scope>test</scope>  -->
 		</dependency>
 
 		<dependency>
@@ -41,7 +42,7 @@
 		<dependency>
 			<groupId>org.venice.piazza</groupId>
 			<artifactId>pz-jobcommon</artifactId>
-			<version>LATEST</version> <!-- LATEST for true deploy, vs. 1.0.0.BUILD-SNAPSHOT local snapshot -->
+			<version>1.0.0.BUILD-SNAPSHOT</version> <!-- LATEST for true deploy, vs. 1.0.0.BUILD-SNAPSHOT local snapshot -->
 		</dependency>
 
 		<dependency>

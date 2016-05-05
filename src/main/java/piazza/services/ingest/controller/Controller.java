@@ -28,7 +28,9 @@ import com.vividsolutions.jts.geom.Geometry;
 import model.response.DataResourceResponse;
 import model.response.ServiceResponse;
 import model.service.metadata.Service;
+import piazza.commons.elasticsearch.NativeElasticsearchTemplate;
 import piazza.services.ingest.repository.DataResourceContainer;
+import piazza.services.ingest.repository.ServiceContainer;
 //import piazza.services.ingest.model.Metadata;
 //import piazza.services.ingest.repository.MetadataRepository;
 //import piazza.services.ingest.repository.ServiceContainer;
@@ -41,7 +43,15 @@ public class Controller {
 	private PiazzaLogger logger= new PiazzaLogger();
 	private final String API_ROOT = "${api.basepath}";
 
-//	@Autowired
+	static final String DATAINDEX = "pzmetadata";
+	static final String DATATYPE = "DataResource";
+	static final String SERVICESINDEX = "pzservices";
+	static final String SERVICESTYPE = "ServiceContainer";
+
+	@Autowired
+	NativeElasticsearchTemplate template;
+
+	//	@Autowired
 //	MetadataRepository repository;
 	
 //	@Autowired
@@ -70,8 +80,9 @@ public class Controller {
 
 	@RequestMapping(value = API_ROOT + "/dataold", method = RequestMethod.POST, consumes="application/json")
 	public @ResponseBody DataResource createEntry(@RequestBody DataResource entry){
-		DataResourceContainer dr = new DataResourceContainer( entry );
-		repository.save(dr);
+		DataResourceContainer drc = new DataResourceContainer( entry );
+		template.index(DATAINDEX, DATATYPE, drc);
+//		repository.save(dr);
 		//repository.save(entry);
 		return entry;
 	}
@@ -96,7 +107,8 @@ public class Controller {
 			String message = String.format("Error augmenting with geolocation center point and bbox", exception.getMessage());
 			System.out.println(message);		
 		}
-		repository.save(drc);
+		template.index(DATAINDEX, DATATYPE, drc);
+		//repository.save(drc);
 		//repository.save(entry);
 		return drc;
 	}
@@ -146,7 +158,8 @@ public class Controller {
 				logger.log(message, PiazzaLogger.ERROR);
 			}
 			
-			repository.save(drc);
+			//repository.save(drc);
+			template.index(DATAINDEX, DATATYPE, drc);
 			return new DataResourceResponse( dr );
 			
 		} catch (Exception exception) {
@@ -183,7 +196,8 @@ public class Controller {
 			Service objService;
 			objService = smdingestJob.getData();
 			ServiceContainer sc = new ServiceContainer( objService );
-			servicerepository.save(sc);
+			//servicerepository.save(sc);
+			template.index(DATAINDEX, DATATYPE, sc);
 			return new ServiceResponse( objService );
 			
 		} catch (Exception exception) {

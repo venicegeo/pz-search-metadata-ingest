@@ -1,6 +1,7 @@
 package piazza.services.ingest.repository;
 
 import model.data.DataResource;
+import piazza.commons.elasticsearch.ESModel;
 import piazza.services.ingest.util.GeoJsonDeserializer;
 import piazza.services.ingest.util.GeoJsonSerializer;
 
@@ -22,7 +23,7 @@ import com.vividsolutions.jts.geom.Geometry;
  */
 
 //@Document(indexName = "pzmetadata", type = "DataResourceContainer")
-public class DataResourceContainer {
+public class DataResourceContainer implements piazza.commons.elasticsearch.ESModel {
 //	@Id
 	public String dataResourceContainerId;
 	public GeoPoint locationCenterPoint;
@@ -55,6 +56,18 @@ public class DataResourceContainer {
 	public void setBoundingArea(
 		Geometry boundingArea ) {
 		this.boundingArea = boundingArea;
+	}
+
+	@Override
+	public String getId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setId(String id) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
