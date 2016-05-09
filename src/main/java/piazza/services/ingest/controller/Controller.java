@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.elasticsearch.common.geo.GeoPoint;
 import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.stereotype.Component;
+import org.springframework.test.context.ContextConfiguration;
 //import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,16 +31,23 @@ import model.response.DataResourceResponse;
 import model.response.ServiceResponse;
 import model.service.metadata.Service;
 import piazza.commons.elasticsearch.NativeElasticsearchTemplate;
+import piazza.commons.elasticsearch.NativeElasticsearchTemplateConfiguration;
 import piazza.services.ingest.repository.DataResourceContainer;
+//import piazza.services.ingest.repository.MetadataRepository;
 import piazza.services.ingest.repository.ServiceContainer;
+//import piazza.services.ingest.repository.ServiceMetadataRepository;
 //import piazza.services.ingest.model.Metadata;
 //import piazza.services.ingest.repository.MetadataRepository;
 //import piazza.services.ingest.repository.ServiceContainer;
 //import piazza.services.ingest.repository.ServiceMetadataRepository;
 import piazza.services.ingest.util.GeometryUtils;
 
+@ContextConfiguration(classes = NativeElasticsearchTemplateConfiguration.class)
+
+//@Component
 @RestController
 public class Controller {
+
 	
 	private PiazzaLogger logger= new PiazzaLogger();
 	private final String API_ROOT = "${api.basepath}";
@@ -51,11 +60,14 @@ public class Controller {
 	@Autowired
 	NativeElasticsearchTemplate template;
 
-	//	@Autowired
-//	MetadataRepository repository;
+	/*
+	@Autowired
+	MetadataRepository repository;
 	
-//	@Autowired
-//	ServiceMetadataRepository servicerepository;
+	@Autowired
+	ServiceMetadataRepository servicerepository;
+	*/
+	
 /*
 	@RequestMapping(value="/metadata_v1/ingest", method=RequestMethod.POST, consumes="application/json")
 	public @ResponseBody Metadata createEntry(@RequestBody Metadata entry){
