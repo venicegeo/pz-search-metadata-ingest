@@ -57,8 +57,10 @@ public class Controller {
 	static final String SERVICESINDEX = "pzservices";
 	static final String SERVICESTYPE = "ServiceContainer";
 
-	@Autowired
-	NativeElasticsearchTemplate template;
+	//@Autowired
+	NativeElasticsearchTemplateConfiguration templateconfig= new NativeElasticsearchTemplateConfiguration();
+	//@Autowired
+	NativeElasticsearchTemplate template = templateconfig.template(templateconfig.client(), templateconfig.mapper());
 
 	/*
 	@Autowired
