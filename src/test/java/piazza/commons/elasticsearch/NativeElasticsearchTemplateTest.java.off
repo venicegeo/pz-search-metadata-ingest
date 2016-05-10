@@ -30,8 +30,8 @@ import mti.commons.repositories.filters.TimeFilter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = NativeElasticsearchTemplateConfiguration.class)
-@TestPropertySource(properties = { "elasticsearch.clustername = P422-elasticsearch",
-		"elasticsearch.hostname = 10.0.0.16", "elasticsearch.port = 9300" })
+@TestPropertySource(properties = { "elasticsearch.clustername = venice-es",
+		"elasticsearch.hostname = 127.0.0.1", "elasticsearch.port = 9300" })
 public class NativeElasticsearchTemplateTest {
 
 	public static class MockTrack implements ESModel {

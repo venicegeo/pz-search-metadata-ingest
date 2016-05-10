@@ -12,9 +12,13 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.elasticsearch.common.geo.GeoPoint;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 //import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 //import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,9 +46,11 @@ import piazza.services.ingest.repository.ServiceContainer;
 //import piazza.services.ingest.repository.ServiceMetadataRepository;
 import piazza.services.ingest.util.GeometryUtils;
 
-@ContextConfiguration(classes = NativeElasticsearchTemplateConfiguration.class)
+//@ContextConfiguration(classes = NativeElasticsearchTemplateConfiguration.class)
+//@TestPropertySource(properties = { "elasticsearch.clustername = venice-es",
+//		"elasticsearch.hostname = 127.0.0.1", "elasticsearch.port = 9300" })
 
-//@Component
+@Component
 @RestController
 public class Controller {
 
@@ -58,9 +64,11 @@ public class Controller {
 	static final String SERVICESTYPE = "ServiceContainer";
 
 	//@Autowired
-	NativeElasticsearchTemplateConfiguration templateconfig= new NativeElasticsearchTemplateConfiguration();
+	//NativeElasticsearchTemplateConfiguration templateconfig= new NativeElasticsearchTemplateConfiguration();
 	//@Autowired
-	NativeElasticsearchTemplate template = templateconfig.template(templateconfig.client(), templateconfig.mapper());
+	//NativeElasticsearchTemplate template = templateconfig.template(templateconfig.client(), templateconfig.mapper());
+	@Autowired
+	NativeElasticsearchTemplate template;
 
 	/*
 	@Autowired
