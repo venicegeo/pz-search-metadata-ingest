@@ -6,6 +6,7 @@ import piazza.services.ingest.util.GeoJsonDeserializer;
 import piazza.services.ingest.util.GeoJsonSerializer;
 
 import org.elasticsearch.common.geo.GeoPoint;
+import org.springframework.data.annotation.Id;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -19,7 +20,7 @@ import com.vividsolutions.jts.geom.Geometry;
 /*
  * Shell containing object for DataResource annotated for ElasticSearch _mapping
  * @author C. Smith
- * @Document(indexName = "pzmetadata", type = "DataResource")
+ * @Document(indexName = "pzmetadata", type = "DataResourceContainer")
  */
 
 //@Document(indexName = "pzmetadata", type = "DataResourceContainer")

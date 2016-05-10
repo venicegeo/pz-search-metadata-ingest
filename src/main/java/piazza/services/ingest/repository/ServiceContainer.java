@@ -14,7 +14,7 @@ import org.springframework.data.annotation.Id;
 
 //@Document(indexName = "pzservices", type = "ServiceContainer")
 public class ServiceContainer implements piazza.commons.elasticsearch.ESModel {
-	@Id
+//	@Id
 	public String serviceContainerId;
 	
 //	@Field(type = FieldType.Nested)

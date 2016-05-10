@@ -50,7 +50,7 @@ import piazza.services.ingest.util.GeometryUtils;
 //@TestPropertySource(properties = { "elasticsearch.clustername = venice-es",
 //		"elasticsearch.hostname = 127.0.0.1", "elasticsearch.port = 9300" })
 
-@Component
+//@Component
 @RestController
 public class Controller {
 
@@ -59,7 +59,7 @@ public class Controller {
 	private final String API_ROOT = "${api.basepath}";
 
 	static final String DATAINDEX = "pzmetadata";
-	static final String DATATYPE = "DataResource";
+	static final String DATATYPE = "DataResourceContainer";
 	static final String SERVICESINDEX = "pzservices";
 	static final String SERVICESTYPE = "ServiceContainer";
 
@@ -85,7 +85,9 @@ public class Controller {
 		return entry;
 	}
 */
-	@RequestMapping(value="/", method=RequestMethod.GET)
+	//@RequestMapping(value="/", method=RequestMethod.GET)
+	@RequestMapping("/")
+	@ResponseBody
 	public String checkme(){
 		return ("Hello pz-search-metadata-ingest.  Let\'s have some metadata for search!");
 	}
