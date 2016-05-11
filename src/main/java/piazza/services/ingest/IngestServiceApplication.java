@@ -14,7 +14,7 @@ import piazza.commons.elasticsearch.NativeElasticsearchTemplateConfiguration;
 
 
 //@Configuration
-@ComponentScan("piazza.commons")
+@ComponentScan("piazza")
 //@EnableAutoConfiguration 
 //@ContextConfiguration(classes = NativeElasticsearchTemplateConfiguration.class)
 @SpringBootApplication
