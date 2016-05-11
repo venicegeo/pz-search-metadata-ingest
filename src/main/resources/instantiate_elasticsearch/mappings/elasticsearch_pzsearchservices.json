@@ -1,0 +1,44 @@
+{
+    "template" : "pz-searchservice*",
+    "settings" : {
+        "number_of_shards" : 5,
+        "number_of_replicas" : 1
+    },
+    "mappings": {
+
+        "ServiceContainer": {
+            "properties": {
+                "service": {
+                    "properties": {
+                        "serviceId": {
+                            "type": "string"
+                        },
+                        "resourceMetadata": {
+                            "properties": {
+                                "description": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "method": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "url": {
+                            "type": "string"
+                        },
+                        "contractData": {
+                            "type": "string"
+                        },
+                        "contractUrl": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    } 
+}
+

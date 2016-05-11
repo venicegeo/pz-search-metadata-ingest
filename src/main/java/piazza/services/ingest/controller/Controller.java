@@ -70,21 +70,6 @@ public class Controller {
 	@Autowired
 	NativeElasticsearchTemplate template;
 
-	/*
-	@Autowired
-	MetadataRepository repository;
-	
-	@Autowired
-	ServiceMetadataRepository servicerepository;
-	*/
-	
-/*
-	@RequestMapping(value="/metadata_v1/ingest", method=RequestMethod.POST, consumes="application/json")
-	public @ResponseBody Metadata createEntry(@RequestBody Metadata entry){
-		repository.save(entry);
-		return entry;
-	}
-*/
 	//@RequestMapping(value="/", method=RequestMethod.GET)
 	@RequestMapping("/")
 	@ResponseBody
@@ -103,16 +88,20 @@ public class Controller {
 	}
 
 	@RequestMapping(value = API_ROOT + "/dataold", method = RequestMethod.POST, consumes="application/json")
-	public @ResponseBody DataResource createEntry(@RequestBody DataResource entry){
+	public @ResponseBody DataResource createEntry(@RequestBody DataResource entry)  throws Exception {
 		DataResourceContainer drc = new DataResourceContainer( entry );
-		template.index(DATAINDEX, DATATYPE, drc);
-//		repository.save(dr);
-		//repository.save(entry);
-		return entry;
+		try {
+			template.index(DATAINDEX, DATATYPE, drc);
+			return entry;
+		} catch (org.elasticsearch.client.transport.NoNodeAvailableException exception) {
+			String message = String.format("Error attempting index of data", exception.getMessage());
+			System.out.println(message);		
+			throw new Exception(message);
+		}
 	}
 	
 	@RequestMapping(value = API_ROOT + "/datanew", method = RequestMethod.POST, consumes="application/json")
-	public @ResponseBody DataResourceContainer createEntryNew(@RequestBody DataResource entry){
+	public @ResponseBody DataResourceContainer createEntryNew(@RequestBody DataResource entry)  throws Exception {
 		DataResourceContainer drc = new DataResourceContainer( entry );
 		try {
 			SpatialMetadata sm = entry.getSpatialMetadata();
@@ -131,10 +120,16 @@ public class Controller {
 			String message = String.format("Error augmenting with geolocation center point and bbox", exception.getMessage());
 			System.out.println(message);		
 		}
-		template.index(DATAINDEX, DATATYPE, drc);
-		//repository.save(drc);
-		//repository.save(entry);
-		return drc;
+		try {
+			template.index(DATAINDEX, DATATYPE, drc);
+			//repository.save(drc);
+			//repository.save(entry);
+			return drc;
+		} catch (org.elasticsearch.client.transport.NoNodeAvailableException exception) {
+			String message = String.format("Error attempting index of data", exception.getMessage());
+			System.out.println(message);		
+			throw new Exception(message);
+		}
 	}
 	
 	/* 

@@ -1,0 +1,133 @@
+{
+    "template" : "pz-searchdata*",
+    "settings" : {
+        "number_of_shards" : 5,
+        "number_of_replicas" : 1
+    },
+    "mappings" : {
+        "DataResourceContainer": {
+            "properties": {
+                "locationCenterPoint": {
+                    "type": "geo_point"
+                },
+                "boundingArea": {
+                    "type": "geo_shape"
+                },
+                "dataResource": {
+                    "properties": {
+                        "dataType": {
+                            "properties": {
+                                "content": {
+                                    "type": "string"
+                                },
+                                "databaseTableName": {
+                                    "type": "string"
+                                },
+                                "location": {
+                                    "properties": {
+                                        "fileName": {
+                                            "type": "string"
+                                        },
+                                        "domainName": {
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "type": "string"
+                                        },
+                                        "bucketName": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "featureType": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string"
+                                },
+                                "url": {
+                                    "type": "string"
+                                },
+                                "mimeType": {
+                                    "type": "string"
+                                },
+                                "version": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "dataId": {
+                            "type": "string"
+                        },
+                        "spatialMetadata": {
+                            "properties": {
+                                "epsgCode": {
+                                    "type": "long"
+                                },
+                                "coordinateReferenceSystem": {
+                                    "type": "string"
+                                },
+                                "maxY": {
+                                    "type": "double"
+                                },
+                                "maxX": {
+                                    "type": "double"
+                                },
+                                "minX": {
+                                    "type": "double"
+                                },
+                                "minY": {
+                                    "type": "double"
+                                }
+                            }
+                        },
+                        "metadata": {
+                            "properties": {
+                                "description": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "textKeyValueList": {
+                                    "properties": {
+                                        "value": {
+                                            "type": "string"
+                                        },
+                                        "key": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "numericKeyValueList": {
+                                    "properties": {
+                                        "value": {
+                                            "type": "double"
+                                        },
+                                        "key": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "method": {
+                                    "type": "string"
+                                },
+                                "classType": {
+                                    "properties": {
+                                        "classification": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "availability": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
