@@ -6,5 +6,5 @@ ELASTICSEARCH=$1
 curl -XPUT "$ELASTICSEARCH/pzmetadata" -d @mappings/elasticsearch_pzsearchdata.json
 
 #Instantiate pzmetadata for data
-curl -XPUT "$ELASTICSEARCH/pzservices" -d @mappings/elasticsearch_pzservices.json
+curl -XPUT "$ELASTICSEARCH/pzservices" -d @mappings/elasticsearch_pzsearchservices.json
 
