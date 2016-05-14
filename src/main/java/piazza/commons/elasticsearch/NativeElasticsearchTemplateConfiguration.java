@@ -1,8 +1,11 @@
 package piazza.commons.elasticsearch;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.ImmutableSettings;
+//old import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,10 +28,11 @@ public class NativeElasticsearchTemplateConfiguration {
 	private Integer port;
 
 	@Bean
-	public Client client() {
-		Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", clustername).build();
-		TransportClient transportClient = new TransportClient(settings);
-		transportClient.addTransportAddress(new InetSocketTransportAddress(hostname, port));
+	public Client client() throws UnknownHostException {
+		Settings settings = Settings.settingsBuilder().put("cluster.name", clustername).build();
+		TransportClient transportClient = TransportClient.builder().settings(settings).build();
+		transportClient.addTransportAddress(new InetSocketTransportAddress(
+												InetAddress.getByName(hostname), port));
 
 		return transportClient;
 	}

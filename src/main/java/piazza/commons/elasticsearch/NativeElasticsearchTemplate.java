@@ -277,11 +277,17 @@ public class NativeElasticsearchTemplate
 		return response.getHits().getTotalHits();
 	}
 
+/* 2.x changes query builders CSS 5/14/16
 	public SearchRequestBuilder NativeSearchQueryBuilder() {
 		return new SearchRequestBuilder(
 			this.client);
 	}
-
+*/
+	public SearchRequestBuilder NativeSearchQueryBuilder() {
+		return new SearchRequestBuilder(
+			this.client, null);
+	}
+	
 	public <T extends ESModel> boolean delete(
 		String index,
 		String type,

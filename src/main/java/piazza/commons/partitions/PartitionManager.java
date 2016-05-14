@@ -6,16 +6,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.index.query.AndFilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
+//import org.elasticsearch.index.query.AndFilterBuilder;
+//import org.elasticsearch.index.query.FilterBuilders.*;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import piazza.commons.elasticsearch.NativeElasticsearchTemplate;
-import piazza.commons.repositories.filters.TimeFilter;
+//import piazza.commons.repositories.filters.TimeFilter;
 
 public class PartitionManager {
 	
@@ -32,13 +34,19 @@ public class PartitionManager {
 	public PartitionManager(PartitionType partitionType) {
 		this.partitionType = partitionType;
 	}
-
+	
+	//TEMP!!!!!
+	public String getPartition(Date date) throws Exception {
+		return ("dummy placeholder for migration to ES 2.X");
+	}
+/* css 5/14/16  migreate to ES 2.X  A MESS!!!!!!!
 	public String getPartition(Date date) throws Exception {
 		
 		String partitionName = null;
 
-		AndFilterBuilder filter = FilterBuilders.andFilter(TimeFilter.getTimeRangeFilter("startTime", "stopTime", date),
-				FilterBuilders.termFilter("type", partitionType.toString().toLowerCase()));
+		RangeQueryBuilder rqb = QueryBuilders.rangeQuery("time").to("stopTime").from("startTime");
+		QueryBuilders filter = QueryBuilders.andFilter(TimeFilter.getTimeRangeFilter("startTime", "stopTime", date),
+				QueryBuilders.termQuery("type", partitionType.toString().toLowerCase();
 		
 		SearchRequestBuilder searchQuery = elasticsearchTemplate.NativeSearchQueryBuilder().setIndices(index).setTypes(type)
 				.setQuery(QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), filter));
@@ -93,7 +101,7 @@ public class PartitionManager {
 		
 		return partitionNames.toArray(new String[partitions.size()]);
 	}
-	
+*/	
 	public String getAlias() {
 		return this.partitionType.toString().toLowerCase();
 	}

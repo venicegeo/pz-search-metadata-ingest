@@ -3,8 +3,9 @@ package piazza.commons.elasticsearch.dao;
 import java.util.Collection;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.QueryBuilder;
+//import org.elasticsearch.index.query.FilterBuilder;
+//import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,7 @@ public class ElasticsearchPartitionedDAO<T extends ESPartitionedModel> extends E
 		return null;
 	}
 
-	@Override
+/*	@Override
 	public T findOne(String uuid) {
 		FilterBuilder filter = FilterBuilders.idsFilter().addIds(uuid);
 		SearchRequestBuilder query = template.NativeSearchQueryBuilder().setIndices(indexTemplate).setTypes(documentType)
@@ -42,7 +43,16 @@ public class ElasticsearchPartitionedDAO<T extends ESPartitionedModel> extends E
 		
 		return template.queryForOne(query, modelClass);
 	}
-
+*/
+	@Override
+	public T findOne(String uuid) {
+		QueryBuilder filter = QueryBuilders.idsQuery(indexTemplate).addIds(uuid);
+		SearchRequestBuilder query = template.NativeSearchQueryBuilder().setIndices(indexTemplate).setTypes(documentType)
+				.setQuery(QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery()).filter( filter ));
+		
+		return template.queryForOne(query, modelClass);
+	}
+	
 	@Override
 	public boolean delete(T instance) {
 		try {
