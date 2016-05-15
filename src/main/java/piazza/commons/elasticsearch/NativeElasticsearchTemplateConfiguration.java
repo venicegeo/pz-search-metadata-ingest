@@ -29,10 +29,15 @@ public class NativeElasticsearchTemplateConfiguration {
 
 	@Bean
 	public Client client() throws UnknownHostException {
+//		TransportClient client = TransportClient.builder().build()
+//		        .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(hostname), port));
+		
 		Settings settings = Settings.settingsBuilder().put("cluster.name", clustername).build();
+		
 		TransportClient transportClient = TransportClient.builder().settings(settings).build();
+		
 		transportClient.addTransportAddress(new InetSocketTransportAddress(
-												InetAddress.getByName(hostname), port));
+											InetAddress.getByName(hostname), port));
 
 		return transportClient;
 	}
