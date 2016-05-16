@@ -33,12 +33,12 @@ curl -XPOST http://localhost:9200/pzmetadata/DataResourceContainer -d '
     "spatialMetadata": {
         "epsgCode": 1984
     },
-   "locationCenterPoint": { "41.11,-71.33" },
+   "locationCenterPoint": [ 41.11, -71.33 ],
     "boundingArea" : {
         "type" : "polygon",
         "coordinates" : [
             [ [-177.0, 10.0], [176.0, 15.0], [172.0, 0.0], [176.0, -15.0], [-177.0, -10.0], [-177.0, 10.0] ],
-            [ [178.2, 8.2], [-178.8, 8.2], [-180.8, -8.8], [178.2, 8.8] ]
+            [ [178.2, 8.2], [-178.8, 8.2], [-180.8, -8.8], [178.2, 8.2] ]
         ]
     }
 }

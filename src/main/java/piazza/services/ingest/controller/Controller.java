@@ -120,6 +120,22 @@ public class Controller {
 			String message = String.format("Error augmenting with geolocation center point and bbox", exception.getMessage());
 			System.out.println(message);		
 		}
+
+		/*    Block for debug purposes if needed
+		// get reconstituted JSON Doc out of augmented input parameter
+		*/
+		String reconJSONdoc;
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			reconJSONdoc = mapper.writeValueAsString( drc );
+			System.out.println("The Re-Constituted JSON Doc:\n");
+			System.out.println( reconJSONdoc );
+		} catch (Exception exception) {
+			String message = String.format("Error Reconstituting JSON Doc from SearchMetadataIngestJob: %s", exception.getMessage());
+			logger.log(message, PiazzaLogger.ERROR);
+			throw new Exception(message);
+		}
+		
 		try {
 			template.index(DATAINDEX, DATATYPE, drc);
 			//repository.save(drc);

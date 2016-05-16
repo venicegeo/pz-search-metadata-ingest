@@ -7,9 +7,6 @@
     "mappings" : {
         "DataResourceContainer": {
             "properties": {
-                "locationCenterPoint": {
-                    "type": "geo_point"
-                },
                 "boundingArea": {
                     "type": "geo_shape"
                 },
