@@ -21,8 +21,12 @@ public class NativeElasticsearchTemplateConfiguration {
 	@Value("${elasticsearch.clustername}")
 	private String clustername;
 
-	@Value("${elasticsearch.hostname}")
-	private String hostname;
+	// move to CF VCAP geoint serv. platform
+//	@Value("${elasticsearch.hostname}")
+//	private String hostname;
+	@Value("${vcap.services.pz-elasticsearch.credentials.hostname}")
+	private String cfhostname;
+
 
 	@Value("${elasticsearch.port}")
 	private Integer port;
@@ -37,7 +41,7 @@ public class NativeElasticsearchTemplateConfiguration {
 		TransportClient transportClient = TransportClient.builder().settings(settings).build();
 		
 		transportClient.addTransportAddress(new InetSocketTransportAddress(
-											InetAddress.getByName(hostname), port));
+											InetAddress.getByName(cfhostname), port));
 
 		return transportClient;
 	}

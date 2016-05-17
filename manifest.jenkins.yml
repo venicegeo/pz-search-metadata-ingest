@@ -6,4 +6,6 @@ applications:
   domain: stage.geointservices.io
   memory: 512M
   instances: 1
-  timeout: 80
+  timeout: 180
+  services:
+     - pz-elasticsearch
