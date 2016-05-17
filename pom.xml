@@ -42,13 +42,7 @@
 		<dependency>
 			<groupId>org.venice.piazza</groupId>
 			<artifactId>pz-jobcommon</artifactId>
-			<version>1.0.0.BUILD-SNAPSHOT</version> <!-- LATEST for true deploy, vs. 1.0.0.BUILD-SNAPSHOT local snapshot -->
-			<exclusions>
-				<exclusion>
-					<artifactId>spring-data-elasticsearch</artifactId>
-					<groupId>org.springframework.data</groupId>
-				</exclusion>
-			</exclusions>
+			<version>LATEST</version> <!-- LATEST for true deploy, vs. 1.0.0.BUILD-SNAPSHOT local snapshot -->
 		</dependency>
 
 		<dependency>
