@@ -232,7 +232,7 @@ public class Controller {
 			objService = smdingestJob.getData();
 			ServiceContainer sc = new ServiceContainer( objService );
 			//servicerepository.save(sc);
-			template.index(DATAINDEX, DATATYPE, sc);
+			template.index(SERVICESINDEX, SERVICESTYPE, sc);
 			return new ServiceResponse( objService );
 			
 		} catch (Exception exception) {
