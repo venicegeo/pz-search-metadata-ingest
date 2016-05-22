@@ -41,6 +41,7 @@ public class DataResourceContainer implements piazza.commons.elasticsearch.ESMod
 	public DataResourceContainer( DataResource dr )
 	{
 		dataResource = dr;
+		dataResourceContainerId = dataResource.getDataId();
 	}
 	
 	public GeoPoint getLocationCenterPoint() {

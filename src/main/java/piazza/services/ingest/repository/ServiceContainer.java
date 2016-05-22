@@ -25,18 +25,17 @@ public class ServiceContainer implements piazza.commons.elasticsearch.ESModel {
 	public ServiceContainer( Service s )
 	{
 		service = s;
+		serviceContainerId = service.getServiceId();
 	}
 
 	@Override
 	public String getId() {
-		// TODO Auto-generated method stub
-		return null;
+		return serviceContainerId;
 	}
 
 	@Override
 	public void setId(String id) {
-		// TODO Auto-generated method stub
-		
+		serviceContainerId = id;
 	}
 
 }

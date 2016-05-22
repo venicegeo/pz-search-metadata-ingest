@@ -5,7 +5,11 @@ import model.job.metadata.SpatialMetadata;
 import model.job.type.SearchMetadataIngestJob;
 import model.job.type.ServiceMetadataIngestJob;
 import util.PiazzaLogger;
+
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.fasterxml.jackson.databind.util.JSONWrappedObject;
 
 import java.io.IOException;
 
@@ -34,6 +38,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import model.response.DataResourceResponse;
 import model.response.ServiceResponse;
 import model.service.metadata.Service;
+import piazza.commons.elasticsearch.ESModel;
 import piazza.commons.elasticsearch.NativeElasticsearchTemplate;
 import piazza.commons.elasticsearch.NativeElasticsearchTemplateConfiguration;
 import piazza.services.ingest.repository.DataResourceContainer;
@@ -206,8 +211,8 @@ public class Controller {
 	}
 	
 	/* 
-	 * endpoint ingesting ServiceMetadataIngestJob containing data/metadata resource object
-	 * @return dataResource object ingested
+	 * endpoint ingesting ServiceMetadataIngestJob containing Service object
+	 * @return Service object ingested
 	 */
 	@RequestMapping(value = API_ROOT + "/service", method = RequestMethod.POST, consumes = "application/json")
 	public ServiceResponse ingestServiceMetadataJob(@RequestBody(required = true) ServiceMetadataIngestJob smdingestJob)  throws Exception {
@@ -242,5 +247,122 @@ public class Controller {
 		}
 		
 	}
+	/* 
+	 * endpoint ingesting Service object
+	 * @return Service object ingested
+	 */
+	@RequestMapping(value = API_ROOT + "/servicenew", method = RequestMethod.POST, consumes = "application/json")
+	public ServiceResponse ingestServiceDoc(@RequestBody(required = true) Service objService)  throws Exception {
 		
+		/*    Block for debug purposes if needed
+		// get reconstituted JSON Doc out of job object parameter
+		*/
+		String reconJSONdoc;
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			reconJSONdoc = mapper.writeValueAsString( objService );
+			System.out.println("The Re-Constituted JSON Doc:\n");
+			System.out.println( reconJSONdoc );
+		} catch (Exception exception) {
+			String message = String.format("Error Reconstituting JSON Doc from Service obj: %s", exception.getMessage());
+			logger.log(message, PiazzaLogger.ERROR);
+			throw new Exception(message);
+		}
+		
+		try {
+			ServiceContainer sc = new ServiceContainer( objService );
+			//servicerepository.save(sc);
+			template.index(SERVICESINDEX, SERVICESTYPE, sc);
+			return new ServiceResponse( objService );
+			
+		} catch (Exception exception) {
+			String message = String.format("Error completing JSON Doc indexing in Elasticsearch from ServiceMetadataIngestJob: %s", exception.getMessage());
+			logger.log(message, PiazzaLogger.ERROR);
+			throw new Exception(message);
+		}
+		
+	}
+
+	/* 
+	 * endpoint ingesting ServiceMetadataIngestJob containing data/metadata resource object
+	 * 5/21 currently only using serviceId as criterion for doc search/identification
+	 * @return success/fail
+	 */
+	@RequestMapping(value = API_ROOT + "/servicedeleteserviceid", method = RequestMethod.POST, consumes = "application/json")
+	public Boolean deleteServiceDocById(@RequestBody(required = true) Service objService)  throws Exception {
+		
+		
+		try {
+			//ObjectMapper mapper = new ObjectMapper();
+			//Object obj = mapper.readValue(serviceIdJSON, Object.class);
+			//ServiceContainer sc0 = new ServiceContainer();
+			ServiceContainer sc = template.findOne(SERVICESINDEX, 
+					SERVICESTYPE, objService.getServiceId(), new ServiceContainer().getClass());
+			//ServiceContainer sc = new ServiceContainer( objService );
+			//servicerepository.save(sc);
+//			template.index(SERVICESINDEX, SERVICESTYPE, sc);
+
+			String reconJSONdoc;
+			try {
+				ObjectMapper mapper = new ObjectMapper();
+				reconJSONdoc = mapper.writeValueAsString( sc );
+				System.out.println("The Re-Constituted JSON Doc:\n");
+				System.out.println( reconJSONdoc );
+			} catch (Exception exception) {
+				String message = String.format("Error Reconstituting JSON Doc from Service obj: %s", exception.getMessage());
+				logger.log(message, PiazzaLogger.ERROR);
+				throw new Exception(message);
+			}
+			
+			return true;
+			
+		} catch (Exception exception) {
+			String message = String.format("Error completing JSON Doc deleting in Elasticsearch from ServiceMetadataIngestJob: %s", exception.getMessage());
+			logger.log(message, PiazzaLogger.ERROR);
+			throw new Exception(message);
+		}
+		
+	}
+
+	/* 
+	 * endpoint ingesting ServiceMetadataIngestJob containing data/metadata resource object
+	 * 5/21 currently only using serviceId as criterion for doc search/identification
+	 * @return success/fail
+	 */
+	@RequestMapping(value = API_ROOT + "/servicedelete", method = RequestMethod.POST, consumes = "application/json")
+	public Boolean deleteServiceDoc(@RequestBody(required = true) Service objService)  throws Exception {
+		
+		
+		try {
+			//ObjectMapper mapper = new ObjectMapper();
+			//Object obj = mapper.readValue(serviceIdJSON, Object.class);
+			//ServiceContainer sc0 = new ServiceContainer();
+			ServiceContainer sc = template.findOne(SERVICESINDEX, 
+					SERVICESTYPE, objService.getServiceId(), new ServiceContainer().getClass());
+			//ServiceContainer sc = new ServiceContainer( objService );
+			//servicerepository.save(sc);
+//			template.index(SERVICESINDEX, SERVICESTYPE, sc);
+
+			String reconJSONdoc;
+			try {
+				ObjectMapper mapper = new ObjectMapper();
+				reconJSONdoc = mapper.writeValueAsString( sc );
+				System.out.println("The Re-Constituted JSON Doc:\n");
+				System.out.println( reconJSONdoc );
+			} catch (Exception exception) {
+				String message = String.format("Error Reconstituting JSON Doc from Service obj: %s", exception.getMessage());
+				logger.log(message, PiazzaLogger.ERROR);
+				throw new Exception(message);
+			}
+			
+			return true;
+			
+		} catch (Exception exception) {
+			String message = String.format("Error completing JSON Doc deleting in Elasticsearch from ServiceMetadataIngestJob: %s", exception.getMessage());
+			logger.log(message, PiazzaLogger.ERROR);
+			throw new Exception(message);
+		}
+		
+	}
+
 }

@@ -278,9 +278,35 @@ curl -XGET 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata/_se
        }
   }'  
   
+  ************ Match  Query work *********
+curl -XGET 'http://localhost:9200/pzservices/_search?pretty=true' -d '
+{
+   "match" : {
+        "ServiceId" : "this is a test"
+    }
+}'
   
+curl -XGET 'http://localhost:9200/pzservices/serviceContainer/_search?pretty=true' -d '
+{
+  "query": { 
+    "bool": { 
+      "must": [
+        { "match": { "serviceContainerId":   "AVTUfsCXOkCpD373O7rG"  }} 
+      ]
+    }
+  }
+}'
+
+curl -XGET 'http://localhost:9200/pzservices/_search?pretty=true' -d '
+{
+      "query" : {
+         "match" : {
+             "serviceContainerId" : "AVTUfsCXOkCpD373O7rG"
+          }
+       }
+}'
   
-  
+ **************************************** 
   
   
   curl -XGET 'https://search-venice-es-pjebjkdaueu2gukocyccj4r5m4.us-east-1.es.amazonaws.com/pzmetadata/_search?pretty=true' -d '
