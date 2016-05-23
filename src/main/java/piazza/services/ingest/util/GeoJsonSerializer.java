@@ -3,8 +3,10 @@ package piazza.services.ingest.util;
 import java.io.IOException;
 import java.text.DecimalFormat;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,9 +21,13 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
+import util.PiazzaLogger;
+
 public class GeoJsonSerializer extends JsonSerializer<Geometry> {
 	
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	//private final Logger log = LoggerFactory.getLogger(this.getClass());
+	@Autowired
+	private PiazzaLogger logger;
 	
     @Override
     public Class<Geometry> handledType() {
@@ -54,7 +60,9 @@ public class GeoJsonSerializer extends JsonSerializer<Geometry> {
         } else if (value instanceof GeometryCollection) {
             writeGeometryCollection(jgen, (GeometryCollection) value);
         } else {
-        	log.error("Failed to serialize Geometry to GeoJSON, unsupported type.");
+			String message = String.format("Failed to serialize Geometry to GeoJSON, unsupported type.");
+			logger.log(message, PiazzaLogger.ERROR);
+        	//log.error("Failed to serialize Geometry to GeoJSON, unsupported type.");
             throw new UnsupportedOperationException("not implemented: "
                     + value.getClass().getName());
         }

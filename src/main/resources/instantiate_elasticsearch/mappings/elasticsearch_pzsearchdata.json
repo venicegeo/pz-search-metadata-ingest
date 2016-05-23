@@ -10,6 +10,9 @@
                 "boundingArea": {
                     "type": "geo_shape"
                 },
+		        "dataResourceContainerId": {
+		            "type": "string"
+		        },
                 "dataResource": {
                     "properties": {
                         "dataType": {

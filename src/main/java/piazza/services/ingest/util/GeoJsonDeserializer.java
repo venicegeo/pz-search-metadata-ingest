@@ -2,8 +2,9 @@ package piazza.services.ingest.util;
 
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.ObjectCodec;
@@ -18,10 +19,14 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 
+import util.PiazzaLogger;
+
 public class GeoJsonDeserializer extends JsonDeserializer<Geometry> {
 	
 	private GeometryFactory gf = new GeometryFactory();
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
+//	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	@Autowired
+	private PiazzaLogger logger;
 
     @Override
     public Geometry deserialize(JsonParser jp, DeserializationContext ctxt)
@@ -54,7 +59,8 @@ public class GeoJsonDeserializer extends JsonDeserializer<Geometry> {
             return gf.createGeometryCollection(parseGeometries(root
                     .get("geometries")));
         } else {
-        	log.error("Failed to deserialize GeoJSON, unsupported type.");
+        	//log.error("Failed to deserialize GeoJSON, unsupported type.");
+			logger.log("Failed to deserialize GeoJSON, unsupported type.", PiazzaLogger.ERROR);
             throw new UnsupportedOperationException();
         }
     }

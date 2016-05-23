@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 //import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
@@ -59,8 +60,6 @@ import piazza.services.ingest.util.GeometryUtils;
 @RestController
 public class Controller {
 
-	
-	private PiazzaLogger logger= new PiazzaLogger();
 	private final String API_ROOT = "${api.basepath}";
 
 	static final String DATAINDEX = "pzmetadata";
@@ -68,11 +67,14 @@ public class Controller {
 	static final String SERVICESINDEX = "pzservices";
 	static final String SERVICESTYPE = "ServiceContainer";
 
+//	@Autowired
+	private PiazzaLogger logger;
+
 	//@Autowired
 	//NativeElasticsearchTemplateConfiguration templateconfig= new NativeElasticsearchTemplateConfiguration();
 	//@Autowired
 	//NativeElasticsearchTemplate template = templateconfig.template(templateconfig.client(), templateconfig.mapper());
-	@Autowired
+	//@Autowired
 	NativeElasticsearchTemplate template;
 
 	//@RequestMapping(value="/", method=RequestMethod.GET)
@@ -284,11 +286,12 @@ public class Controller {
 	}
 
 	/* 
-	 * endpoint ingesting ServiceMetadataIngestJob containing data/metadata resource object
+	 * endpoint ingesting Service object
 	 * 5/21 currently only using serviceId as criterion for doc search/identification
+	 * @param Service object
 	 * @return success/fail
 	 */
-	@RequestMapping(value = API_ROOT + "/servicedeleteserviceid", method = RequestMethod.POST, consumes = "application/json")
+	@RequestMapping(value = API_ROOT + "/servicedeleteid", method = RequestMethod.POST, consumes = "application/json")
 	public Boolean deleteServiceDocById(@RequestBody(required = true) Service objService)  throws Exception {
 		
 		
@@ -314,10 +317,13 @@ public class Controller {
 				throw new Exception(message);
 			}
 			
-			return true;
+			if (sc == null) return false; 
+			else {
+				return template.delete(SERVICESINDEX, SERVICESTYPE, sc);
+			}
 			
 		} catch (Exception exception) {
-			String message = String.format("Error completing JSON Doc deleting in Elasticsearch from ServiceMetadataIngestJob: %s", exception.getMessage());
+			String message = String.format("Error completing JSON Doc deleting in Elasticsearch from Service object: %s", exception.getMessage());
 			logger.log(message, PiazzaLogger.ERROR);
 			throw new Exception(message);
 		}
@@ -325,12 +331,14 @@ public class Controller {
 	}
 
 	/* 
-	 * endpoint ingesting ServiceMetadataIngestJob containing data/metadata resource object
+	 * endpoint ingesting Service object
 	 * 5/21 currently only using serviceId as criterion for doc search/identification
+	 * logic- delete identified doc; index input param as new
+	 * @param Service object
 	 * @return success/fail
 	 */
-	@RequestMapping(value = API_ROOT + "/servicedelete", method = RequestMethod.POST, consumes = "application/json")
-	public Boolean deleteServiceDoc(@RequestBody(required = true) Service objService)  throws Exception {
+	@RequestMapping(value = API_ROOT + "/serviceupdateid", method = RequestMethod.POST, consumes = "application/json")
+	public Boolean updateServiceDocById(@RequestBody(required = true) Service objService)  throws Exception {
 		
 		
 		try {
@@ -347,7 +355,7 @@ public class Controller {
 			try {
 				ObjectMapper mapper = new ObjectMapper();
 				reconJSONdoc = mapper.writeValueAsString( sc );
-				System.out.println("The Re-Constituted JSON Doc:\n");
+				System.out.println("The Re-Constituted JSON Doc found in ES:\n");
 				System.out.println( reconJSONdoc );
 			} catch (Exception exception) {
 				String message = String.format("Error Reconstituting JSON Doc from Service obj: %s", exception.getMessage());
@@ -355,10 +363,24 @@ public class Controller {
 				throw new Exception(message);
 			}
 			
-			return true;
+			if (sc == null) {
+				String message = String.format("Unable to locate JSON Doc: %s", reconJSONdoc);
+				System.out.println( message );
+				logger.log(message, PiazzaLogger.ERROR);
+				return false; 
+			}
+			else {
+				if( !template.delete(SERVICESINDEX, SERVICESTYPE, sc) ) {
+					String message = String.format("Unable to delete JSON Doc: %s", reconJSONdoc);
+					logger.log(message, PiazzaLogger.ERROR);
+					throw new Exception(message);
+				}
+				sc = new ServiceContainer( objService );
+				return template.index(SERVICESINDEX, SERVICESTYPE, sc);
+			}
 			
 		} catch (Exception exception) {
-			String message = String.format("Error completing JSON Doc deleting in Elasticsearch from ServiceMetadataIngestJob: %s", exception.getMessage());
+			String message = String.format("Error completing JSON Doc updating in Elasticsearch from Service object: %s", exception.getMessage());
 			logger.log(message, PiazzaLogger.ERROR);
 			throw new Exception(message);
 		}

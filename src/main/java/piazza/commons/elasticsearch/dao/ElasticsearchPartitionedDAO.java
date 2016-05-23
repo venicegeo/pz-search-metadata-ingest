@@ -7,15 +7,19 @@ import org.elasticsearch.index.query.QueryBuilder;
 //import org.elasticsearch.index.query.FilterBuilder;
 //import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import piazza.commons.elasticsearch.ESPartitionedModel;
 import piazza.commons.partitions.PartitionManager;
+import util.PiazzaLogger;
 
 public class ElasticsearchPartitionedDAO<T extends ESPartitionedModel> extends ElasticsearchBasicDAO<T> {
 
-	protected static final Logger logger = LoggerFactory.getLogger(ElasticsearchPartitionedDAO.class);
+//	protected static final Logger logger = LoggerFactory.getLogger(ElasticsearchPartitionedDAO.class);
+	@Autowired
+	private PiazzaLogger logger;
 
 	protected final PartitionManager partitionManager;
 
@@ -30,7 +34,8 @@ public class ElasticsearchPartitionedDAO<T extends ESPartitionedModel> extends E
 			return (template.index(partitionManager.getPartition(instance.getPartitionDate()), documentType, instance)
 					? instance : null);
 		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
+			//logger.error(e.getMessage(), e);
+			logger.log(e.getMessage(), PiazzaLogger.ERROR);
 		}
 		return null;
 	}
@@ -58,7 +63,8 @@ public class ElasticsearchPartitionedDAO<T extends ESPartitionedModel> extends E
 		try {
 			return template.delete(partitionManager.getPartition(instance.getPartitionDate()), documentType, instance);
 		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
+			//logger.error(e.getMessage(), e);
+			logger.log(e.getMessage(), PiazzaLogger.ERROR);
 		}
 		
 		return false;

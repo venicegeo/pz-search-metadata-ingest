@@ -20,19 +20,28 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import util.PiazzaLogger;
+
+//@Component
 public class NativeElasticsearchTemplate
 {
 
-	private final Logger log = LoggerFactory.getLogger(
-		this.getClass());
+	//@Autowired
+	//private PiazzaLogger logger;
+//	private final Logger log = LoggerFactory.getLogger(
+//		this.getClass());
 	private Client client;
 	private ObjectMapper mapper;
 
+	public NativeElasticsearchTemplate(){}
+	
 	public NativeElasticsearchTemplate(
 		Client client,
 		ObjectMapper mapper ) {
@@ -91,9 +100,10 @@ public class NativeElasticsearchTemplate
 			}
 		}
 		catch (Exception e) {
-			log.error(
-				e.getMessage(),
-				e);
+//			logger.log(e.getMessage(), PiazzaLogger.ERROR);
+//			log.error(
+//				e.getMessage(),
+//				e);
 		}
 
 		return created;
@@ -135,9 +145,7 @@ public class NativeElasticsearchTemplate
 
 		}
 		catch (Exception e) {
-			log.error(
-				e.getMessage(),
-				e);
+//			logger.log(e.getMessage(), PiazzaLogger.ERROR);
 		}
 	}
 
@@ -163,9 +171,7 @@ public class NativeElasticsearchTemplate
 					result);
 			}
 			catch (Exception e) {
-				log.error(
-					e.getMessage(),
-					e);
+//				logger.log(e.getMessage(), PiazzaLogger.ERROR);
 			}
 		}
 
@@ -201,9 +207,7 @@ public class NativeElasticsearchTemplate
 					result);
 			}
 			catch (Exception e) {
-				log.error(
-					e.getMessage(),
-					e);
+//				logger.log(e.getMessage(), PiazzaLogger.ERROR);
 			}
 		}
 
@@ -236,9 +240,7 @@ public class NativeElasticsearchTemplate
 			}
 		}
 		catch (Exception e) {
-			log.error(
-				e.getMessage(),
-				e);
+//			logger.log(e.getMessage(), PiazzaLogger.ERROR);
 		}
 
 		return result;
@@ -260,9 +262,7 @@ public class NativeElasticsearchTemplate
 			}
 		}
 		catch (Exception e) {
-			log.error(
-				e.getMessage(),
-				e);
+//			logger.log(e.getMessage(), PiazzaLogger.ERROR);
 		}
 
 		return result;
@@ -302,9 +302,7 @@ public class NativeElasticsearchTemplate
 			result = response.isFound();
 		}
 		catch (Exception e) {
-			log.error(
-				e.getMessage(),
-				e);
+//			logger.log(e.getMessage(), PiazzaLogger.ERROR);
 		}
 
 		return result;
@@ -343,9 +341,7 @@ public class NativeElasticsearchTemplate
 
 		}
 		catch (Exception e) {
-			log.error(
-				e.getMessage(),
-				e);
+//			logger.log(e.getMessage(), PiazzaLogger.ERROR);
 		}
 
 		return result;
@@ -361,9 +357,7 @@ public class NativeElasticsearchTemplate
 			success = (result.getShardFailures().length == 0);
 		}
 		catch (Exception e) {
-			log.error(
-				e.getMessage(),
-				e);
+//			logger.log(e.getMessage(), PiazzaLogger.ERROR);
 		}
 
 		return success;

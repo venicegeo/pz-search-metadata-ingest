@@ -279,14 +279,32 @@ curl -XGET 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata/_se
   }'  
   
   ************ Match  Query work *********
+-----5/23 container mockup, use "service" subset for web service ingest
+
+curl -XPUT 'http://localhost:9200/pzservices/ServiceContainer' -d '
+ {
+    "serviceContainerId": "12345",
+    "service": {
+      "serviceId": "f3ca816c-927f-4212-aca9-5903465a0c5f",
+      "url": "https://pz-svcs-prevgen.int.geointservices.io/crop",
+      "resourceMetadata": {
+        "name": "Preview Generator",
+        "description": "Service that takes nuttin'.",
+        "method": "POST"
+      }
+    }
+  }
+  '
+  
+**** bad syntax below (match) 
 curl -XGET 'http://localhost:9200/pzservices/_search?pretty=true' -d '
 {
    "match" : {
-        "ServiceId" : "this is a test"
+        "serviceId" : "this is a test"
     }
 }'
   
-curl -XGET 'http://localhost:9200/pzservices/serviceContainer/_search?pretty=true' -d '
+curl -XGET 'http://localhost:9200/pzservices/_search?pretty=true' -d '
 {
   "query": { 
     "bool": { 

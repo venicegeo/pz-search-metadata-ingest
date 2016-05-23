@@ -5,9 +5,11 @@
         "number_of_replicas" : 1
     },
     "mappings": {
-
         "ServiceContainer": {
             "properties": {
+		        "serviceContainerId": {
+		            "type": "string"
+		        },
                 "service": {
                     "properties": {
                         "serviceId": {

@@ -12,19 +12,22 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 //import org.elasticsearch.index.query.FilterBuilders.*;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import piazza.commons.elasticsearch.NativeElasticsearchTemplate;
 //import piazza.commons.repositories.filters.TimeFilter;
+import util.PiazzaLogger;
 
 public class PartitionManager {
 	
 	public static String index = "partitions";
 	public static String type = "partition";
 
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	//private final Logger log = LoggerFactory.getLogger(this.getClass());
+	@Autowired
+	private PiazzaLogger logger;
 
 	@Autowired
 	private NativeElasticsearchTemplate elasticsearchTemplate;
