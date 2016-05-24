@@ -67,14 +67,14 @@ public class Controller {
 	static final String SERVICESINDEX = "pzservices";
 	static final String SERVICESTYPE = "ServiceContainer";
 
-//	@Autowired
+	@Autowired
 	private PiazzaLogger logger;
 
 	//@Autowired
 	//NativeElasticsearchTemplateConfiguration templateconfig= new NativeElasticsearchTemplateConfiguration();
 	//@Autowired
 	//NativeElasticsearchTemplate template = templateconfig.template(templateconfig.client(), templateconfig.mapper());
-	//@Autowired
+	@Autowired
 	NativeElasticsearchTemplate template;
 
 	//@RequestMapping(value="/", method=RequestMethod.GET)

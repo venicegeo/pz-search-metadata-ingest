@@ -33,8 +33,8 @@ import util.PiazzaLogger;
 public class NativeElasticsearchTemplate
 {
 
-	//@Autowired
-	//private PiazzaLogger logger;
+	@Autowired
+	private PiazzaLogger logger;
 //	private final Logger log = LoggerFactory.getLogger(
 //		this.getClass());
 	private Client client;
@@ -100,7 +100,7 @@ public class NativeElasticsearchTemplate
 			}
 		}
 		catch (Exception e) {
-//			logger.log(e.getMessage(), PiazzaLogger.ERROR);
+			logger.log(e.getMessage(), PiazzaLogger.ERROR);
 //			log.error(
 //				e.getMessage(),
 //				e);
@@ -145,7 +145,7 @@ public class NativeElasticsearchTemplate
 
 		}
 		catch (Exception e) {
-//			logger.log(e.getMessage(), PiazzaLogger.ERROR);
+			logger.log(e.getMessage(), PiazzaLogger.ERROR);
 		}
 	}
 
@@ -171,7 +171,7 @@ public class NativeElasticsearchTemplate
 					result);
 			}
 			catch (Exception e) {
-//				logger.log(e.getMessage(), PiazzaLogger.ERROR);
+				logger.log(e.getMessage(), PiazzaLogger.ERROR);
 			}
 		}
 
@@ -207,7 +207,7 @@ public class NativeElasticsearchTemplate
 					result);
 			}
 			catch (Exception e) {
-//				logger.log(e.getMessage(), PiazzaLogger.ERROR);
+				logger.log(e.getMessage(), PiazzaLogger.ERROR);
 			}
 		}
 
@@ -240,7 +240,7 @@ public class NativeElasticsearchTemplate
 			}
 		}
 		catch (Exception e) {
-//			logger.log(e.getMessage(), PiazzaLogger.ERROR);
+			logger.log(e.getMessage(), PiazzaLogger.ERROR);
 		}
 
 		return result;
@@ -262,7 +262,7 @@ public class NativeElasticsearchTemplate
 			}
 		}
 		catch (Exception e) {
-//			logger.log(e.getMessage(), PiazzaLogger.ERROR);
+			logger.log(e.getMessage(), PiazzaLogger.ERROR);
 		}
 
 		return result;
@@ -302,7 +302,7 @@ public class NativeElasticsearchTemplate
 			result = response.isFound();
 		}
 		catch (Exception e) {
-//			logger.log(e.getMessage(), PiazzaLogger.ERROR);
+			logger.log(e.getMessage(), PiazzaLogger.ERROR);
 		}
 
 		return result;
@@ -341,7 +341,7 @@ public class NativeElasticsearchTemplate
 
 		}
 		catch (Exception e) {
-//			logger.log(e.getMessage(), PiazzaLogger.ERROR);
+			logger.log(e.getMessage(), PiazzaLogger.ERROR);
 		}
 
 		return result;
@@ -357,7 +357,7 @@ public class NativeElasticsearchTemplate
 			success = (result.getShardFailures().length == 0);
 		}
 		catch (Exception e) {
-//			logger.log(e.getMessage(), PiazzaLogger.ERROR);
+			logger.log(e.getMessage(), PiazzaLogger.ERROR);
 		}
 
 		return success;
