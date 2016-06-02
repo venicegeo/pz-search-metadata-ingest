@@ -37,6 +37,8 @@ import com.vividsolutions.jts.geom.Geometry;
 
 
 import model.response.DataResourceResponse;
+import model.response.ErrorResponse;
+import model.response.PiazzaResponse;
 import model.response.ServiceResponse;
 import model.service.metadata.Service;
 import piazza.commons.elasticsearch.ESModel;
@@ -284,50 +286,28 @@ public class Controller {
 		}
 		
 	}
-
-	/* 
-	 * endpoint ingesting Service object
-	 * 5/21 currently only using serviceId as criterion for doc search/identification
-	 * @param Service object
-	 * @return success/fail
+	
+	/**
+	 * Endpoint for deleting service metadata from elastic search.
+	 * 
+	 * @param Service
+	 * @return PiazzaResponse ErrorResponse or ServiceResponse returned
 	 */
 	@RequestMapping(value = API_ROOT + "/servicedeleteid", method = RequestMethod.POST, consumes = "application/json")
-	public Boolean deleteServiceDocById(@RequestBody(required = true) Service objService)  throws Exception {
-		
-		
+	public PiazzaResponse deleteServiceDocById(@RequestBody(required = true) Service objService) throws Exception {
 		try {
-			//ObjectMapper mapper = new ObjectMapper();
-			//Object obj = mapper.readValue(serviceIdJSON, Object.class);
-			//ServiceContainer sc0 = new ServiceContainer();
-			ServiceContainer sc = template.findOne(SERVICESINDEX, 
-					SERVICESTYPE, objService.getServiceId(), new ServiceContainer().getClass());
-			//ServiceContainer sc = new ServiceContainer( objService );
-			//servicerepository.save(sc);
-//			template.index(SERVICESINDEX, SERVICESTYPE, sc);
-
-			String reconJSONdoc;
-			try {
-				ObjectMapper mapper = new ObjectMapper();
-				reconJSONdoc = mapper.writeValueAsString( sc );
-				System.out.println("The Re-Constituted JSON Doc:\n");
-				System.out.println( reconJSONdoc );
-			} catch (Exception exception) {
-				String message = String.format("Error Reconstituting JSON Doc from Service obj: %s", exception.getMessage());
-				logger.log(message, PiazzaLogger.ERROR);
-				throw new Exception(message);
+			ServiceContainer serviceContainer = template.findOne(SERVICESINDEX, SERVICESTYPE, objService.getServiceId(), ServiceContainer.class);
+			if (serviceContainer == null) {
+				return new ErrorResponse(null, "Unable to find service in elastic search.", "Elastic Search");
+			} else {
+				template.delete(SERVICESINDEX, SERVICESTYPE, serviceContainer);
+				return new ServiceResponse(objService);
 			}
-			
-			if (sc == null) return false; 
-			else {
-				return template.delete(SERVICESINDEX, SERVICESTYPE, sc);
-			}
-			
 		} catch (Exception exception) {
-			String message = String.format("Error completing JSON Doc deleting in Elasticsearch from Service object: %s", exception.getMessage());
+			String message = String.format("Error deleting in Elasticsearch from Service object: %s", exception.getMessage());
 			logger.log(message, PiazzaLogger.ERROR);
 			throw new Exception(message);
 		}
-		
 	}
 
 	/* 
