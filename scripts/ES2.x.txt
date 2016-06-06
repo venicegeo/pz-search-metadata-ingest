@@ -1,0 +1,110 @@
+************Data metadata example **************
+4/18/16 input at REST endpoint localhost:8580/api/v1/datanew
+{
+    "dataId": "WWW",
+    "dataType": {
+       "id": "dummyUUID",
+        "type": "wfs",
+        "url": "http://geoserver.dev:8080/geoserver/wfs",
+        "featureType": "piazza:shelters",
+        "version": "1.0.0"
+    },
+    "metadata": {
+        "name": "London",
+        "availability": "nope",
+        "description": "London BBOX combined with random WFS; hmmm.",
+        "classType": { "classification": "unclassified" },
+       "numericKeyValueList": [
+         {
+           "key": "velocity",
+           "value": 55.5
+         },
+         {
+           "key": "angle",
+           "value": 90
+         }
+       ],
+       "textKeyValueList": [
+         {
+           "key": "comment",
+           "value": "I wanted a pony, but my parents got me a kitten!! %^&*%!!"
+         }
+       ]
+    },
+    "spatialMetadata": {
+        "epsgCode": 1984,
+        "minY": 51.28,
+        "maxY": 51.69,
+        "minX": -0.51,
+        "maxX": 0.334
+    }
+}
+************End Data metadata example **************
+
+**************SERVICES Metadata**************
+localhost:8580/api/v1/servicenew
+{
+      "serviceId": "f3ca816c-927f-4212-aca9-5903465a0c5f",
+      "url": "https://pz-svcs-prevgen.int.geointservices.io/crop",
+      "resourceMetadata": {
+        "name": "Preview Generator",
+        "description": "Service that takes nuttin'.",
+        "method": "POST"
+      }
+}
+
+E.G.- at localhost:8580/api/v1/serviceupdateid
+{
+  "serviceId": "f3ca816c-927f-4212-aca9-5903465a0c5f",
+  "url": "https://pz-svcs-prevgen.int.geointservices.io/crop",
+  "resourceMetadata": {
+    "name": "Preview Generator",
+    "description": "Service that takes nuttin' much again!!!!!!!!!!!!!!!!.",
+    "method": "POST"
+  }
+}
+E.G.- at localhost:8580/api/v1/servicedeleteid
+{
+  "serviceId": "f3ca816c-927f-4212-aca9-5903465a0c5f"
+}
+**************END  SERVICES**************
+
+*****************QUERYING****************
+localhost:8581/api/v1/dslfordataresources
+{
+	"query" : {
+		"match_all" : {}
+	}
+}
+
+YEP!!!!
+{
+	"query" : {
+		"match" : {
+			"_all" : "kitten"
+		}
+	}
+}
+NOPE!!!!
+{
+	"query" : {
+		"match" : {
+			"_all" : "kiten"
+		}
+	}
+}
+
+YEP!- matches fuzzy kitten
+Damerau-Levenshtein distance formula for fuzziness
+"prefix_length"- The number of initial characters which will not be “fuzzified”. This helps to reduce the number of terms which must be examined
+{
+  "query": {
+    "match": {
+      "_all": {
+        "query": "kiten",
+        "fuzziness": 1,
+        "prefix_length": 1
+      }
+    }
+  }
+}

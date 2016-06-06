@@ -1,0 +1,55 @@
+https://pz-servicecontroller.int.geointservices.io/servicecontroller/registerService
+```
+{   "userName" : "my-api-key-38n987",   
+     "jobType" : {    
+        "type" : "register-service",    
+        "data" : {       
+            "url" : "https://pz-svcs-prevgen.int.geointservices.io/crop",       
+            "id" : "12345",     
+            "resourceMetadata" : {  
+                "name" : "pz-svcs-prevgen",         
+                "description" : "Service that takes payload containing S3 location and bounding box for some raster file, downloads, crops and uploads the crop back up to s3.",         
+                "method" : "POST"       
+                
+            }     
+            
+        }   
+     } 
+}
+```
+
+returns:
+```
+{
+  "type": "service",
+  "serviceId": "d00b6a49-09aa-4c56-a09d-4d8629d8c09b"
+}
+```
+
+then...
+https://pz-search-metadata-ingest-sprint03-29-g3495399.int.geointservices.io/api/v1/serviceupdateid
+```
+{
+  "serviceId": "d00b6a49-09aa-4c56-a09d-4d8629d8c09b",
+  "url": "https://pz-svcs-prevgen.int.geointservices.io/crop",
+  "resourceMetadata": {
+    "name": "Preview Generator",
+    "description": "Service that takes nuttin' much again again.",
+    "method": "POST"
+  }
+}
+```
+verified description change via cURL
+then...
+https://pz-search-metadata-ingest-sprint03-29-g3495399.int.geointservices.io/api/v1/servicedeleteid
+```
+{
+  "serviceId": "d00b6a49-09aa-4c56-a09d-4d8629d8c09b",
+  "url": "https://pz-svcs-prevgen.int.geointservices.io/crop",
+  "resourceMetadata": {
+    "name": "Preview Generator",
+    "description": "Service that THIS DON'T MATTA!!!! takes nuttin' much again again.",
+    "method": "POST"
+  }
+}
+```

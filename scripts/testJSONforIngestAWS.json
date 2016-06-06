@@ -136,6 +136,43 @@ curl -XGET 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata/Dat
     "match" : { "dataId" : "KittenTest" }
   }
 }'
+
+//works
+curl -XGET 'localhost:9200/pzservices/ServiceContainer/_search?pretty=true' -d '
+{
+  "query": {
+    "match" : { "_id" : "d00b6a49-09aa-4c56-a09d-4d8629d8c09b" }
+  }
+}'
+//also works
+curl -XGET 'localhost:9200/pzservices/_search?pretty=true' -d '
+{
+  "query": {
+    "match" : { "_id" : "d00b6a49-09aa-4c56-a09d-4d8629d8c09b" }
+  }
+}'
+//also works
+curl -XGET 'localhost:9200/pzservices/_search?pretty=true' -d '
+{
+  "query": {
+    "match" : { "serviceContainerId" : "d00b6a49-09aa-4c56-a09d-4d8629d8c09b" }
+  }
+}'//also works, nested "service" object
+curl -XGET 'localhost:9200/pzservices/_search?pretty=true' -d '
+{
+  "query": {
+    "match" : { "service.serviceId" : "d00b6a49-09aa-4c56-a09d-4d8629d8c09b" }
+  }
+}'
+//serviceId becomes ES _id doesn't work
+curl -XGET 'localhost:9200/pzservices/d00b6a49-09aa-4c56-a09d-4d8629d8c09b/_search?pretty=true' -d '
+{
+    "query" : {
+        "matchAll" : {}
+     }
+}'
+
+
 curl -XGET 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata/DataResourceContainer/_search?pretty=true' -d '
 {
   "query": {
@@ -501,7 +538,7 @@ curl -XGET 'http://localhost:9200/pzservices/_search?pretty=true' -d '
 {
     "dataId": "WWW",
     "dataType": {
-       "id": "PatrickUUID",
+       "id": "dummyUUID",
         "type": "wfs",
         "url": "http://geoserver.dev:8080/geoserver/wfs",
         "featureType": "piazza:shelters",
@@ -571,3 +608,7 @@ curl -XGET 'http://localhost:9200/pzservices/_search?pretty=true' -d '
        ]
     }
 }
+
+cd '/cygdrive/c/Documents and Settings/csmith/Documents/GitHub/pz-search-metadata-ingest/src/main/resources/instantiate_elasticsearch'
+cd '/cygdrive/c/Documents and Settings/csmith/Documents/GitHub/pz-search-metadata-ingest/scripts'
+
