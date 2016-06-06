@@ -40,6 +40,7 @@ import model.response.DataResourceResponse;
 import model.response.ErrorResponse;
 import model.response.PiazzaResponse;
 import model.response.ServiceResponse;
+import model.response.SuccessResponse;
 import model.service.metadata.Service;
 import piazza.commons.elasticsearch.ESModel;
 import piazza.commons.elasticsearch.NativeElasticsearchTemplate;
@@ -298,10 +299,10 @@ public class Controller {
 		try {
 			ServiceContainer serviceContainer = template.findOne(SERVICESINDEX, SERVICESTYPE, objService.getServiceId(), ServiceContainer.class);
 			if (serviceContainer == null) {
-				return new ErrorResponse(null, "Unable to find service in elastic search.", "Elastic Search");
+				return new ErrorResponse(null, "Unable to find service in elastic search.", "ElasticSearch");
 			} else {
 				template.delete(SERVICESINDEX, SERVICESTYPE, serviceContainer);
-				return new ServiceResponse(objService);
+				return new SuccessResponse(null, String.format("Deleted service %s from elastic search" + objService.getServiceId()), "ElasticSearch" );
 			}
 		} catch (Exception exception) {
 			String message = String.format("Error deleting in Elasticsearch from Service object: %s", exception.getMessage());
