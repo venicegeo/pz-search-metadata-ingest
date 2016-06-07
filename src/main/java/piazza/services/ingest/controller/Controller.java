@@ -302,7 +302,7 @@ public class Controller {
 				return new ErrorResponse(null, "Unable to find service in elastic search.", "ElasticSearch");
 			} else {
 				template.delete(SERVICESINDEX, SERVICESTYPE, serviceContainer);
-				return new SuccessResponse(null, String.format("Deleted service %s from elastic search" + objService.getServiceId()), "ElasticSearch" );
+				return new SuccessResponse(null, String.format("Deleted service %s from elastic search", objService.getServiceId()), "ElasticSearch" );
 			}
 		} catch (Exception exception) {
 			String message = String.format("Error deleting in Elasticsearch from Service object: %s", exception.getMessage());

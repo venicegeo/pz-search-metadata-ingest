@@ -1,5 +1,6 @@
 ************Data metadata example **************
-4/18/16 input at REST endpoint localhost:8580/api/v1/datanew
+metadata input at REST endpoint localhost:8580/api/v1/datanew (see CF via Pivotal GUI or CLI for "space"(int, stage, etc.) endpoint
+can use CF Elasticsearch cluster while executing web service locally by setting up port-forwarding...
 {
     "dataId": "WWW",
     "dataType": {
@@ -43,6 +44,7 @@
 
 **************SERVICES Metadata**************
 localhost:8580/api/v1/servicenew
+note: can also accomplish service metadata endtry via service registrations through Gateway
 {
       "serviceId": "f3ca816c-927f-4212-aca9-5903465a0c5f",
       "url": "https://pz-svcs-prevgen.int.geointservices.io/crop",
@@ -108,3 +110,153 @@ Damerau-Levenshtein distance formula for fuzziness
     }
   }
 }
+
+******* Example service interaction flow in Cloud Foundry
+at: https://pz-servicecontroller.int.geointservices.io/servicecontroller/registerService
+{   "userName" : "my-api-key-38n987",   
+     "jobType" : {    
+        "type" : "register-service",    
+        "data" : {       
+            "url" : "https://pz-svcs-prevgen.int.geointservices.io/crop",       
+            "id" : "12",     
+            "resourceMetadata" : {  
+                "name" : "pz-svcs-prevgen",         
+                "description" : "Service that takes payload containing kittens.",         
+                "method" : "POST"       
+                
+            }     
+            
+        }   
+     } 
+}
+returns:
+{
+  "type": "service",
+  "serviceId": "d1464992-d062-43b1-ae56-6ffa518af080"
+}
+
+check progress:
+$ curl -XGET 'localhost:9200/pzservices/_search?pretty=true' -d '
+  {
+      "query" : {
+          "match" : { "_all": "kittens"}
+       }
+  }'
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   894  100   818  100    76   2278    211 --:--:-- --:--:-- --:--:--  2278{
+  "took" : 19,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 5,
+    "successful" : 5,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : 1,
+    "max_score" : 0.52345484,
+    "hits" : [ {
+      "_index" : "pzservices",
+      "_type" : "ServiceContainer",
+      "_id" : "d1464992-d062-43b1-ae56-6ffa518af080",
+      "_score" : 0.52345484,
+      "_source" : {
+        "serviceContainerId" : "d1464992-d062-43b1-ae56-6ffa518af080",
+        "service" : {
+          "serviceId" : "d1464992-d062-43b1-ae56-6ffa518af080",
+          "url" : "https://pz-svcs-prevgen.int.geointservices.io/crop",
+          "resourceMetadata" : {
+            "name" : "pz-svcs-prevgen",
+            "description" : "Service that takes payload containing kittens.",
+            "method" : "POST"
+          }
+        }
+      }
+    } ]
+  }
+}
+
+subsequently:
+at: https://pz-search-metadata-ingest-Sprint03-33-g94498d9.int.geointservices.io/api/v1/serviceupdateid
+{
+  "serviceId": "d1464992-d062-43b1-ae56-6ffa518af080",
+  "url": "https://pz-svcs-prevgen.int.geointservices.io/crop",
+  "resourceMetadata": {
+    "name": "Preview Generator",
+    "description": "Service that takes nuttin' much again again--- but kittens still.",
+    "method": "POST"
+  }
+}
+
+check progress (port-forwarded to CF "int" space):
+$ curl -XGET 'localhost:9200/pzservices/_search?pretty=true' -d '
+  {
+      "query" : {
+          "match" : { "_all": "kittens"}
+       }
+  }'
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   914  100   838  100    76   1917    173 --:--:-- --:--:-- --:--:--  1917{
+  "took" : 5,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 5,
+    "successful" : 5,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : 1,
+    "max_score" : 0.52345484,
+    "hits" : [ {
+      "_index" : "pzservices",
+      "_type" : "ServiceContainer",
+      "_id" : "d1464992-d062-43b1-ae56-6ffa518af080",
+      "_score" : 0.52345484,
+      "_source" : {
+        "serviceContainerId" : "d1464992-d062-43b1-ae56-6ffa518af080",
+        "service" : {
+          "serviceId" : "d1464992-d062-43b1-ae56-6ffa518af080",
+          "url" : "https://pz-svcs-prevgen.int.geointservices.io/crop",
+          "resourceMetadata" : {
+            "name" : "Preview Generator",
+            "description" : "Service that takes nuttin' much again again--- but kittens still.",
+            "method" : "POST"
+          }
+        }
+      }
+    } ]
+  }
+}
+
+finally:
+at: https://pz-search-metadata-ingest-Sprint03-33-g94498d9.int.geointservices.io/api/v1/servicedeleteid
+{
+  "serviceId": "d1464992-d062-43b1-ae56-6ffa518af080"
+}
+
+check progress:
+$ curl -XGET 'localhost:9200/pzservices/_search?pretty=true' -d '
+  {
+      "query" : {
+          "match" : { "_all": "kittens"}
+       }
+  }'
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   269  100   193  100    76    475    187 --:--:-- --:--:-- --:--:--   494{
+  "took" : 2,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 5,
+    "successful" : 5,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : 0,
+    "max_score" : null,
+    "hits" : [ ]
+  }
+}
+
+
