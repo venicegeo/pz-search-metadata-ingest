@@ -13,6 +13,9 @@ sudo apt-get update && sudo apt-get install elasticsearch
 sudo update-rc.d elasticsearch defaults 95 10
 sudo /etc/init.d/elasticsearch start
 
+#chmod 777 /vagrant/pz-search-metadata-ingest/config/bootstrap.sh
+cp /vagrant/pz-search-metadata-ingest/config/elasticsearch.yml /etc/elasticsearch/elasticsearch.yml
+
 # either of the next two lines is needed to be able to access "localhost:9200" from the host os
 sudo echo "network.bind_host: 0" >> /etc/elasticsearch/elasticsearch.yml
 sudo echo "network.host: 0.0.0.0" >> /etc/elasticsearch/elasticsearch.yml
