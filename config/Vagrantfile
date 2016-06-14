@@ -3,7 +3,6 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "search" do |search|
-	  #search.vm.box = "ubuntu/trusty64"
 	  search.vm.box = "ubuntu/precise64"
 	  search.vm.hostname = "search.dev"
 	  search.vm.provision :shell, path: "bootstrap.sh"
