@@ -10,9 +10,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	  search.vm.network :forwarded_port, host: 9200, guest: 9200
 	  search.vm.network :forwarded_port, host: 9300, guest: 9300
 	  search.vm.provider "virtualbox" do |v|
-		v.memory = 2048
-		v.cpus = 1
-		v.name = "ElasticSearch-2.x"
+	  	v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+		v.customize ["modifyvm", :id, "--memory", "512"]
       end
   end
 end
