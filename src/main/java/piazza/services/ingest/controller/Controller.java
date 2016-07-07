@@ -299,10 +299,10 @@ public class Controller {
 		try {
 			ServiceContainer serviceContainer = template.findOne(SERVICESINDEX, SERVICESTYPE, objService.getServiceId(), ServiceContainer.class);
 			if (serviceContainer == null) {
-				return new ErrorResponse(null, "Unable to find service in elastic search.", "ElasticSearch");
+				return new ErrorResponse("Unable to find service in elastic search.", "ElasticSearch");
 			} else {
 				template.delete(SERVICESINDEX, SERVICESTYPE, serviceContainer);
-				return new SuccessResponse(null, String.format("Deleted service %s from elastic search", objService.getServiceId()), "ElasticSearch" );
+				return new SuccessResponse(String.format("Deleted service %s from elastic search", objService.getServiceId()), "ElasticSearch" );
 			}
 		} catch (Exception exception) {
 			String message = String.format("Error deleting in Elasticsearch from Service object: %s", exception.getMessage());
