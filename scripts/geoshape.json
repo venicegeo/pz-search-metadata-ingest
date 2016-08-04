@@ -153,7 +153,7 @@ curl -XPUT 'http://localhost:9200/pzmetadata' -d '{
     }
 }
 '
-////without nested class for geoLocation
+////without nested class for geoLocation   current 8/1/16!!!
 curl -XPUT 'http://localhost:9200/pzmetadata' -d '{
     "mappings": {
         "DataResourceContainer": {
