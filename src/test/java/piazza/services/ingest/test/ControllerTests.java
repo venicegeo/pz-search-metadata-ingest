@@ -21,9 +21,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -31,10 +29,12 @@ import model.data.DataResource;
 import model.data.type.GeoJsonDataType;
 import model.job.metadata.ResourceMetadata;
 import model.job.type.SearchMetadataIngestJob;
+import model.job.type.ServiceMetadataIngestJob;
 import model.response.DataResourceResponse;
+import model.response.ServiceResponse;
+import model.service.metadata.Service;
 import piazza.commons.elasticsearch.NativeElasticsearchTemplate;
 import piazza.services.ingest.controller.Controller;
-import piazza.services.ingest.repository.DataResourceContainer;
 import util.PiazzaLogger;
 
 /**
@@ -122,12 +122,28 @@ public class ControllerTests {
 	 * Test the ingest of a Service
 	 */
 	@Test
-	public void testServiceIngest() {
+	public void testServiceIngest() throws Exception {
 		// Mock
+		Service mockService = new Service();
+		mockService.setUrl("http://test.com/service");
+		mockService.setContractUrl("http://test.com/contract");
+		mockService.setMethod("GET");
+		mockService.setResourceMetadata(new ResourceMetadata());
+		mockService.setServiceId("123456");
+		mockService.getResourceMetadata().setName("Test Service");
+
+		ServiceMetadataIngestJob mockJob = new ServiceMetadataIngestJob();
+		mockJob.setData(mockService);
 
 		// Test
+		ServiceResponse response = controller.ingestServiceMetadataJob(mockJob);
 
 		// Verify
+		Assert.assertTrue(response != null);
+		Assert.assertTrue(response.data.getServiceId().equals(mockService.getServiceId()));
+		Assert.assertTrue(response.data.getUrl().equals(mockService.getUrl()));
+		Assert.assertTrue(response.data.getMethod().equals(mockService.getMethod()));
+		Assert.assertTrue(response.data.getResourceMetadata().getName().equals(mockService.getResourceMetadata().getName()));
 	}
 
 	/**
@@ -136,8 +152,9 @@ public class ControllerTests {
 	@Test(expected = Exception.class)
 	public void testServiceIngestError() throws Exception {
 		// Mock
+		ServiceMetadataIngestJob mockJob = new ServiceMetadataIngestJob();
 
 		// Test - ensure exception is thrown
-
+		controller.ingestServiceMetadataJob(mockJob);
 	}
 }
