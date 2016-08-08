@@ -2,8 +2,8 @@ applications:
 - name: pz-search-metadata-ingest
   host: pz-search-metadata-ingest
   path: pz-search-metadata-ingest.jar
-  buildpack: java_buildpack_offline
-  domain: stage.geointservices.io
+  buildpack: https://github.com/cloudfoundry/java-buildpack.git
+  domain: int.geointservices.io
   memory: 512M
   instances: 1
   timeout: 180

@@ -14,10 +14,10 @@ import piazza.commons.elasticsearch.NativeElasticsearchTemplateConfiguration;
 
 
 //@Configuration
-@ComponentScan("piazza")
 //@EnableAutoConfiguration 
 //@ContextConfiguration(classes = NativeElasticsearchTemplateConfiguration.class)
 @SpringBootApplication
+@ComponentScan({"piazza, util"})
 public class IngestServiceApplication {
 
 	public static void main(String[] args) {
