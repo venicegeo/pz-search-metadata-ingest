@@ -42,7 +42,10 @@ import com.vividsolutions.jts.geom.Geometry;
 public class DataResourceContainer implements piazza.commons.elasticsearch.ESModel {
 //	@Id
 	public String dataResourceContainerId;
-	public GeoPoint locationCenterPoint;
+	//public GeoPoint locationCenterPoint;
+	// 8/9/16 need representation of <lat>,<lon> for correct entry,
+	// without geohash, into Elasticsearch mapping of geo_point
+	public String locationCenterPoint;
 	// serialize into ES GeoShape
 	@JsonSerialize(using = GeoJsonSerializer.class)
 	@JsonDeserialize(using = GeoJsonDeserializer.class)
@@ -59,12 +62,12 @@ public class DataResourceContainer implements piazza.commons.elasticsearch.ESMod
 		dataResourceContainerId = dataResource.getDataId();
 	}
 	
-	public GeoPoint getLocationCenterPoint() {
+	public String getLocationCenterPoint() {
 		return locationCenterPoint;
 	}
 	public void setLocationCenterPoint(
 			GeoPoint gp ) {
-		this.locationCenterPoint = gp;
+		this.locationCenterPoint = gp.toString();
 	}
 	
 	public Geometry getBoundingArea() {
