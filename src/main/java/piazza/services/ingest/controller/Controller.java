@@ -114,9 +114,15 @@ public class Controller {
 			Geometry bboxGeometry = GeometryUtils.createBoundingBox(NW, SE);
 			drc.setBoundingArea(bboxGeometry);
 		} catch (Exception exception) {
-			String message = String.format("Error Augmenting JSON Doc with geolocation info, possible null values input, unrecognized EPSG: %s, DataId: %s",
-					entry.getSpatialMetadata().getEpsgString(), entry.getDataId());
-			System.out.println(message);
+			try{  // in case test or for some other reason null metadata values
+				String message = String.format("Error Augmenting JSON Doc with geolocation info, possible null values input, unrecognized EPSG: %s, DataId: %s",
+						entry.getSpatialMetadata().getEpsgString(), entry.getDataId());
+				logger.log(message, PiazzaLogger.WARNING);
+				System.out.println(message);
+			} catch (Exception e2) {
+				logger.log(exception.getMessage(), PiazzaLogger.ERROR);
+				System.out.println(exception.getMessage());
+			}
 		}
 
 		/*
@@ -188,9 +194,13 @@ public class Controller {
 				drc.setBoundingArea(bboxGeometry);
 
 			} catch (Exception exception) {
-				String message = String.format("Error Augmenting JSON Doc with geolocation info, possible null values input, , unrecognized EPSG: %s, DataId: %s",
-						dr.getSpatialMetadata().getEpsgString(), dr.getDataId());
-				logger.log(message, PiazzaLogger.ERROR);
+				try{  // in case test or for some other reason null metadata values
+					String message = String.format("Error Augmenting JSON Doc with geolocation info, possible null values input, , unrecognized EPSG: %s, DataId: %s",
+							dr.getSpatialMetadata().getEpsgString(), dr.getDataId());
+					logger.log(message, PiazzaLogger.WARNING);
+				} catch (Exception e2) {
+					logger.log(exception.getMessage(), PiazzaLogger.ERROR);
+				}
 			}
 
 			// repository.save(drc);
