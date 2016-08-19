@@ -115,13 +115,13 @@ public class Controller {
 			drc.setBoundingArea(bboxGeometry);
 		} catch (Exception exception) {
 			try{  // in case test or for some other reason null metadata values
-				String message = String.format("Error Augmenting JSON Doc with geolocation info, possible null values input, unrecognized EPSG: %s, DataId: %s",
-						entry.getSpatialMetadata().getEpsgCode().toString(), entry.getDataId());
+				String message = String.format("Error Augmenting JSON Doc with geolocation info, possible null values input, unrecognized SRS: %s, DataId: %s",
+						entry.getSpatialMetadata().getCoordinateReferenceSystem(), entry.getDataId());
 				logger.log(message, PiazzaLogger.WARNING);
 				System.out.println(message);
 			} catch (Exception e2) {
-				logger.log(exception.getMessage(), PiazzaLogger.ERROR);
-				System.out.println(exception.getMessage());
+				logger.log("Error Augmenting JSON Doc with geolocation info", PiazzaLogger.ERROR);
+				System.out.println("Error Augmenting JSON Doc with geolocation info");
 			}
 		}
 
@@ -195,16 +195,11 @@ public class Controller {
 
 			} catch (Exception exception) {
 				try{  // in case test or for some other reason null metadata values
-					System.out.println("Ready for Spatial MD dump");
-					System.out.println(dr.getSpatialMetadata());
-					System.out.println(dr.getSpatialMetadata().getEpsgCode());
-					System.out.println(dr.getSpatialMetadata().getEpsgCode().toString());
-					System.out.println("End Spatial MD dump");
-					String message = String.format("Error Augmenting JSON Doc with geolocation info, possible null values input, unrecognized EPSG: %s, DataId: %s",
-							dr.getSpatialMetadata().getEpsgCode().toString(), dr.getDataId());
+					String message = String.format("Error Augmenting JSON Doc with geolocation info, possible null values input, unrecognized SRS: %s, DataId: %s",
+							dr.getSpatialMetadata().getCoordinateReferenceSystem(), dr.getDataId());
 					logger.log(message, PiazzaLogger.WARNING);
 				} catch (Exception e2) {
-					logger.log(exception.getMessage(), PiazzaLogger.ERROR);
+					logger.log("Error Augmenting JSON Doc with geolocation info", PiazzaLogger.ERROR);
 				}
 			}
 
