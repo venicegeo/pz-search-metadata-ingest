@@ -115,8 +115,8 @@ public class Controller {
 			drc.setBoundingArea(bboxGeometry);
 		} catch (Exception exception) {
 			try{  // in case test or for some other reason null metadata values
-				String message = String.format("Error Augmenting JSON Doc with geolocation info, possible null values input, unrecognized SRS: %s, DataId: %s",
-						entry.getSpatialMetadata().getCoordinateReferenceSystem(), entry.getDataId());
+				String message = String.format("Error Augmenting JSON Doc with geolocation info, DataId: %s, possible null values input or unrecognized SRS: %s",
+						entry.getDataId(), entry.getSpatialMetadata().getCoordinateReferenceSystem());
 				logger.log(message, PiazzaLogger.WARNING);
 				System.out.println(message);
 			} catch (Exception e2) {
@@ -195,8 +195,8 @@ public class Controller {
 
 			} catch (Exception exception) {
 				try{  // in case test or for some other reason null metadata values
-					String message = String.format("Error Augmenting JSON Doc with geolocation info, possible null values input, unrecognized SRS: %s, DataId: %s",
-							dr.getSpatialMetadata().getCoordinateReferenceSystem(), dr.getDataId());
+					String message = String.format("Error Augmenting JSON Doc with geolocation info, DataId: %s, possible null values input or unrecognized SRS: %s",
+							dr.getDataId(), dr.getSpatialMetadata().getCoordinateReferenceSystem());
 					logger.log(message, PiazzaLogger.WARNING);
 				} catch (Exception e2) {
 					logger.log("Error Augmenting JSON Doc with geolocation info", PiazzaLogger.ERROR);
