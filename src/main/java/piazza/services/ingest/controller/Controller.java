@@ -114,7 +114,8 @@ public class Controller {
 			Geometry bboxGeometry = GeometryUtils.createBoundingBox(NW, SE);
 			drc.setBoundingArea(bboxGeometry);
 		} catch (Exception exception) {
-			String message = String.format("Error augmenting with geolocation center point and bbox", exception.getMessage());
+			String message = String.format("Error Augmenting JSON Doc with geolocation info, possible null values input, unrecognized EPSG: %s, DataId: %s",
+					entry.getSpatialMetadata().getEpsgString(), entry.getDataId());
 			System.out.println(message);
 		}
 
@@ -187,8 +188,8 @@ public class Controller {
 				drc.setBoundingArea(bboxGeometry);
 
 			} catch (Exception exception) {
-				String message = String.format("Error Augmenting JSON Doc with geolocation info, perhaps null values input: %s",
-						exception.getMessage());
+				String message = String.format("Error Augmenting JSON Doc with geolocation info, possible null values input, , unrecognized EPSG: %s, DataId: %s",
+						dr.getSpatialMetadata().getEpsgString(), dr.getDataId());
 				logger.log(message, PiazzaLogger.ERROR);
 			}
 
