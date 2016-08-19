@@ -101,7 +101,7 @@ public class Controller {
 	public @ResponseBody DataResourceContainer createEntryNew(@RequestBody DataResource entry) throws Exception {
 		DataResourceContainer drc = new DataResourceContainer(entry);
 		try {
-			SpatialMetadata sm = entry.getSpatialMetadata();
+			SpatialMetadata sm = entry.getSpatialMetadata().getProjectedSpatialMetadata();
 			Double minX = sm.getMinX();
 			Double maxX = sm.getMaxX();
 			Double minY = sm.getMinY();
@@ -173,7 +173,7 @@ public class Controller {
 			dr = mdingestJob.getData();
 			DataResourceContainer drc = new DataResourceContainer(dr);
 			try {
-				SpatialMetadata sm = dr.getSpatialMetadata();
+				SpatialMetadata sm = dr.getSpatialMetadata().getProjectedSpatialMetadata();
 				Double minX = sm.getMinX();
 				Double maxX = sm.getMaxX();
 				Double minY = sm.getMinY();
