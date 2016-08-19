@@ -195,6 +195,11 @@ public class Controller {
 
 			} catch (Exception exception) {
 				try{  // in case test or for some other reason null metadata values
+					System.out.println("Ready for Spatial MD dump");
+					System.out.println(dr.getSpatialMetadata());
+					System.out.println(dr.getSpatialMetadata().getEpsgCode());
+					System.out.println(dr.getSpatialMetadata().getEpsgCode().toString());
+					System.out.println("End Spatial MD dump");
 					String message = String.format("Error Augmenting JSON Doc with geolocation info, possible null values input, unrecognized EPSG: %s, DataId: %s",
 							dr.getSpatialMetadata().getEpsgCode().toString(), dr.getDataId());
 					logger.log(message, PiazzaLogger.WARNING);
