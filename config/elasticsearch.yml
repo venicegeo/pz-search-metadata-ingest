@@ -93,3 +93,10 @@ cluster.name: venice
 # Require explicit names when deleting indices:
 #
 # action.destructive_requires_name: true
+network.bind_host: 0
+network.host: 0.0.0.0
+cluster.name: venice
+script.inline: on
+script.indexed: on
+http.cors.enabled: true
+http.cors.allow-origin: /https?:\/\/.*/
