@@ -5,7 +5,7 @@
 
 	<groupId>piazza.services.ingest</groupId>
 	<artifactId>pz-search-metadata-ingest</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
 	<parent>
