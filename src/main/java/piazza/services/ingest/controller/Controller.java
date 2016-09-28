@@ -34,7 +34,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import model.data.DataResource;
 import model.job.metadata.SpatialMetadata;
 import model.job.type.SearchMetadataIngestJob;
-import model.job.type.ServiceMetadataIngestJob;
 import model.response.DataResourceResponse;
 import model.response.ErrorResponse;
 import model.response.PiazzaResponse;
@@ -60,14 +59,9 @@ public class Controller {
 	@Autowired
 	private PiazzaLogger logger;
 
-	// @Autowired
-	// NativeElasticsearchTemplateConfiguration templateconfig= new NativeElasticsearchTemplateConfiguration();
-	// @Autowired
-	// NativeElasticsearchTemplate template = templateconfig.template(templateconfig.client(), templateconfig.mapper());
 	@Autowired
 	NativeElasticsearchTemplate template;
 
-	// @RequestMapping(value="/", method=RequestMethod.GET)
 	@RequestMapping("/")
 	@ResponseBody
 	public String checkme() {
@@ -82,74 +76,6 @@ public class Controller {
 	@RequestMapping(value = "/admin/stats", method = RequestMethod.GET)
 	public void stats(HttpServletResponse response) throws IOException {
 		response.sendRedirect("/metrics");
-	}
-
-	@RequestMapping(value = API_ROOT + "/dataold", method = RequestMethod.POST, consumes = "application/json")
-	public @ResponseBody DataResource createEntry(@RequestBody DataResource entry) throws Exception {
-		DataResourceContainer drc = new DataResourceContainer(entry);
-		try {
-			template.index(DATAINDEX, DATATYPE, drc);
-			return entry;
-		} catch (org.elasticsearch.client.transport.NoNodeAvailableException exception) {
-			String message = String.format("Error attempting index of data", exception.getMessage());
-			System.out.println(message);
-			throw new Exception(message);
-		}
-	}
-
-	@RequestMapping(value = API_ROOT + "/datanew", method = RequestMethod.POST, consumes = "application/json")
-	public @ResponseBody DataResourceContainer createEntryNew(@RequestBody DataResource entry) throws Exception {
-		DataResourceContainer drc = new DataResourceContainer(entry);
-		try {
-			SpatialMetadata sm = entry.getSpatialMetadata().getProjectedSpatialMetadata();
-			Double minX = sm.getMinX();
-			Double maxX = sm.getMaxX();
-			Double minY = sm.getMinY();
-			Double maxY = sm.getMaxY();
-			GeoPoint gp = new GeoPoint((maxY + minY) / 2, (maxX + minX) / 2);
-			drc.setLocationCenterPoint(gp);
-
-			Coordinate NW = new Coordinate(minX, maxY);
-			Coordinate SE = new Coordinate(maxX, minY);
-			Geometry bboxGeometry = GeometryUtils.createBoundingBox(NW, SE);
-			drc.setBoundingArea(bboxGeometry);
-		} catch (Exception exception) {
-			try{  // in case test or for some other reason null metadata values
-				String message = String.format("Error Augmenting JSON Doc with geolocation info, DataId: %s, possible null values input or unrecognized SRS: %s",
-						entry.getDataId(), entry.getSpatialMetadata().getCoordinateReferenceSystem());
-				logger.log(message, PiazzaLogger.WARNING);
-				System.out.println(message);
-			} catch (Exception e2) {
-				logger.log("Error Augmenting JSON Doc with geolocation info", PiazzaLogger.ERROR);
-				System.out.println("Error Augmenting JSON Doc with geolocation info");
-			}
-		}
-
-		/*
-		 * Block for debug purposes if needed // get reconstituted JSON Doc out of augmented input parameter
-		 */
-		String reconJSONdoc;
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			reconJSONdoc = mapper.writeValueAsString(drc);
-			System.out.println("The Re-Constituted JSON Doc:\n");
-			System.out.println(reconJSONdoc);
-		} catch (Exception exception) {
-			String message = String.format("Error Reconstituting JSON Doc from SearchMetadataIngestJob: %s", exception.getMessage());
-			logger.log(message, PiazzaLogger.ERROR);
-			throw new Exception(message);
-		}
-
-		try {
-			template.index(DATAINDEX, DATATYPE, drc);
-			// repository.save(drc);
-			// repository.save(entry);
-			return drc;
-		} catch (org.elasticsearch.client.transport.NoNodeAvailableException exception) {
-			String message = String.format("Error attempting index of data", exception.getMessage());
-			System.out.println(message);
-			throw new Exception(message);
-		}
 	}
 
 	/*
@@ -194,8 +120,9 @@ public class Controller {
 				drc.setBoundingArea(bboxGeometry);
 
 			} catch (Exception exception) {
-				try{  // in case test or for some other reason null metadata values
-					String message = String.format("Error Augmenting JSON Doc with geolocation info, DataId: %s, possible null values input or unrecognized SRS: %s",
+				try { // in case test or for some other reason null metadata values
+					String message = String.format(
+							"Error Augmenting JSON Doc with geolocation info, DataId: %s, possible null values input or unrecognized SRS: %s",
 							dr.getDataId(), dr.getSpatialMetadata().getCoordinateReferenceSystem());
 					logger.log(message, PiazzaLogger.WARNING);
 				} catch (Exception e2) {
@@ -209,46 +136,6 @@ public class Controller {
 
 		} catch (Exception exception) {
 			String message = String.format("Error completing JSON Doc indexing in Elasticsearch from SearchMetadataIngestJob: %s",
-					exception.getMessage());
-			logger.log(message, PiazzaLogger.ERROR);
-			throw new Exception(message);
-		}
-
-	}
-
-	/*
-	 * endpoint ingesting ServiceMetadataIngestJob containing Service object
-	 * 
-	 * @return Service object ingested
-	 */
-	@RequestMapping(value = API_ROOT + "/service", method = RequestMethod.POST, consumes = "application/json")
-	public ServiceResponse ingestServiceMetadataJob(@RequestBody(required = true) ServiceMetadataIngestJob smdingestJob) throws Exception {
-
-		/*
-		 * Block for debug purposes if needed // get reconstituted JSON Doc out of job object parameter
-		 */
-		String reconJSONdoc;
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			reconJSONdoc = mapper.writeValueAsString(smdingestJob.getData());
-			System.out.println("The Re-Constituted JSON Doc:\n");
-			System.out.println(reconJSONdoc);
-		} catch (Exception exception) {
-			String message = String.format("Error Reconstituting JSON Doc from ServiceMetadataIngestJob: %s", exception.getMessage());
-			logger.log(message, PiazzaLogger.ERROR);
-			throw new Exception(message);
-		}
-
-		try {
-			Service objService;
-			objService = smdingestJob.getData();
-			ServiceContainer sc = new ServiceContainer(objService);
-			// servicerepository.save(sc);
-			template.index(SERVICESINDEX, SERVICESTYPE, sc);
-			return new ServiceResponse(objService);
-
-		} catch (Exception exception) {
-			String message = String.format("Error completing JSON Doc indexing in Elasticsearch from ServiceMetadataIngestJob: %s",
 					exception.getMessage());
 			logger.log(message, PiazzaLogger.ERROR);
 			throw new Exception(message);
@@ -331,14 +218,8 @@ public class Controller {
 	public Boolean updateServiceDocById(@RequestBody(required = true) Service objService) throws Exception {
 
 		try {
-			// ObjectMapper mapper = new ObjectMapper();
-			// Object obj = mapper.readValue(serviceIdJSON, Object.class);
-			// ServiceContainer sc0 = new ServiceContainer();
 			ServiceContainer sc = template.findOne(SERVICESINDEX, SERVICESTYPE, objService.getServiceId(),
 					new ServiceContainer().getClass());
-			// ServiceContainer sc = new ServiceContainer( objService );
-			// servicerepository.save(sc);
-			// template.index(SERVICESINDEX, SERVICESTYPE, sc);
 
 			String reconJSONdoc;
 			try {
