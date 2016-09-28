@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -29,12 +30,15 @@ import model.data.DataResource;
 import model.data.type.GeoJsonDataType;
 import model.job.metadata.ResourceMetadata;
 import model.job.type.SearchMetadataIngestJob;
-import model.job.type.ServiceMetadataIngestJob;
 import model.response.DataResourceResponse;
+import model.response.ErrorResponse;
+import model.response.PiazzaResponse;
 import model.response.ServiceResponse;
+import model.response.SuccessResponse;
 import model.service.metadata.Service;
 import piazza.commons.elasticsearch.NativeElasticsearchTemplate;
 import piazza.services.ingest.controller.Controller;
+import piazza.services.ingest.repository.ServiceContainer;
 import util.PiazzaLogger;
 
 /**
@@ -132,11 +136,8 @@ public class ControllerTests {
 		mockService.setServiceId("123456");
 		mockService.getResourceMetadata().setName("Test Service");
 
-		ServiceMetadataIngestJob mockJob = new ServiceMetadataIngestJob();
-		mockJob.setData(mockService);
-
 		// Test
-		ServiceResponse response = controller.ingestServiceMetadataJob(mockJob);
+		ServiceResponse response = controller.ingestServiceDoc(mockService);
 
 		// Verify
 		Assert.assertTrue(response != null);
@@ -147,14 +148,74 @@ public class ControllerTests {
 	}
 
 	/**
+	 * Test the deletion of a Service
+	 */
+	@Test
+	public void testServiceDelete() throws Exception {
+		// Mock
+		Service mockService = new Service();
+		mockService.setUrl("http://test.com/service");
+		mockService.setContractUrl("http://test.com/contract");
+		mockService.setMethod("GET");
+		mockService.setResourceMetadata(new ResourceMetadata());
+		mockService.setServiceId("123456");
+		mockService.getResourceMetadata().setName("Test Service");
+
+		// Test. Template will return null.
+		PiazzaResponse response = controller.deleteServiceDocById(mockService);
+
+		// Verify that error is sent.
+		Assert.assertTrue(response instanceof ErrorResponse);
+
+		// Mock Template so that a ServiceContainer is returned
+		ServiceContainer mockContainer = new ServiceContainer(mockService);
+		Mockito.doReturn(mockContainer).when(template).findOne(Mockito.eq("pzservices"), Mockito.eq("ServiceContainer"),
+				Mockito.eq("123456"), Mockito.any());
+
+		// Re-test
+		response = controller.deleteServiceDocById(mockService);
+
+		// Verify correct
+		Assert.assertTrue(response instanceof SuccessResponse);
+	}
+
+	/**
+	 * Test updating a Service
+	 */
+	@Test
+	public void testServiceUpdate() throws Exception {
+		// Mock
+		Service mockService = new Service();
+		mockService.setUrl("http://test.com/service");
+		mockService.setContractUrl("http://test.com/contract");
+		mockService.setMethod("GET");
+		mockService.setResourceMetadata(new ResourceMetadata());
+		mockService.setServiceId("123456");
+		mockService.getResourceMetadata().setName("Test Service");
+		ServiceContainer mockContainer = new ServiceContainer(mockService);
+
+		Mockito.doReturn(mockContainer).when(template).findOne(Mockito.eq("pzservices"), Mockito.eq("ServiceContainer"),
+				Mockito.eq("123456"), Mockito.any());
+		Mockito.doReturn(new Boolean(true)).when(template).index(Mockito.eq("pzservices"), Mockito.eq("ServiceContainer"), Mockito.any());
+		Mockito.doReturn(true).when(template).delete(Mockito.eq("pzservices"), Mockito.eq("ServiceContainer"),
+				Mockito.any(ServiceContainer.class));
+
+		// Test
+		Boolean isSuccess = controller.updateServiceDocById(mockService);
+
+		// Verify
+		Assert.assertTrue(isSuccess.booleanValue());
+	}
+
+	/**
 	 * Test the error condition for a Service ingest
 	 */
 	@Test(expected = Exception.class)
 	public void testServiceIngestError() throws Exception {
-		// Mock
-		ServiceMetadataIngestJob mockJob = new ServiceMetadataIngestJob();
+		// Mock null data
+		Service mockService = null;
 
 		// Test - ensure exception is thrown
-		controller.ingestServiceMetadataJob(mockJob);
+		controller.ingestServiceDoc(mockService);
 	}
 }
