@@ -31,6 +31,6 @@ public class IngestServiceApplication {
 
 	public static void main(String[] args) {
 
-		SpringApplication.run(IngestServiceApplication.class, args);
+		SpringApplication.run(IngestServiceApplication.class, args); //NOSONAR
 	}
 }

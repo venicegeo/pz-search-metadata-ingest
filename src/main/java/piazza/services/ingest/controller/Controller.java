@@ -144,7 +144,7 @@ public class Controller {
 	}
 
 	/*
-	 * endpoint ingesting Service object
+	 * Endpoint ingesting Service object
 	 * 
 	 * @return Service object ingested
 	 */
