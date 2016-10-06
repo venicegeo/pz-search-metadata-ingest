@@ -42,7 +42,7 @@ public class IngestServiceApplication {
 	}
 	
 	@Configuration
-	protected static class GatewayConfig extends WebMvcConfigurerAdapter {
+	protected static class SearchConfig extends WebMvcConfigurerAdapter {
 		@Override
 		public void addInterceptors(InterceptorRegistry registry) {
 			registry.addInterceptor(new HandlerInterceptorAdapter() {
