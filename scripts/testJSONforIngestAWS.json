@@ -172,6 +172,12 @@ curl -XGET 'localhost:9200/pzservices/d00b6a49-09aa-4c56-a09d-4d8629d8c09b/_sear
      }
 }'
 
+curl -XGET 'localhost:9200/pzmetadat/_search?pretty=true' -d '
+{
+    "query" : {
+        "matchAll" : {}
+     }
+}'
 
 curl -XGET 'http://ec2-54-175-229-24.compute-1.amazonaws.com:9200/pzmetadata/DataResourceContainer/_search?pretty=true' -d '
 {

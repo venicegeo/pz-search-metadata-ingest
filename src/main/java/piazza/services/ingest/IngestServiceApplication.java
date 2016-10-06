@@ -15,12 +15,16 @@
  **/
 package piazza.services.ingest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
-//import piazza.commons.elasticsearch.NativeElasticsearchTemplateConfiguration;
+import piazza.services.ingest.controller.Controller;
+import util.PiazzaLogger;
 
+//import piazza.commons.elasticsearch.NativeElasticsearchTemplateConfiguration;
 
 //@Configuration
 //@EnableAutoConfiguration 
@@ -29,8 +33,19 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan({"piazza, util"})
 public class IngestServiceApplication {
 
+	@Autowired
+	private Controller cont;
+
 	public static void main(String[] args) {
 
-		SpringApplication.run(IngestServiceApplication.class, args); //NOSONAR
+		ConfigurableApplicationContext context = SpringApplication.run(IngestServiceApplication.class, args); //NOSONAR
+		//Controller cont = new Controller();
+		try {
+			context.getBean(Controller.class).init();
+			//cont.init();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

@@ -78,6 +78,22 @@ public class Controller {
 		response.sendRedirect("/metrics");
 	}
 
+
+	public void init() throws Exception {
+		try {
+//			DataResourceContainer drc = new DataResourceContainer();
+//			template.index("pzmetadat", DATATYPE, drc);
+			if ( !template.indexExists("pzmetadat") )
+				template.createIndex("pzmetadat");
+		} catch (Exception exception) {
+			String message = String.format(
+					"Error considering pre-exisitence of ES index");
+			//logger.log(message, PiazzaLogger.ERROR);
+			System.out.println(message);
+			throw new Exception(message);
+		}
+	}
+
 	/*
 	 * endpoint ingesting SearchMetadataIngestJob containing data/metadata resource object
 	 * 
