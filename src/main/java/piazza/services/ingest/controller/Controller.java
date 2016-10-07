@@ -55,6 +55,7 @@ public class Controller {
 	static final String DATATYPE = "DataResourceContainer";
 	static final String SERVICESINDEX = "pzservices";
 	static final String SERVICESTYPE = "ServiceContainer";
+	static final String mappingJSON = "{ \"DataResourceContainer\": { \"properties\" : { \"locationCenterPoint\": { \"type\": \"geo_point\" }, \"boundingArea\": { \"type\": \"geo_shape\" } } } }";
 
 	@Autowired
 	private PiazzaLogger logger;
@@ -76,6 +77,20 @@ public class Controller {
 	@RequestMapping(value = "/admin/stats", method = RequestMethod.GET)
 	public void stats(HttpServletResponse response) throws IOException {
 		response.sendRedirect("/metrics");
+	}
+
+
+	public void init() throws Exception {
+		try {
+			String mapping = mappingJSON;
+			if ( !template.indexExists(DATAINDEX) )
+				template.createIndexWithMapping(DATAINDEX, DATATYPE, mapping);
+		} catch (Exception exception) {
+			String message = String.format(
+					"Error considering pre-exisitence of ES index");
+			logger.log(message, PiazzaLogger.ERROR);
+			throw new Exception(message);
+		}
 	}
 
 	/*
