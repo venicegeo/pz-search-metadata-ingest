@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -34,7 +35,12 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.client.Requests;
+import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
+import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequestBuilder;
+import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,13 +71,27 @@ public class NativeElasticsearchTemplate
 	}
 
 	public boolean createIndex(
-		String indexName ) {
-		CreateIndexRequestBuilder createIndexRequestBuilder = client.admin().indices().prepareCreate(
-			indexName);
-		CreateIndexResponse response = createIndexRequestBuilder.execute().actionGet();
+			String indexName ) {
+			CreateIndexRequestBuilder createIndexRequestBuilder = client.admin().indices().prepareCreate(
+				indexName);
+			CreateIndexResponse response = createIndexRequestBuilder.execute().actionGet();
 
-		return response.isAcknowledged();
-	}
+			return response.isAcknowledged();
+		}
+	public boolean createIndexWithMapping(
+			String indexName,
+			String type,
+			String mapping) {
+		
+			CreateIndexRequestBuilder createIndexRequestBuilder = client.admin().indices().prepareCreate(
+				indexName);
+	        if (mapping != null) {
+	        	createIndexRequestBuilder.addMapping(type, mapping);
+	        }
+			CreateIndexResponse response = createIndexRequestBuilder.execute().actionGet();
+
+			return response.isAcknowledged();
+		}
 
 	public boolean createAlias(
 		String indexName,
@@ -83,7 +103,7 @@ public class NativeElasticsearchTemplate
 
 		return createAliasResponse.isAcknowledged();
 	}
-
+	
 	public boolean indexExists(
 		String indexName ) {
 		return client.admin().indices().prepareExists(

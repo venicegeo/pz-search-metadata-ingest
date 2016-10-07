@@ -81,10 +81,13 @@ public class Controller {
 
 	public void init() throws Exception {
 		try {
+			String mapping = "{ \"DataResourceContainer\": { \"properties\" : { \"locationCenterPoint\": { \"type\": \"geo_point\" }, \"boundingArea\": { \"type\": \"geo_shape\" } } } }";
+			//String mapping = "{ \"mappings\": { \"DataResourceContainer\": { \"properties\" : { \"locationCenterPoint\": { \"type\": \"geo_point\" }, \"boundingArea\": { \"type\": \"geo_shape\" } } } } }";
+			//String mapping = "{ \"locationCenterPoint\": { \"type\": \"geo_point\" }, \"boundingArea\": { \"type\": \"geo_shape\" } }";
 //			DataResourceContainer drc = new DataResourceContainer();
 //			template.index("pzmetadat", DATATYPE, drc);
-			if ( !template.indexExists("pzmetadat") )
-				template.createIndex("pzmetadat");
+			if ( !template.indexExists(DATAINDEX) )
+				template.createIndexWithMapping(DATAINDEX, DATATYPE, mapping);
 		} catch (Exception exception) {
 			String message = String.format(
 					"Error considering pre-exisitence of ES index");
