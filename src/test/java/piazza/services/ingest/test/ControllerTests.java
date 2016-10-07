@@ -83,6 +83,16 @@ public class ControllerTests {
 	}
 
 	/**
+	 * Tests ES initialization
+	 */
+	@Test
+	public void testInit() throws Exception {
+		// Ensuring no Exceptions are thrown
+		MockHttpServletResponse mockResponse = new MockHttpServletResponse();
+		controller.init();
+	}
+
+	/**
 	 * Test the ingest of a Data Resource
 	 */
 	@Test

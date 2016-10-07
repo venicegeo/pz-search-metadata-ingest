@@ -93,6 +93,7 @@ public class NativeElasticsearchTemplate
 			return response.isAcknowledged();
 		}
 
+	/* CSS presently unused; remove for test code coverage %
 	public boolean createAlias(
 		String indexName,
 		String aliasName ) {
@@ -103,6 +104,7 @@ public class NativeElasticsearchTemplate
 
 		return createAliasResponse.isAcknowledged();
 	}
+	*/
 	
 	public boolean indexExists(
 		String indexName ) {
@@ -144,6 +146,7 @@ public class NativeElasticsearchTemplate
 		return created;
 	}
 
+	/* CSS presently unused; remove for test code coverage %
 	public <T extends ESModel> void bulkIndex(
 		String indexName,
 		String type,
@@ -183,7 +186,9 @@ public class NativeElasticsearchTemplate
 			logger.log(e.getMessage(), PiazzaLogger.ERROR);
 		}
 	}
-
+	*/
+	
+	/* CSS presently unused; remove for test code coverage %
 	public <T extends ESModel> List<T> queryForList(
 		SearchRequestBuilder searchQuery,
 		Class<T> clazz ) {
@@ -253,7 +258,8 @@ public class NativeElasticsearchTemplate
 
 		return results;
 	}
-
+	*/
+	
 	public <T extends ESModel> T findOne(
 		String index,
 		String type,
@@ -281,6 +287,7 @@ public class NativeElasticsearchTemplate
 		return result;
 	}
 
+	/* CSS presently unused; remove for test code coverage %
 	public <T extends ESModel> T queryForOne(
 		SearchRequestBuilder searchQuery,
 		Class<T> clazz ) {
@@ -302,7 +309,8 @@ public class NativeElasticsearchTemplate
 
 		return result;
 	}
-
+	*/
+	
 	public long count(
 		SearchRequestBuilder searchQuery ) {
 
