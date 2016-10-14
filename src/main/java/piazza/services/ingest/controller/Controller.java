@@ -102,7 +102,7 @@ public class Controller {
 	 * @return dataResource object ingested
 	 */
 	@RequestMapping(value = API_ROOT + "/data", method = RequestMethod.POST, consumes = "application/json")
-	public DataResourceResponse ingestMetadataJob(@RequestBody(required = true) SearchMetadataIngestJob mdingestJob) throws InvalidInputException {
+	public DataResourceResponse ingestMetadataJob(@RequestBody(required = true) SearchMetadataIngestJob mdingestJob) throws InvalidInputException, IOException {
 
 		/*
 		 * Block for debug purposes if needed // get reconstituted JSON Doc out of job object parameter
@@ -160,7 +160,7 @@ public class Controller {
 			String message = String.format("Error completing JSON Doc indexing in Elasticsearch from SearchMetadataIngestJob: %s",
 					exception.getMessage());
 			logger.log(message, PiazzaLogger.ERROR);
-			throw new InvalidInputException(message);
+			throw new IOException(message);
 		}
 
 	}
@@ -171,7 +171,7 @@ public class Controller {
 	 * @return Service object ingested
 	 */
 	@RequestMapping(value = API_ROOT + "/servicenew", method = RequestMethod.POST, consumes = "application/json")
-	public ServiceResponse ingestServiceDoc(@RequestBody(required = true) Service objService) throws InvalidInputException {
+	public ServiceResponse ingestServiceDoc(@RequestBody(required = true) Service objService) throws InvalidInputException, IOException {
 
 		/*
 		 * Block for debug purposes if needed // get reconstituted JSON Doc out of job object parameter
@@ -200,7 +200,7 @@ public class Controller {
 					exception.getMessage());
 			logger.log(message, PiazzaLogger.ERROR);
 			LOGGER.error(message, exception);
-			throw new InvalidInputException(message);
+			throw new IOException(message);
 		}
 
 	}
@@ -240,7 +240,7 @@ public class Controller {
 	 * @return success/fail
 	 */
 	@RequestMapping(value = API_ROOT + "/serviceupdateid", method = RequestMethod.POST, consumes = "application/json")
-	public Boolean updateServiceDocById(@RequestBody(required = true) Service objService) throws InvalidInputException {
+	public Boolean updateServiceDocById(@RequestBody(required = true) Service objService) throws InvalidInputException, IOException {
 
 		try {
 			ServiceContainer sc = template.findOne(SERVICESINDEX, SERVICESTYPE, objService.getServiceId(),
@@ -268,7 +268,7 @@ public class Controller {
 				if (!template.delete(SERVICESINDEX, SERVICESTYPE, sc)) {
 					String message = String.format("Unable to delete JSON Doc: %s", reconJSONdoc);
 					logger.log(message, PiazzaLogger.ERROR);
-					throw new Exception(message);
+					throw new IOException(message);
 				}
 				sc = new ServiceContainer(objService);
 				return template.index(SERVICESINDEX, SERVICESTYPE, sc);
@@ -279,7 +279,7 @@ public class Controller {
 					exception.getMessage());
 			logger.log(message, PiazzaLogger.ERROR);
 			LOGGER.error(message, exception);
-			throw new InvalidInputException(message);
+			throw new IOException(message);
 		}
 
 	}
