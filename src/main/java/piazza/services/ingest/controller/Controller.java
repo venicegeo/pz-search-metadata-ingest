@@ -20,6 +20,8 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.elasticsearch.common.geo.GeoPoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 
+import exception.InvalidInputException;
 import model.data.DataResource;
 import model.job.metadata.SpatialMetadata;
 import model.job.type.SearchMetadataIngestJob;
@@ -56,6 +59,7 @@ public class Controller {
 	static final String SERVICESINDEX = "pzservices";
 	static final String SERVICESTYPE = "ServiceContainer";
 	static final String mappingJSON = "{ \"DataResourceContainer\": { \"properties\" : { \"locationCenterPoint\": { \"type\": \"geo_point\" }, \"boundingArea\": { \"type\": \"geo_shape\" } } } }";
+	private final static Logger LOGGER = LoggerFactory.getLogger(Controller.class);
 
 	@Autowired
 	private PiazzaLogger logger;
@@ -79,17 +83,16 @@ public class Controller {
 		response.sendRedirect("/metrics");
 	}
 
-
-	public void init() throws Exception {
+	public void init() throws IOException {
 		try {
 			String mapping = mappingJSON;
-			if ( !template.indexExists(DATAINDEX) )
+			if (!template.indexExists(DATAINDEX))
 				template.createIndexWithMapping(DATAINDEX, DATATYPE, mapping);
 		} catch (Exception exception) {
-			String message = String.format(
-					"Error considering pre-exisitence of ES index");
+			String message = "Error considering pre-exisitence of ES index";
 			logger.log(message, PiazzaLogger.ERROR);
-			throw new Exception(message);
+			LOGGER.error(message, exception);
+			throw new IOException(message);
 		}
 	}
 
@@ -99,7 +102,7 @@ public class Controller {
 	 * @return dataResource object ingested
 	 */
 	@RequestMapping(value = API_ROOT + "/data", method = RequestMethod.POST, consumes = "application/json")
-	public DataResourceResponse ingestMetadataJob(@RequestBody(required = true) SearchMetadataIngestJob mdingestJob) throws Exception {
+	public DataResourceResponse ingestMetadataJob(@RequestBody(required = true) SearchMetadataIngestJob mdingestJob) throws InvalidInputException {
 
 		/*
 		 * Block for debug purposes if needed // get reconstituted JSON Doc out of job object parameter
@@ -113,7 +116,8 @@ public class Controller {
 		} catch (Exception exception) {
 			String message = String.format("Error Reconstituting JSON Doc from SearchMetadataIngestJob: %s", exception.getMessage());
 			logger.log(message, PiazzaLogger.ERROR);
-			throw new Exception(message);
+			LOGGER.error(message, exception);
+			throw new InvalidInputException(message);
 		}
 
 		try {
@@ -135,13 +139,16 @@ public class Controller {
 				drc.setBoundingArea(bboxGeometry);
 
 			} catch (Exception exception) {
+				LOGGER.error("Error Augmenting JSON", exception);
 				try { // in case test or for some other reason null metadata values
 					String message = String.format(
 							"Error Augmenting JSON Doc with geolocation info, DataId: %s, possible null values input or unrecognized SRS: %s",
 							dr.getDataId(), dr.getSpatialMetadata().getCoordinateReferenceSystem());
 					logger.log(message, PiazzaLogger.WARNING);
 				} catch (Exception e2) {
-					logger.log("Error Augmenting JSON Doc with geolocation info", PiazzaLogger.ERROR);
+					String message = "Error Augmenting JSON Doc with geolocation info";
+					LOGGER.error(message, e2);
+					logger.log(message, PiazzaLogger.ERROR);
 				}
 			}
 
@@ -153,7 +160,7 @@ public class Controller {
 			String message = String.format("Error completing JSON Doc indexing in Elasticsearch from SearchMetadataIngestJob: %s",
 					exception.getMessage());
 			logger.log(message, PiazzaLogger.ERROR);
-			throw new Exception(message);
+			throw new InvalidInputException(message);
 		}
 
 	}
@@ -164,7 +171,7 @@ public class Controller {
 	 * @return Service object ingested
 	 */
 	@RequestMapping(value = API_ROOT + "/servicenew", method = RequestMethod.POST, consumes = "application/json")
-	public ServiceResponse ingestServiceDoc(@RequestBody(required = true) Service objService) throws Exception {
+	public ServiceResponse ingestServiceDoc(@RequestBody(required = true) Service objService) throws InvalidInputException {
 
 		/*
 		 * Block for debug purposes if needed // get reconstituted JSON Doc out of job object parameter
@@ -178,7 +185,8 @@ public class Controller {
 		} catch (Exception exception) {
 			String message = String.format("Error Reconstituting JSON Doc from Service obj: %s", exception.getMessage());
 			logger.log(message, PiazzaLogger.ERROR);
-			throw new Exception(message);
+			LOGGER.error(message, exception);
+			throw new InvalidInputException(message);
 		}
 
 		try {
@@ -191,7 +199,8 @@ public class Controller {
 			String message = String.format("Error completing JSON Doc indexing in Elasticsearch from Service object: %s",
 					exception.getMessage());
 			logger.log(message, PiazzaLogger.ERROR);
-			throw new Exception(message);
+			LOGGER.error(message, exception);
+			throw new InvalidInputException(message);
 		}
 
 	}
@@ -203,7 +212,7 @@ public class Controller {
 	 * @return PiazzaResponse ErrorResponse or ServiceResponse returned
 	 */
 	@RequestMapping(value = API_ROOT + "/servicedeleteid", method = RequestMethod.POST, consumes = "application/json")
-	public PiazzaResponse deleteServiceDocById(@RequestBody(required = true) Service objService) throws Exception {
+	public PiazzaResponse deleteServiceDocById(@RequestBody(required = true) Service objService) throws IOException {
 		try {
 			ServiceContainer serviceContainer = template.findOne(SERVICESINDEX, SERVICESTYPE, objService.getServiceId(),
 					ServiceContainer.class);
@@ -217,7 +226,8 @@ public class Controller {
 		} catch (Exception exception) {
 			String message = String.format("Error deleting in Elasticsearch from Service object: %s", exception.getMessage());
 			logger.log(message, PiazzaLogger.ERROR);
-			throw new Exception(message);
+			LOGGER.error(message, exception);
+			throw new IOException(message);
 		}
 	}
 
@@ -230,7 +240,7 @@ public class Controller {
 	 * @return success/fail
 	 */
 	@RequestMapping(value = API_ROOT + "/serviceupdateid", method = RequestMethod.POST, consumes = "application/json")
-	public Boolean updateServiceDocById(@RequestBody(required = true) Service objService) throws Exception {
+	public Boolean updateServiceDocById(@RequestBody(required = true) Service objService) throws InvalidInputException {
 
 		try {
 			ServiceContainer sc = template.findOne(SERVICESINDEX, SERVICESTYPE, objService.getServiceId(),
@@ -245,7 +255,8 @@ public class Controller {
 			} catch (Exception exception) {
 				String message = String.format("Error Reconstituting JSON Doc from Service obj: %s", exception.getMessage());
 				logger.log(message, PiazzaLogger.ERROR);
-				throw new Exception(message);
+				LOGGER.error(message, exception);
+				throw new InvalidInputException(message);
 			}
 
 			if (sc == null) {
@@ -267,7 +278,8 @@ public class Controller {
 			String message = String.format("Error completing JSON Doc updating in Elasticsearch from Service object: %s",
 					exception.getMessage());
 			logger.log(message, PiazzaLogger.ERROR);
-			throw new Exception(message);
+			LOGGER.error(message, exception);
+			throw new InvalidInputException(message);
 		}
 
 	}

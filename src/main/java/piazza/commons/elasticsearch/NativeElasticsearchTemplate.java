@@ -15,13 +15,8 @@
  **/
 package piazza.commons.elasticsearch;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
-import org.elasticsearch.action.ListenableActionFuture;
-import org.elasticsearch.action.admin.indices.alias.IndicesAliasesResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
@@ -35,12 +30,8 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.IndicesAdminClient;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.client.Requests;
-import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
-import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequestBuilder;
-import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +44,7 @@ import util.PiazzaLogger;
 //@Component
 public class NativeElasticsearchTemplate
 {
+	private final static Logger LOGGER = LoggerFactory.getLogger(NativeElasticsearchTemplate.class);
 
 	@Autowired
 	private PiazzaLogger logger;
@@ -137,6 +129,7 @@ public class NativeElasticsearchTemplate
 			}
 		}
 		catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
 			logger.log(e.getMessage(), PiazzaLogger.ERROR);
 //			log.error(
 //				e.getMessage(),
@@ -281,6 +274,7 @@ public class NativeElasticsearchTemplate
 			}
 		}
 		catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
 			logger.log(e.getMessage(), PiazzaLogger.ERROR);
 		}
 
@@ -345,6 +339,7 @@ public class NativeElasticsearchTemplate
 			result = response.isFound();
 		}
 		catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
 			logger.log(e.getMessage(), PiazzaLogger.ERROR);
 		}
 
@@ -384,6 +379,7 @@ public class NativeElasticsearchTemplate
 
 		}
 		catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
 			logger.log(e.getMessage(), PiazzaLogger.ERROR);
 		}
 
@@ -400,6 +396,7 @@ public class NativeElasticsearchTemplate
 			success = (result.getShardFailures().length == 0);
 		}
 		catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
 			logger.log(e.getMessage(), PiazzaLogger.ERROR);
 		}
 

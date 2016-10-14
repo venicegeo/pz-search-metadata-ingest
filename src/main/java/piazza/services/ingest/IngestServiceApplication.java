@@ -15,6 +15,8 @@
  **/
 package piazza.services.ingest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,7 +24,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 import piazza.services.ingest.controller.Controller;
-import util.PiazzaLogger;
 
 //import piazza.commons.elasticsearch.NativeElasticsearchTemplateConfiguration;
 
@@ -32,6 +33,7 @@ import util.PiazzaLogger;
 @SpringBootApplication
 @ComponentScan({"piazza, util"})
 public class IngestServiceApplication {
+	private final static Logger LOGGER = LoggerFactory.getLogger(IngestServiceApplication.class);
 
 	@Autowired
 	private Controller cont;
@@ -44,8 +46,7 @@ public class IngestServiceApplication {
 			context.getBean(Controller.class).init();
 			//cont.init();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 }
