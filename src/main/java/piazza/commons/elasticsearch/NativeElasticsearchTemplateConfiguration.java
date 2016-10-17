@@ -15,7 +15,7 @@
  **/
 package piazza.commons.elasticsearch;
 
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
 import org.elasticsearch.client.Client;
@@ -57,8 +57,9 @@ public class NativeElasticsearchTemplateConfiguration {
 		
 		TransportClient transportClient = TransportClient.builder().settings(settings).build();
 		
-		transportClient.addTransportAddress(new InetSocketTransportAddress(
-											InetAddress.getByName(cfhostname), port));
+//		transportClient.addTransportAddress(new InetSocketTransportAddress(
+//											InetAddress.getByName(cfhostname), port));
+		transportClient.addTransportAddress(new InetSocketTransportAddress(new InetSocketAddress(cfhostname, port)));
 
 		return transportClient;
 	}
