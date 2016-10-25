@@ -1,3 +1,35 @@
+cURL ex. can't have numericKeyValueList or textKeyValueList because serializer not available!
+curl -XPOST http://localhost:9200/pzmetadata/DataResourceContainer -d '
+{
+    "dataId": "Alfred E. Newman",
+    "dataType": {
+        "id": "findme",
+        "type": "wfs",
+        "url": "http://geoserver.dev:8080/geoserver/wfs",
+        "featureType": "piazza:shelters",
+        "version": "1.0.0"
+    },
+    "metadata": {
+        "name": "My Test Shapefile",
+        "availability": "nope",
+        "description": "This is a test.",
+        "classType": "unclassified"
+
+    },
+    "spatialMetadata": {
+        "epsgCode": 1984
+    },
+   "locationCenterPoint": [ 41.11, -71.33 ],
+    "boundingArea" : {
+        "type" : "polygon",
+        "coordinates" : [
+            [ [-177.0, 10.0], [176.0, 15.0], [172.0, 0.0], [176.0, -15.0], [-177.0, -10.0], [-177.0, 10.0] ],
+            [ [178.2, 8.2], [-178.8, 8.2], [-180.8, -8.8], [178.2, 8.2] ]
+        ]
+    }
+}
+'
+
 curl -XPOST http://localhost:9200/pzmetadata/DataResourceContainer -d '
 {
     "dataId": "Alfred E. Newman",
@@ -332,18 +364,73 @@ curl -XPUT 'http://localhost:9200/pzservices/ServiceContainer' -d '
       "url": "https://pz-svcs-prevgen.int.geointservices.io/crop",
       "resourceMetadata": {
         "name": "Preview Generator",
-        "description": "Service that takes nuttin'.",
+        "description": "Service that takes nuttin.",
         "method": "POST"
       }
     }
   }
   '
+curl -XPUT 'http://localhost:9200/pzservices/ServiceContainer' -d '
+ {
+  
+    "serviceId": "gumbo",
+    "url": "https://pzsvc-hello.stage.geointservices.io/",
+    "contractUrl": "http://helloContract",
+    "method": "GET",
+    "timeout": 600,
+    "isAsynchronous": false,
+    "resourceMetadata": {
+      "name": "pzsvc-hello service",
+      "description": "Service created for integration testing.",
+      "format": null,
+      "qos": null,
+      "statusType": null,
+      "availability": null,
+      "tags": null,
+      "classType": {
+        "classification": "UNCLASSIFIED"
+      },
+      "clientCertRequired": null,
+      "credentialsRequired": null,
+      "preAuthRequired": null,
+      "networkAvailable": null,
+      "contacts": null,
+      "reason": null,
+      "version": null,
+      "createdBy": "smithcs",
+      "createdOn": "2016-10-21T16:25:01.806Z",
+      "createdByJobId": null,
+      "metadata": null,
+      "numericKeyValueList": null,
+      "textKeyValueList": null
+   
+  }
+ }'
+
   
 **** bad syntax below (match) 
 curl -XGET 'http://localhost:9200/pzservices/_search?pretty=true' -d '
 {
-   "match" : {
+   "matchAll" : {
         "serviceId" : "this is a test"
+    }
+}'
+
+curl -XGET 'http://localhost:9200/pzservices/_search?pretty=true' -d '
+{
+    "query": {
+   		"match" : {
+       		 "serviceId" : "this is a test"
+        	}
+    }
+}'
+
+curl -XGET 'http://localhost:9200/pzservices/_search?pretty=true' -d '
+{
+    "query": {
+        "match": {
+            "_all": true
+        }
     }
 }'
   
