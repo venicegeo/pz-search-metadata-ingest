@@ -38,7 +38,7 @@ public class DataResourceContainer implements piazza.commons.elasticsearch.ESMod
 	// public GeoPoint locationCenterPoint;
 	// 8/9/16 need representation of <lat>,<lon> for correct entry,
 	// without geohash, into Elasticsearch mapping of geo_point
-	public String locationCenterPoint;
+	public GeoPoint locationCenterPoint;
 	// serialize into ES GeoShape
 	@JsonSerialize(using = GeoJsonSerializer.class)
 	@JsonDeserialize(using = GeoJsonDeserializer.class)
@@ -55,12 +55,12 @@ public class DataResourceContainer implements piazza.commons.elasticsearch.ESMod
 		dataResourceContainerId = dataResource.getDataId();
 	}
 
-	public String getLocationCenterPoint() {
+	public GeoPoint getLocationCenterPoint() {
 		return locationCenterPoint;
 	}
 
 	public void setLocationCenterPoint(GeoPoint gp) {
-		this.locationCenterPoint = gp.toString();
+		this.locationCenterPoint = gp;
 	}
 
 	public Geometry getBoundingArea() {
@@ -73,14 +73,12 @@ public class DataResourceContainer implements piazza.commons.elasticsearch.ESMod
 
 	@Override
 	public String getId() {
-		// TODO Auto-generated method stub
-		return null;
+		return dataResourceContainerId;
 	}
 
 	@Override
 	public void setId(String id) {
-		// TODO Auto-generated method stub
-
+		dataResourceContainerId = id;
 	}
 
 }

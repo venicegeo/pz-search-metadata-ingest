@@ -238,7 +238,7 @@ public class Controller {
 	@RequestMapping(value = API_ROOT + "/datadeleteid", method = RequestMethod.POST, consumes = "application/json")
 	public PiazzaResponse deleteDataDocById(@RequestBody(required = true) DataResource dr) throws IOException {
 		try {
-			DataResourceContainer drc = template.findOne(DATAINDEX, DATATYPE, "dataResource."+dr.getDataId(),
+			DataResourceContainer drc = template.findOne(DATAINDEX, DATATYPE, dr.getDataId(),
 					DataResourceContainer.class);
 			if (drc == null) {
 				return new ErrorResponse("Unable to find data record in elastic search.", "ElasticSearch");
@@ -267,7 +267,7 @@ public class Controller {
 	public Boolean updateDataDocById(@RequestBody(required = true) DataResource dr) throws InvalidInputException, IOException {
 
 		try {
-			DataResourceContainer drc = template.findOne(DATAINDEX, DATATYPE, "dataResource."+dr.getDataId(),
+			DataResourceContainer drc = template.findOne(DATAINDEX, DATATYPE, dr.getDataId(),
 					DataResourceContainer.class);
 			String reconJSONdoc;
 			try {
