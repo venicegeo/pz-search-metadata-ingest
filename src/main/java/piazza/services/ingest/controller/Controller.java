@@ -159,6 +159,7 @@ public class Controller {
 		} catch (Exception exception) {
 			String message = String.format("Error completing JSON Doc indexing in Elasticsearch from SearchMetadataIngestJob: %s",
 					exception.getMessage());
+			LOGGER.error(message, exception);
 			logger.log(message, PiazzaLogger.ERROR);
 			throw new IOException(message);
 		}
