@@ -166,6 +166,149 @@ public class Controller {
 
 	}
 
+	/*For debug if need to excercise WS with metadata payload rather than Piazza job.
+	 * Comment out for code coverage
+	 * May switch to this as payload endpoint, away from 'job' paradigm, then delete of comment out 'data' endpoint above
+	 * 
+	 * endpoint ingesting DataResource object 
+	 * 
+	 * @return dataResource object ingested
+	 */
+	@RequestMapping(value = API_ROOT + "/datanew", method = RequestMethod.POST, consumes = "application/json")
+	public @ResponseBody DataResourceContainer createEntryNew(@RequestBody DataResource entry) throws Exception {
+		DataResourceContainer drc = new DataResourceContainer(entry);
+		try {
+			SpatialMetadata sm = entry.getSpatialMetadata().getProjectedSpatialMetadata();
+			Double minX = sm.getMinX();
+			Double maxX = sm.getMaxX();
+			Double minY = sm.getMinY();
+			Double maxY = sm.getMaxY();
+			GeoPoint gp = new GeoPoint((maxY + minY) / 2, (maxX + minX) / 2);
+			drc.setLocationCenterPoint(gp);
+
+			Coordinate NW = new Coordinate(minX, maxY);
+			Coordinate SE = new Coordinate(maxX, minY);
+			Geometry bboxGeometry = GeometryUtils.createBoundingBox(NW, SE);
+			drc.setBoundingArea(bboxGeometry);
+		} catch (Exception exception) {
+			try{  // in case test or for some other reason null metadata values
+				String message = String.format("Error Augmenting JSON Doc with geolocation info, DataId: %s, possible null values input or unrecognized SRS: %s",
+						entry.getDataId(), entry.getSpatialMetadata().getCoordinateReferenceSystem());
+				logger.log(message, PiazzaLogger.WARNING);
+				System.out.println(message);
+			} catch (Exception e2) {
+				logger.log("Error Augmenting JSON Doc with geolocation info", PiazzaLogger.ERROR);
+				System.out.println("Error Augmenting JSON Doc with geolocation info");
+			}
+		}
+
+		/*
+		 * Block for debug purposes if needed // get reconstituted JSON Doc out of augmented input parameter
+		 */
+		String reconJSONdoc;
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			reconJSONdoc = mapper.writeValueAsString(drc);
+			System.out.println("The Re-Constituted JSON Doc:\n");
+			System.out.println(reconJSONdoc);
+		} catch (Exception exception) {
+			String message = String.format("Error Reconstituting JSON Doc from SearchMetadataIngestJob: %s", exception.getMessage());
+			logger.log(message, PiazzaLogger.ERROR);
+			throw new Exception(message);
+		}
+
+		try {
+			template.index(DATAINDEX, DATATYPE, drc);
+			// repository.save(drc);
+			// repository.save(entry);
+			return drc;
+		} catch (org.elasticsearch.client.transport.NoNodeAvailableException exception) {
+			String message = String.format("Error attempting index of data", exception.getMessage());
+			System.out.println(message);
+			throw new Exception(message);
+		}
+	}
+
+	
+	/**
+	 * Endpoint for deleting data metadata record from elastic search.
+	 * 
+	 * @param DataResource object
+	 * @return PiazzaResponse ErrorResponse or ServiceResponse returned
+	 */
+	@RequestMapping(value = API_ROOT + "/datadeleteid", method = RequestMethod.POST, consumes = "application/json")
+	public PiazzaResponse deleteDataDocById(@RequestBody(required = true) DataResource dr) throws IOException {
+		try {
+			DataResourceContainer drc = template.findOne(DATAINDEX, DATATYPE, dr.getDataId(),
+					DataResourceContainer.class);
+			if (drc == null) {
+				return new ErrorResponse("Unable to find data record in elastic search.", "ElasticSearch");
+			} else {
+				template.delete(DATAINDEX, DATATYPE, drc);
+				return new SuccessResponse(String.format( "Deleted data record %s from elastic search", dr.getDataId() ),
+						"ElasticSearch");
+			}
+		} catch (Exception exception) {
+			String message = String.format("Error deleting in Elasticsearch from DataResource object: %s", exception.getMessage());
+			logger.log(message, PiazzaLogger.ERROR);
+			LOGGER.error(message, exception);
+			throw new IOException(message);
+		}
+	}
+
+	/*
+	 * endpoint ingesting DataResource object using DataId as criterion for doc search/identification
+	 * logic- delete identified doc; index input param as new
+	 * 
+	 * @param Service object
+	 * 
+	 * @return success/fail
+	 */
+	@RequestMapping(value = API_ROOT + "/dataupdateid", method = RequestMethod.POST, consumes = "application/json")
+	public Boolean updateDataDocById(@RequestBody(required = true) DataResource dr) throws InvalidInputException, IOException {
+
+		try {
+			DataResourceContainer drc = template.findOne(DATAINDEX, DATATYPE, dr.getDataId(),
+					DataResourceContainer.class);
+			String reconJSONdoc;
+			try {
+				ObjectMapper mapper = new ObjectMapper();
+				reconJSONdoc = mapper.writeValueAsString(drc);
+				System.out.println("The Re-Constituted JSON Doc found in ES:\n");
+				System.out.println(reconJSONdoc);
+			} catch (Exception exception) {
+				String message = String.format("Error Reconstituting JSON Doc from Data obj: %s", exception.getMessage());
+				logger.log(message, PiazzaLogger.ERROR);
+				LOGGER.error(message, exception);
+				throw new InvalidInputException(message);
+			}
+
+			if (drc == null) {
+				String message = String.format("Unable to locate JSON Doc: %s", reconJSONdoc);
+				System.out.println(message);
+				logger.log(message, PiazzaLogger.ERROR);
+				return false;
+			} else {
+				if (!template.delete(DATAINDEX, DATATYPE, drc)) {
+					String message = String.format("Unable to delete JSON Doc: %s", reconJSONdoc);
+					logger.log(message, PiazzaLogger.ERROR);
+					throw new IOException(message);
+				}
+				drc = new DataResourceContainer(dr);
+				return template.index(DATAINDEX, DATATYPE, drc);
+			}
+
+		} catch (Exception exception) {
+			String message = String.format("Error completing JSON Doc updating in Elasticsearch from Data object: %s",
+					exception.getMessage());
+			logger.log(message, PiazzaLogger.ERROR);
+			LOGGER.error(message, exception);
+			throw new IOException(message);
+		}
+
+	}
+
+	
 	/*
 	 * Endpoint ingesting Service object
 	 * 
