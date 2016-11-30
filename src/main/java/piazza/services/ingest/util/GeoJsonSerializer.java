@@ -36,6 +36,7 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
+import model.logger.Severity;
 import util.PiazzaLogger;
 
 public class GeoJsonSerializer extends JsonSerializer<Geometry> {
@@ -76,7 +77,7 @@ public class GeoJsonSerializer extends JsonSerializer<Geometry> {
             writeGeometryCollection(jgen, (GeometryCollection) value);
         } else {
 			String message = "Failed to serialize Geometry to GeoJSON, unsupported type.";
-			logger.log(message, PiazzaLogger.ERROR);
+			logger.log(message, Severity.ERROR);
             throw new UnsupportedOperationException("not implemented: " + value.getClass().getName());
         }
     }

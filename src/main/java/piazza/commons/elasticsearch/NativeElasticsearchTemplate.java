@@ -39,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import model.logger.Severity;
 import util.PiazzaLogger;
 
 //@Component
@@ -130,7 +131,7 @@ public class NativeElasticsearchTemplate
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
-			logger.log(e.getMessage(), PiazzaLogger.ERROR);
+			logger.log(e.getMessage(), Severity.ERROR);
 //			log.error(
 //				e.getMessage(),
 //				e);
@@ -275,7 +276,7 @@ public class NativeElasticsearchTemplate
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
-			logger.log(e.getMessage(), PiazzaLogger.ERROR);
+			logger.log(e.getMessage(), Severity.ERROR);
 		}
 
 		return result;
@@ -340,7 +341,7 @@ public class NativeElasticsearchTemplate
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
-			logger.log(e.getMessage(), PiazzaLogger.ERROR);
+			logger.log(e.getMessage(), Severity.ERROR);
 		}
 
 		return result;
@@ -380,7 +381,7 @@ public class NativeElasticsearchTemplate
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
-			logger.log(e.getMessage(), PiazzaLogger.ERROR);
+			logger.log(e.getMessage(), Severity.ERROR);
 		}
 
 		return result;
@@ -397,7 +398,7 @@ public class NativeElasticsearchTemplate
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
-			logger.log(e.getMessage(), PiazzaLogger.ERROR);
+			logger.log(e.getMessage(), Severity.ERROR);
 		}
 
 		return success;

@@ -37,6 +37,8 @@ import exception.InvalidInputException;
 import model.data.DataResource;
 import model.job.metadata.SpatialMetadata;
 import model.job.type.SearchMetadataIngestJob;
+import model.logger.AuditElement;
+import model.logger.Severity;
 import model.response.DataResourceResponse;
 import model.response.ErrorResponse;
 import model.response.PiazzaResponse;
@@ -90,7 +92,7 @@ public class Controller {
 				template.createIndexWithMapping(DATAINDEX, DATATYPE, mapping);
 		} catch (Exception exception) {
 			String message = "Error considering pre-exisitence of ES index";
-			logger.log(message, PiazzaLogger.ERROR);
+			logger.log(message, Severity.ERROR);
 			LOGGER.error(message, exception);
 			throw new IOException(message);
 		}
@@ -115,7 +117,7 @@ public class Controller {
 			System.out.println(reconJSONdoc);
 		} catch (Exception exception) {
 			String message = String.format("Error Reconstituting JSON Doc from SearchMetadataIngestJob: %s", exception.getMessage());
-			logger.log(message, PiazzaLogger.ERROR);
+			logger.log(message, Severity.ERROR);
 			LOGGER.error(message, exception);
 			throw new InvalidInputException(message);
 		}
@@ -144,23 +146,29 @@ public class Controller {
 					String message = String.format(
 							"Error Augmenting JSON Doc with geolocation info, DataId: %s, possible null values input or unrecognized SRS: %s",
 							dr.getDataId(), dr.getSpatialMetadata().getCoordinateReferenceSystem());
-					logger.log(message, PiazzaLogger.WARNING);
+					logger.log(message, Severity.WARNING);
 				} catch (Exception e2) {
 					String message = "Error Augmenting JSON Doc with geolocation info";
 					LOGGER.error(message, e2);
-					logger.log(message, PiazzaLogger.ERROR);
+					logger.log(message, Severity.ERROR);
 				}
 			}
 
 			// repository.save(drc);
 			template.index(DATAINDEX, DATATYPE, drc);
+			
+			logger.log(
+					String.format("Ingesting data into elastic search containing data/metadata resource object id %s",
+							dr.getDataId()),
+					Severity.INFORMATIONAL, new AuditElement("searchMetadataIngest", "searchIngest", dr.getDataId()));
+			
 			return new DataResourceResponse(dr);
 
 		} catch (Exception exception) {
 			String message = String.format("Error completing JSON Doc indexing in Elasticsearch from SearchMetadataIngestJob: %s",
 					exception.getMessage());
 			LOGGER.error(message, exception);
-			logger.log(message, PiazzaLogger.ERROR);
+			logger.log(message, Severity.ERROR);
 			throw new IOException(message);
 		}
 
@@ -185,7 +193,7 @@ public class Controller {
 			System.out.println(reconJSONdoc);
 		} catch (Exception exception) {
 			String message = String.format("Error Reconstituting JSON Doc from Service obj: %s", exception.getMessage());
-			logger.log(message, PiazzaLogger.ERROR);
+			logger.log(message, Severity.ERROR);
 			LOGGER.error(message, exception);
 			throw new InvalidInputException(message);
 		}
@@ -194,12 +202,18 @@ public class Controller {
 			ServiceContainer sc = new ServiceContainer(objService);
 			// servicerepository.save(sc);
 			template.index(SERVICESINDEX, SERVICESTYPE, sc);
+
+			logger.log(
+					String.format("Ingesting new service object into elastic search id %s", objService.getServiceId()),
+					Severity.INFORMATIONAL,
+					new AuditElement("searchMetadataIngest", "searchIngestService", objService.getServiceId()));
+
 			return new ServiceResponse(objService);
 
 		} catch (Exception exception) {
 			String message = String.format("Error completing JSON Doc indexing in Elasticsearch from Service object: %s",
 					exception.getMessage());
-			logger.log(message, PiazzaLogger.ERROR);
+			logger.log(message, Severity.ERROR);
 			LOGGER.error(message, exception);
 			throw new IOException(message);
 		}
@@ -221,12 +235,17 @@ public class Controller {
 				return new ErrorResponse("Unable to find service in elastic search.", "ElasticSearch");
 			} else {
 				template.delete(SERVICESINDEX, SERVICESTYPE, serviceContainer);
-				return new SuccessResponse(String.format("Deleted service %s from elastic search", objService.getServiceId()),
+				logger.log(String.format("Deleted service metadata from elastic search %s", objService.getServiceId()),
+						Severity.INFORMATIONAL,
+						new AuditElement("searchMetadataIngest", "searchDeleteServiceMetadata", objService.getServiceId()));
+
+				return new SuccessResponse(
+						String.format("Deleted service %s from elastic search", objService.getServiceId()),
 						"ElasticSearch");
 			}
 		} catch (Exception exception) {
 			String message = String.format("Error deleting in Elasticsearch from Service object: %s", exception.getMessage());
-			logger.log(message, PiazzaLogger.ERROR);
+			logger.log(message, Severity.ERROR);
 			LOGGER.error(message, exception);
 			throw new IOException(message);
 		}
@@ -255,7 +274,7 @@ public class Controller {
 				System.out.println(reconJSONdoc);
 			} catch (Exception exception) {
 				String message = String.format("Error Reconstituting JSON Doc from Service obj: %s", exception.getMessage());
-				logger.log(message, PiazzaLogger.ERROR);
+				logger.log(message, Severity.ERROR);
 				LOGGER.error(message, exception);
 				throw new InvalidInputException(message);
 			}
@@ -263,22 +282,27 @@ public class Controller {
 			if (sc == null) {
 				String message = String.format("Unable to locate JSON Doc: %s", reconJSONdoc);
 				System.out.println(message);
-				logger.log(message, PiazzaLogger.ERROR);
+				logger.log(message, Severity.ERROR);
 				return false;
 			} else {
 				if (!template.delete(SERVICESINDEX, SERVICESTYPE, sc)) {
 					String message = String.format("Unable to delete JSON Doc: %s", reconJSONdoc);
-					logger.log(message, PiazzaLogger.ERROR);
+					logger.log(message, Severity.ERROR);
 					throw new IOException(message);
 				}
 				sc = new ServiceContainer(objService);
+				
+				logger.log(String.format("Ingesting service metadata into elastic search using only service id %s", objService.getServiceId()),
+						Severity.INFORMATIONAL,
+						new AuditElement("searchMetadataIngest", "searchIngest", objService.getServiceId()));
+
 				return template.index(SERVICESINDEX, SERVICESTYPE, sc);
 			}
 
 		} catch (Exception exception) {
 			String message = String.format("Error completing JSON Doc updating in Elasticsearch from Service object: %s",
 					exception.getMessage());
-			logger.log(message, PiazzaLogger.ERROR);
+			logger.log(message, Severity.ERROR);
 			LOGGER.error(message, exception);
 			throw new IOException(message);
 		}

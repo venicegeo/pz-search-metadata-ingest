@@ -34,6 +34,7 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 
+import model.logger.Severity;
 import util.PiazzaLogger;
 
 public class GeoJsonDeserializer extends JsonDeserializer<Geometry> {
@@ -75,7 +76,7 @@ public class GeoJsonDeserializer extends JsonDeserializer<Geometry> {
                     .get("geometries")));
         } else {
         	//log.error("Failed to deserialize GeoJSON, unsupported type.");
-			logger.log("Failed to deserialize GeoJSON, unsupported type.", PiazzaLogger.ERROR);
+			logger.log("Failed to deserialize GeoJSON, unsupported type.", Severity.ERROR);
             throw new UnsupportedOperationException();
         }
     }
