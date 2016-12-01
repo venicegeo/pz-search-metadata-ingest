@@ -98,8 +98,8 @@ public class Controller {
 		}
 	}
 
-	/*
-	 * endpoint ingesting SearchMetadataIngestJob containing data/metadata resource object
+	/**
+	 * Endpoint ingesting SearchMetadataIngestJob containing data/metadata resource object
 	 * 
 	 * @return dataResource object ingested
 	 */
@@ -165,16 +165,17 @@ public class Controller {
 			return new DataResourceResponse(dr);
 
 		} catch (Exception exception) {
-			String message = String.format("Error completing JSON Doc indexing in Elasticsearch from SearchMetadataIngestJob: %s",
-					exception.getMessage());
+			String message = String.format("Error completing JSON Doc indexing in Elasticsearch from SearchMetadataIngestJob: %s", exception.getMessage());
 			LOGGER.error(message, exception);
 			logger.log(message, Severity.ERROR);
+			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "searchIngest", "searchMetadataIngestJob"));
 			throw new IOException(message);
 		}
 
 	}
 
-	/*For debug if need to excercise WS with metadata payload rather than Piazza job.
+	/**
+	 * For debug if need to excercise WS with metadata payload rather than Piazza job.
 	 * Comment out for code coverage
 	 * May switch to this as payload endpoint, away from 'job' paradigm, then delete of comment out 'data' endpoint above
 	 * 
@@ -205,6 +206,7 @@ public class Controller {
 				logger.log(message, Severity.INFORMATIONAL);
 			} catch (Exception e2) {
 				logger.log("Error Augmenting JSON Doc with geolocation info", Severity.ERROR);
+				logger.log("Error Augmenting JSON Doc with geolocation info", Severity.ERROR, new AuditElement("searchMetadataIngest", "searchIngest", "DataResource"));
 			}
 		}
 
@@ -220,21 +222,21 @@ public class Controller {
 		} catch (Exception exception) {
 			String message = String.format("Error Reconstituting JSON Doc from SearchMetadataIngestJob: %s", exception.getMessage());
 			logger.log(message, Severity.ERROR);
+			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "searchIngest", "DataResource"));
 			throw new Exception(message);
 		}
 
 		try {
 			template.index(DATAINDEX, DATATYPE, drc);
-			// repository.save(drc);
-			// repository.save(entry);
 			return drc;
 		} catch (org.elasticsearch.client.transport.NoNodeAvailableException exception) {
 			String message = String.format("Error attempting index of data", exception.getMessage());
 			logger.log(message, Severity.ERROR);
+			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "searchIngest", "DataResource"));
+
 			throw new Exception(message);
 		}
 	}
-
 	
 	/**
 	 * Endpoint for deleting data metadata record from elastic search.
@@ -258,11 +260,12 @@ public class Controller {
 			String message = String.format("Error deleting in Elasticsearch from DataResource object: %s", exception.getMessage());
 			logger.log(message, Severity.ERROR);
 			LOGGER.error(message, exception);
+			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "deleteDataResourceObject", "DataResource"));
 			throw new IOException(message);
 		}
 	}
 
-	/*
+	/**
 	 * endpoint ingesting DataResource object using DataId as criterion for doc search/identification
 	 * logic- delete identified doc; index input param as new
 	 * 
@@ -286,6 +289,7 @@ public class Controller {
 				String message = String.format("Error Reconstituting JSON Doc from Data obj: %s", exception.getMessage());
 				logger.log(message, Severity.ERROR);
 				LOGGER.error(message, exception);
+				logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "ingestDataResourceObjectWithDataId", "DataResource"));
 				throw new InvalidInputException(message);
 			}
 
@@ -308,11 +312,12 @@ public class Controller {
 					exception.getMessage());
 			logger.log(message, Severity.ERROR);
 			LOGGER.error(message, exception);
+			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "ingestDataResourceObjectWithDataId", "DataResource"));
 			throw new IOException(message);
 		}
 	}
 	
-	/*
+	/**
 	 * Endpoint ingesting Service object
 	 * 
 	 * @return Service object ingested
@@ -338,6 +343,7 @@ public class Controller {
 			String message = String.format("Error Reconstituting JSON Doc from Service obj: %s", exception.getMessage());
 			logger.log(message, Severity.ERROR);
 			LOGGER.error(message, exception);
+			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "ingestServiceObject", "Service"));
 			throw new InvalidInputException(message);
 		}
 
@@ -354,10 +360,10 @@ public class Controller {
 			return new ServiceResponse(objService);
 
 		} catch (Exception exception) {
-			String message = String.format("Error completing JSON Doc indexing in Elasticsearch from Service object: %s",
-					exception.getMessage());
+			String message = String.format("Error completing JSON Doc indexing in Elasticsearch from Service object: %s", exception.getMessage());
 			logger.log(message, Severity.ERROR);
 			LOGGER.error(message, exception);
+			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "ingestServiceObject", "Service"));
 			throw new IOException(message);
 		}
 
@@ -390,11 +396,12 @@ public class Controller {
 			String message = String.format("Error deleting in Elasticsearch from Service object: %s", exception.getMessage());
 			logger.log(message, Severity.ERROR);
 			LOGGER.error(message, exception);
+			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "deleteServiceObject", "Service"));
 			throw new IOException(message);
 		}
 	}
 
-	/*
+	/**
 	 * endpoint ingesting Service object 5/21 currently only using serviceId as criterion for doc search/identification
 	 * logic- delete identified doc; index input param as new
 	 * 
@@ -419,6 +426,7 @@ public class Controller {
 				String message = String.format("Error Reconstituting JSON Doc from Service obj: %s", exception.getMessage());
 				logger.log(message, Severity.ERROR);
 				LOGGER.error(message, exception);
+				logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "ingestServiceObjectWithServiceId", "Service"));
 				throw new InvalidInputException(message);
 			}
 
@@ -441,13 +449,11 @@ public class Controller {
 			}
 
 		} catch (Exception exception) {
-			String message = String.format("Error completing JSON Doc updating in Elasticsearch from Service object: %s",
-					exception.getMessage());
+			String message = String.format("Error completing JSON Doc updating in Elasticsearch from Service object: %s", exception.getMessage());
 			logger.log(message, Severity.ERROR);
 			LOGGER.error(message, exception);
+			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "ingestServiceObjectWithServiceId", "Service"));
 			throw new IOException(message);
 		}
-
 	}
-
 }
