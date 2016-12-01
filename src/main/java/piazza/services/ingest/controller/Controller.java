@@ -113,8 +113,8 @@ public class Controller {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			reconJSONdoc = mapper.writeValueAsString(mdingestJob.getData());
-			System.out.println("The Re-Constituted JSON Doc:\n");
-			System.out.println(reconJSONdoc);
+			logger.log("The Re-Constituted JSON Doc:\n", Severity.INFORMATIONAL);
+			logger.log(reconJSONdoc, Severity.INFORMATIONAL);
 		} catch (Exception exception) {
 			String message = String.format("Error Reconstituting JSON Doc from SearchMetadataIngestJob: %s", exception.getMessage());
 			logger.log(message, Severity.ERROR);
@@ -202,11 +202,9 @@ public class Controller {
 			try{  // in case test or for some other reason null metadata values
 				String message = String.format("Error Augmenting JSON Doc with geolocation info, DataId: %s, possible null values input or unrecognized SRS: %s",
 						entry.getDataId(), entry.getSpatialMetadata().getCoordinateReferenceSystem());
-				logger.log(message, Severity.WARNING);
-				System.out.println(message);
+				logger.log(message, Severity.INFORMATIONAL);
 			} catch (Exception e2) {
 				logger.log("Error Augmenting JSON Doc with geolocation info", Severity.ERROR);
-				System.out.println("Error Augmenting JSON Doc with geolocation info");
 			}
 		}
 
@@ -217,8 +215,8 @@ public class Controller {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			reconJSONdoc = mapper.writeValueAsString(drc);
-			System.out.println("The Re-Constituted JSON Doc:\n");
-			System.out.println(reconJSONdoc);
+			logger.log("The Re-Constituted JSON Doc:\n", Severity.INFORMATIONAL);
+			logger.log(reconJSONdoc, Severity.INFORMATIONAL);
 		} catch (Exception exception) {
 			String message = String.format("Error Reconstituting JSON Doc from SearchMetadataIngestJob: %s", exception.getMessage());
 			logger.log(message, Severity.ERROR);
@@ -232,7 +230,7 @@ public class Controller {
 			return drc;
 		} catch (org.elasticsearch.client.transport.NoNodeAvailableException exception) {
 			String message = String.format("Error attempting index of data", exception.getMessage());
-			System.out.println(message);
+			logger.log(message, Severity.ERROR);
 			throw new Exception(message);
 		}
 	}
@@ -282,8 +280,8 @@ public class Controller {
 			try {
 				ObjectMapper mapper = new ObjectMapper();
 				reconJSONdoc = mapper.writeValueAsString(drc);
-				System.out.println("The Re-Constituted JSON Doc found in ES:\n");
-				System.out.println(reconJSONdoc);
+				logger.log("The Re-Constituted JSON Doc found in ES:\n", Severity.INFORMATIONAL);
+				logger.log(reconJSONdoc, Severity.INFORMATIONAL);
 			} catch (Exception exception) {
 				String message = String.format("Error Reconstituting JSON Doc from Data obj: %s", exception.getMessage());
 				logger.log(message, Severity.ERROR);
@@ -292,9 +290,8 @@ public class Controller {
 			}
 
 			if (drc == null) {
-				String message = String.format("Unable to locate JSON Doc: %s", reconJSONdoc);
-				System.out.println(message);
-				logger.log(message, Severity.ERROR);
+
+				logger.log(String.format("Unable to locate JSON Doc: %s", reconJSONdoc), Severity.ERROR);
 				return false;
 			} else {
 				if (!template.delete(DATAINDEX, DATATYPE, drc)) {
@@ -313,9 +310,7 @@ public class Controller {
 			LOGGER.error(message, exception);
 			throw new IOException(message);
 		}
-
 	}
-
 	
 	/*
 	 * Endpoint ingesting Service object
@@ -337,8 +332,8 @@ public class Controller {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			reconJSONdoc = mapper.writeValueAsString(objService);
-			System.out.println("The Re-Constituted JSON Doc:\n");
-			System.out.println(reconJSONdoc);
+			logger.log("The Re-Constituted JSON Doc:\n", Severity.INFORMATIONAL);
+			logger.log(reconJSONdoc, Severity.INFORMATIONAL);
 		} catch (Exception exception) {
 			String message = String.format("Error Reconstituting JSON Doc from Service obj: %s", exception.getMessage());
 			logger.log(message, Severity.ERROR);
@@ -418,8 +413,8 @@ public class Controller {
 			try {
 				ObjectMapper mapper = new ObjectMapper();
 				reconJSONdoc = mapper.writeValueAsString(sc);
-				System.out.println("The Re-Constituted JSON Doc found in ES:\n");
-				System.out.println(reconJSONdoc);
+				logger.log("The Re-Constituted JSON Doc found in ES:\n", Severity.INFORMATIONAL);
+				logger.log(reconJSONdoc, Severity.INFORMATIONAL);
 			} catch (Exception exception) {
 				String message = String.format("Error Reconstituting JSON Doc from Service obj: %s", exception.getMessage());
 				logger.log(message, Severity.ERROR);
@@ -428,9 +423,7 @@ public class Controller {
 			}
 
 			if (sc == null) {
-				String message = String.format("Unable to locate JSON Doc: %s", reconJSONdoc);
-				System.out.println(message);
-				logger.log(message, Severity.ERROR);
+				logger.log(String.format("Unable to locate JSON Doc: %s", reconJSONdoc), Severity.ERROR);
 				return false;
 			} else {
 				if (!template.delete(SERVICESINDEX, SERVICESTYPE, sc)) {
