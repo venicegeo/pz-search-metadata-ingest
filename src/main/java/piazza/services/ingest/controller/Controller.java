@@ -329,6 +329,11 @@ public class Controller {
 		 * Block for debug purposes if needed // get reconstituted JSON Doc out of job object parameter
 		 */
 		String reconJSONdoc;
+		logger.log(
+				String.format("Trying to new service object into elastic search id %s", objService.getServiceId()),
+				Severity.INFORMATIONAL,
+				new AuditElement("searchMetadataIngest", "searchIngestService", objService.getServiceId()));
+		
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			reconJSONdoc = mapper.writeValueAsString(objService);
@@ -347,7 +352,7 @@ public class Controller {
 			template.index(SERVICESINDEX, SERVICESTYPE, sc);
 
 			logger.log(
-					String.format("Ingesting new service object into elastic search id %s", objService.getServiceId()),
+					String.format("Ingested new service object into elastic search id %s", objService.getServiceId()),
 					Severity.INFORMATIONAL,
 					new AuditElement("searchMetadataIngest", "searchIngestService", objService.getServiceId()));
 
