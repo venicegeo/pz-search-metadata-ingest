@@ -202,10 +202,10 @@ public class Controller {
 			try{  // in case test or for some other reason null metadata values
 				String message = String.format("Error Augmenting JSON Doc with geolocation info, DataId: %s, possible null values input or unrecognized SRS: %s",
 						entry.getDataId(), entry.getSpatialMetadata().getCoordinateReferenceSystem());
-				logger.log(message, PiazzaLogger.WARNING);
+				logger.log(message, Severity.WARNING);
 				System.out.println(message);
 			} catch (Exception e2) {
-				logger.log("Error Augmenting JSON Doc with geolocation info", PiazzaLogger.ERROR);
+				logger.log("Error Augmenting JSON Doc with geolocation info", Severity.ERROR);
 				System.out.println("Error Augmenting JSON Doc with geolocation info");
 			}
 		}
@@ -221,7 +221,7 @@ public class Controller {
 			System.out.println(reconJSONdoc);
 		} catch (Exception exception) {
 			String message = String.format("Error Reconstituting JSON Doc from SearchMetadataIngestJob: %s", exception.getMessage());
-			logger.log(message, PiazzaLogger.ERROR);
+			logger.log(message, Severity.ERROR);
 			throw new Exception(message);
 		}
 
@@ -258,7 +258,7 @@ public class Controller {
 			}
 		} catch (Exception exception) {
 			String message = String.format("Error deleting in Elasticsearch from DataResource object: %s", exception.getMessage());
-			logger.log(message, PiazzaLogger.ERROR);
+			logger.log(message, Severity.ERROR);
 			LOGGER.error(message, exception);
 			throw new IOException(message);
 		}
@@ -286,7 +286,7 @@ public class Controller {
 				System.out.println(reconJSONdoc);
 			} catch (Exception exception) {
 				String message = String.format("Error Reconstituting JSON Doc from Data obj: %s", exception.getMessage());
-				logger.log(message, PiazzaLogger.ERROR);
+				logger.log(message, Severity.ERROR);
 				LOGGER.error(message, exception);
 				throw new InvalidInputException(message);
 			}
@@ -294,12 +294,12 @@ public class Controller {
 			if (drc == null) {
 				String message = String.format("Unable to locate JSON Doc: %s", reconJSONdoc);
 				System.out.println(message);
-				logger.log(message, PiazzaLogger.ERROR);
+				logger.log(message, Severity.ERROR);
 				return false;
 			} else {
 				if (!template.delete(DATAINDEX, DATATYPE, drc)) {
 					String message = String.format("Unable to delete JSON Doc: %s", reconJSONdoc);
-					logger.log(message, PiazzaLogger.ERROR);
+					logger.log(message, Severity.ERROR);
 					throw new IOException(message);
 				}
 				drc = new DataResourceContainer(dr);
@@ -309,7 +309,7 @@ public class Controller {
 		} catch (Exception exception) {
 			String message = String.format("Error completing JSON Doc updating in Elasticsearch from Data object: %s",
 					exception.getMessage());
-			logger.log(message, PiazzaLogger.ERROR);
+			logger.log(message, Severity.ERROR);
 			LOGGER.error(message, exception);
 			throw new IOException(message);
 		}
