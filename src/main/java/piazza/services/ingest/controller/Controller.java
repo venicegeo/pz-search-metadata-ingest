@@ -184,7 +184,7 @@ public class Controller {
 	 * @return dataResource object ingested
 	 */
 	@RequestMapping(value = API_ROOT + "/datanew", method = RequestMethod.POST, consumes = "application/json")
-	public @ResponseBody DataResourceContainer createEntryNew(@RequestBody DataResource entry) throws Exception {
+	public @ResponseBody DataResourceContainer createEntryNew(@RequestBody DataResource entry) throws IOException {
 		DataResourceContainer drc = new DataResourceContainer(entry);
 		try {
 			SpatialMetadata sm = entry.getSpatialMetadata().getProjectedSpatialMetadata();
@@ -204,8 +204,9 @@ public class Controller {
 				String message = String.format("Error Augmenting JSON Doc with geolocation info, DataId: %s, possible null values input or unrecognized SRS: %s",
 						entry.getDataId(), entry.getSpatialMetadata().getCoordinateReferenceSystem());
 				logger.log(message, Severity.INFORMATIONAL);
+				LOGGER.error(message, exception);
 			} catch (Exception e2) {
-				logger.log("Error Augmenting JSON Doc with geolocation info", Severity.ERROR);
+				LOGGER.error("Error Augmenting JSON Doc with geolocation info", e2);
 				logger.log("Error Augmenting JSON Doc with geolocation info", Severity.ERROR, new AuditElement("searchMetadataIngest", "searchIngest", "DataResource"));
 			}
 		}
@@ -221,9 +222,9 @@ public class Controller {
 			logger.log(reconJSONdoc, Severity.INFORMATIONAL);
 		} catch (Exception exception) {
 			String message = String.format("Error Reconstituting JSON Doc from SearchMetadataIngestJob: %s", exception.getMessage());
-			logger.log(message, Severity.ERROR);
+			LOGGER.error(message, exception);
 			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "searchIngest", "DataResource"));
-			throw new Exception(message);
+			throw new IOException(message);
 		}
 
 		try {
@@ -231,10 +232,9 @@ public class Controller {
 			return drc;
 		} catch (org.elasticsearch.client.transport.NoNodeAvailableException exception) {
 			String message = String.format("Error attempting index of data", exception.getMessage());
-			logger.log(message, Severity.ERROR);
+			LOGGER.error(message, exception);
 			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "searchIngest", "DataResource"));
-
-			throw new Exception(message);
+			throw new IOException(message);
 		}
 	}
 	
