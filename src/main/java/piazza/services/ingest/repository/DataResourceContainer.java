@@ -38,7 +38,9 @@ public class DataResourceContainer implements piazza.commons.elasticsearch.ESMod
 	// public GeoPoint locationCenterPoint;
 	// 8/9/16 need representation of <lat>,<lon> for correct entry,
 	// without geohash, into Elasticsearch mapping of geo_point
-	public GeoPoint locationCenterPoint;
+	// 1/12/17 ObjectMapper serializes into lat,lon AND geohash (added!)
+	// thus, GeoPoint in ES mapping, array representation in Java
+	public Double[] locationCenterPoint; // lon, lat  - note order!
 	// serialize into ES GeoShape
 	@JsonSerialize(using = GeoJsonSerializer.class)
 	@JsonDeserialize(using = GeoJsonDeserializer.class)
@@ -55,11 +57,11 @@ public class DataResourceContainer implements piazza.commons.elasticsearch.ESMod
 		dataResourceContainerId = dataResource.getDataId();
 	}
 
-	public GeoPoint getLocationCenterPoint() {
+	public Double[] getLocationCenterPoint() {
 		return locationCenterPoint;
 	}
 
-	public void setLocationCenterPoint(GeoPoint gp) {
+	public void setLocationCenterPoint(Double[] gp) {
 		this.locationCenterPoint = gp;
 	}
 

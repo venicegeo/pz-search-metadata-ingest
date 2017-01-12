@@ -490,3 +490,62 @@ curl -XPOST http://localhost:9200/pzmetadata/DataResourceContainer -d '
 
     }
 }
+
+*************error on geojson ingest  Object Mapper serializ3es into both lat-lon AND geohash, ES can't accommodate 
+{
+    "dataId": "08274a38-887a-49d4-aee8-8d90a8f5ca65",
+    "dataType": {
+      "type": "geojson",
+      "databaseTableName": "08274a38-887a-49d4-aee8-8d90a8f5ca65",
+      "location": {
+        "type": "s3",
+        "bucketName": "gsn-s3-stage-app-blobstore-stage",
+        "fileName": "8192c5b9-f9b4-43cf-a83c-389027c2d080-Test.geojson",
+        "fileSize": 263,
+        "domainName": "s3.amazonaws.com"
+      },
+      "mimeType": "application/json"
+    },
+    "spatialMetadata": {
+      "epsgCode": 4326,
+      "minX": 102,
+      "minY": 0.5,
+      "maxX": 106,
+      "maxY": 4,
+      "numFeatures": 2,
+      "projectedSpatialMetadata": {
+        "epsgCode": 4326,
+        "minX": 102,
+        "minY": 0.5,
+        "maxX": 106,
+        "maxY": 4
+      }
+    },
+    "metadata": {
+      "name": "Test.geojson",
+      "description": "A file for integration tests.",
+      "format": null,
+      "qos": null,
+      "statusType": null,
+      "availability": null,
+      "tags": null,
+      "classType": {
+        "classification": "unclassified"
+      },
+      "clientCertRequired": null,
+      "credentialsRequired": null,
+      "preAuthRequired": null,
+      "networkAvailable": null,
+      "contacts": null,
+      "reason": null,
+      "version": null,
+      "createdBy": "PiazzaAustere02@Piazza.geointservices.io",
+      "createdOn": "2017-01-11T22:08:32.246Z",
+      "createdByJobId": "8192c5b9-f9b4-43cf-a83c-389027c2d080",
+      "metadata": null,
+      "numericKeyValueList": null,
+      "textKeyValueList": null
+    }
+  }
+  
+ 

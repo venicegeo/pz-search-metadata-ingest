@@ -60,6 +60,8 @@ public class Controller {
 	static final String DATATYPE = "DataResourceContainer";
 	static final String SERVICESINDEX = "pzservices";
 	static final String SERVICESTYPE = "ServiceContainer";
+	// CSS 1/12/17 if also-indexed geohash is desired
+	//static final String mappingJSON = "{ \"DataResourceContainer\": { \"properties\" : { \"locationCenterPoint\": { \"type\": \"geo_point\", \"geohash\": \"true\" }, \"boundingArea\": { \"type\": \"geo_shape\" } } } }";
 	static final String mappingJSON = "{ \"DataResourceContainer\": { \"properties\" : { \"locationCenterPoint\": { \"type\": \"geo_point\" }, \"boundingArea\": { \"type\": \"geo_shape\" } } } }";
 	private final static Logger LOGGER = LoggerFactory.getLogger(Controller.class);
 
@@ -132,8 +134,10 @@ public class Controller {
 				Double maxX = sm.getMaxX();
 				Double minY = sm.getMinY();
 				Double maxY = sm.getMaxY();
-				GeoPoint gp = new GeoPoint((maxY + minY) / 2, (maxX + minX) / 2);
-				drc.setLocationCenterPoint(gp);
+				//GeoPoint gp = new GeoPoint((maxY + minY) / 2, (maxX + minX) / 2);
+				//drc.setLocationCenterPoint(gp);
+				Double[] lcp = new Double[]{(maxY + minY) / 2, (maxX + minX) / 2};
+				drc.setLocationCenterPoint(lcp);
 
 				Coordinate NW = new Coordinate(minX, maxY);
 				Coordinate SE = new Coordinate(maxX, minY);
@@ -192,8 +196,10 @@ public class Controller {
 			Double maxX = sm.getMaxX();
 			Double minY = sm.getMinY();
 			Double maxY = sm.getMaxY();
-			GeoPoint gp = new GeoPoint((maxY + minY) / 2, (maxX + minX) / 2);
-			drc.setLocationCenterPoint(gp);
+			//GeoPoint gp = new GeoPoint((maxY + minY) / 2, (maxX + minX) / 2);
+			//drc.setLocationCenterPoint(gp);
+			Double[] lcp = new Double[]{ (maxX + minX) / 2, (maxY + minY) / 2 };
+			drc.setLocationCenterPoint(lcp);
 
 			Coordinate NW = new Coordinate(minX, maxY);
 			Coordinate SE = new Coordinate(maxX, minY);
@@ -203,9 +209,11 @@ public class Controller {
 			try{  // in case test or for some other reason null metadata values
 				String message = String.format("Error Augmenting JSON Doc with geolocation info, DataId: %s, possible null values input or unrecognized SRS: %s",
 						entry.getDataId(), entry.getSpatialMetadata().getCoordinateReferenceSystem());
+				//System.out.println(message);
 				logger.log(message, Severity.INFORMATIONAL);
 				LOGGER.error(message, exception);
 			} catch (Exception e2) {
+				//System.out.println(e2.getMessage());
 				LOGGER.error("Error Augmenting JSON Doc with geolocation info", e2);
 				logger.log("Error Augmenting JSON Doc with geolocation info", Severity.ERROR, new AuditElement("searchMetadataIngest", "searchIngest", "DataResource"));
 			}
@@ -218,10 +226,12 @@ public class Controller {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			reconJSONdoc = mapper.writeValueAsString(drc);
+			//System.out.println(reconJSONdoc);
 			logger.log("The Re-Constituted JSON Doc:\n", Severity.INFORMATIONAL);
 			logger.log(reconJSONdoc, Severity.INFORMATIONAL);
 		} catch (Exception exception) {
 			String message = String.format("Error Reconstituting JSON Doc from SearchMetadataIngestJob: %s", exception.getMessage());
+			//System.out.println(message);
 			LOGGER.error(message, exception);
 			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "searchIngest", "DataResource"));
 			throw new IOException(message);
@@ -232,6 +242,7 @@ public class Controller {
 			return drc;
 		} catch (org.elasticsearch.client.transport.NoNodeAvailableException exception) {
 			String message = String.format("Error attempting index of data", exception.getMessage());
+			//System.out.println(message);
 			LOGGER.error(message, exception);
 			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "searchIngest", "DataResource"));
 			throw new IOException(message);
