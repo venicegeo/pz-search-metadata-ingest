@@ -115,10 +115,12 @@ public class Controller {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			reconJSONdoc = mapper.writeValueAsString(mdingestJob.getData());
+			//System.out.println(reconJSONdoc);
 			logger.log("The Re-Constituted JSON Doc:\n", Severity.INFORMATIONAL);
 			logger.log(reconJSONdoc, Severity.INFORMATIONAL);
 		} catch (Exception exception) {
 			String message = String.format("Error Reconstituting JSON Doc from SearchMetadataIngestJob: %s", exception.getMessage());
+			//System.out.println(message);
 			logger.log(message, Severity.ERROR);
 			LOGGER.error(message, exception);
 			throw new InvalidInputException(message);
@@ -136,7 +138,7 @@ public class Controller {
 				Double maxY = sm.getMaxY();
 				//GeoPoint gp = new GeoPoint((maxY + minY) / 2, (maxX + minX) / 2);
 				//drc.setLocationCenterPoint(gp);
-				Double[] lcp = new Double[]{(maxY + minY) / 2, (maxX + minX) / 2};
+				Double[] lcp = new Double[]{ (maxX + minX) / 2, (maxY + minY) / 2 };  //lon then lat!
 				drc.setLocationCenterPoint(lcp);
 
 				Coordinate NW = new Coordinate(minX, maxY);
@@ -198,7 +200,7 @@ public class Controller {
 			Double maxY = sm.getMaxY();
 			//GeoPoint gp = new GeoPoint((maxY + minY) / 2, (maxX + minX) / 2);
 			//drc.setLocationCenterPoint(gp);
-			Double[] lcp = new Double[]{ (maxX + minX) / 2, (maxY + minY) / 2 };
+			Double[] lcp = new Double[]{ (maxX + minX) / 2, (maxY + minY) / 2 };  //lon then lat!
 			drc.setLocationCenterPoint(lcp);
 
 			Coordinate NW = new Coordinate(minX, maxY);

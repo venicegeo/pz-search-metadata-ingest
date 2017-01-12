@@ -15,7 +15,7 @@
  **/
 package piazza.services.ingest.repository;
 
-import org.elasticsearch.common.geo.GeoPoint;
+//import org.elasticsearch.common.geo.GeoPoint;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
