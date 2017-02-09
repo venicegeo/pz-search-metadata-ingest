@@ -15,8 +15,9 @@
  **/
 package piazza.commons.elasticsearch;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
-
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
@@ -32,34 +33,31 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Component;
-
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import model.logger.Severity;
+import util.OsValidator;
 import util.PiazzaLogger;
 
-//@Component
+@Component
 public class NativeElasticsearchTemplate {
 	private final static Logger LOGGER = LoggerFactory.getLogger(NativeElasticsearchTemplate.class);
 
+	@Value("${vcap.services.pz-elasticsearch.credentials.hostname}")
+	private String elasticHostname;
+	@Value("${vcap.services.pz-elasticsearch.credentials.port}")
+	private Integer elasticPort;
+	
 	@Autowired
 	private PiazzaLogger logger;
-	// private final Logger log = LoggerFactory.getLogger(
-	// this.getClass());
+	@Autowired
 	private Client client;
+	@Autowired
+	OsValidator osValidator;
+	
 	private ObjectMapper mapper;
-
-	public NativeElasticsearchTemplate() {
-	}
-
-	public NativeElasticsearchTemplate(Client client, ObjectMapper mapper) {
-		this.client = client;
-		this.mapper = mapper;
-	}
 
 	public boolean createIndex(String indexName) {
 		CreateIndexRequestBuilder createIndexRequestBuilder = client.admin().indices().prepareCreate(indexName);
@@ -79,6 +77,36 @@ public class NativeElasticsearchTemplate {
 		return response.isAcknowledged();
 	}
 
+	/**
+	 * Creates the initial index from a script file located in db folder of the app.
+	 * 
+	 * @param indexName the index to be passed on to script file
+	 * @param type the type of index to be created
+	 * @return boolean for success/fail.
+	 * @throws IOException
+	 */
+	public boolean createIndexWithMappingFromShellScript(String indexName, String type) throws IOException {
+		try {
+			String filename = (osValidator.isWindows()) ? ("initial_pzmetadataIndex.bat") : ("initial_pzmetadataIndex.sh");
+			String appCurrentDirectory = new java.io.File(".").getCanonicalPath();
+			String path = String.format("%s%s%s%s%s%s%s", appCurrentDirectory, File.separator, "db", File.separator,
+					"000-Create-Initial_Indexes", File.separator, filename);
+			String url = String.format("%s:%s/%s/", elasticHostname, elasticPort, indexName);
+
+			// run the shell script file with parameters
+			ProcessBuilder pb = new ProcessBuilder(path, type, url);
+			Process p = pb.start();
+			p.waitFor();
+		} catch (IOException | InterruptedException e) {
+			String error = String.format("Unable to run index creation scripts for index %s. %s", indexName,
+					e.getMessage());
+			logger.log(error, Severity.ERROR);
+			LOGGER.error(error, e);
+			return false;
+		}
+		return true;
+	}
+	
 	/*
 	 * CSS presently unused; remove for test code coverage % public boolean
 	 * createAlias( String indexName, String aliasName ) {

@@ -1,0 +1,1 @@
+curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d "{\"settings\": {\"number_of_shards\": 1},\"mappings\": {\"%1\": {\"_all\": {\"enabled\": false},\"properties\": {\"locationCenterPoint\": {\"type\": \"geo_point\"},\"boundingArea\": {\"type\": \"geo_shape\"}}}}}" %2
