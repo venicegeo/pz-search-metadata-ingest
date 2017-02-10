@@ -36,7 +36,7 @@ public class NativeElasticsearchTemplateConfiguration {
 	private String clustername;
 	@Value("${vcap.services.pz-elasticsearch.credentials.hostname}")
 	private String cfhostname;
-	@Value("${vcap.services.pz-elasticsearch.credentials.transportClientPort}")
+	@Value("${elasticsearch.port}")
 	private Integer port;
 
 	@Bean
@@ -46,5 +46,10 @@ public class NativeElasticsearchTemplateConfiguration {
 		transportClient.addTransportAddress(new InetSocketTransportAddress(new InetSocketAddress(cfhostname, port)));
 
 		return transportClient;
+	}
+
+	@Bean
+	public NativeElasticsearchTemplate template(Client client, ObjectMapper mapper) {
+		return new NativeElasticsearchTemplate(client, mapper);
 	}
 }
