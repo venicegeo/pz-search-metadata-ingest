@@ -36,7 +36,7 @@ public class NativeElasticsearchTemplateConfiguration {
 	private String clustername;
 	@Value("${vcap.services.pz-elasticsearch.credentials.hostname}")
 	private String cfhostname;
-	@Value("${elasticsearch.port}")
+	@Value("${vcap.services.pz-elasticsearch.credentials.transportClientPort}")
 	private Integer port;
 
 	@Bean

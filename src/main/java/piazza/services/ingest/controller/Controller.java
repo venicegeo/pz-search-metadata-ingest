@@ -23,6 +23,7 @@ import org.elasticsearch.common.geo.GeoPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -54,12 +55,16 @@ import util.PiazzaLogger;
 @RestController
 public class Controller {
 
+	@Value("${elasticsearch.dataindex}")
+	private String dataIndex;
+	@Value("${elasticsearch.serviceindex}")
+	private String serviceIndex;
+	
 	private final String API_ROOT = "${api.basepath}";
 
-	static final String DATAINDEX = "pzmetadata";
 	static final String DATATYPE = "DataResourceContainer";
-	static final String SERVICESINDEX = "pzservices";
 	static final String SERVICESTYPE = "ServiceContainer";
+	
 	// CSS 1/12/17 if also-indexed geohash is desired
 	//static final String mappingJSON = "{ \"DataResourceContainer\": { \"properties\" : { \"locationCenterPoint\": { \"type\": \"geo_point\", \"geohash\": \"true\" }, \"boundingArea\": { \"type\": \"geo_shape\" } } } }";
 	static final String mappingJSON = "{ \"DataResourceContainer\": { \"properties\" : { \"locationCenterPoint\": { \"type\": \"geo_point\" }, \"boundingArea\": { \"type\": \"geo_shape\" } } } }";
@@ -89,9 +94,9 @@ public class Controller {
 
 	public void init() throws IOException {
 		try {
-			String mapping = mappingJSON;
-			if (!template.indexExists(DATAINDEX))
-				template.createIndexWithMapping(DATAINDEX, DATATYPE, mapping);
+			if (!template.indexExists(dataIndex)){
+				template.createIndexWithMappingFromShellScript(dataIndex, DATATYPE);
+			}
 		} catch (Exception exception) {
 			String message = "Error considering pre-exisitence of ES index";
 			logger.log(message, Severity.ERROR);
@@ -161,7 +166,7 @@ public class Controller {
 			}
 
 			// repository.save(drc);
-			template.index(DATAINDEX, DATATYPE, drc);
+			template.index(dataIndex, DATATYPE, drc);
 			
 			logger.log(
 					String.format("Ingesting data into elastic search containing data/metadata resource object id %s",
@@ -240,7 +245,7 @@ public class Controller {
 		}
 
 		try {
-			template.index(DATAINDEX, DATATYPE, drc);
+			template.index(dataIndex, DATATYPE, drc);
 			return drc;
 		} catch (org.elasticsearch.client.transport.NoNodeAvailableException exception) {
 			String message = String.format("Error attempting index of data", exception.getMessage());
@@ -260,12 +265,12 @@ public class Controller {
 	@RequestMapping(value = API_ROOT + "/datadeleteid", method = RequestMethod.POST, consumes = "application/json")
 	public PiazzaResponse deleteDataDocById(@RequestBody(required = true) DataResource dr) throws IOException {
 		try {
-			DataResourceContainer drc = template.findOne(DATAINDEX, DATATYPE, dr.getDataId(),
+			DataResourceContainer drc = template.findOne(dataIndex, DATATYPE, dr.getDataId(),
 					DataResourceContainer.class);
 			if (drc == null) {
 				return new ErrorResponse("Unable to find data record in elastic search.", "ElasticSearch");
 			} else {
-				template.delete(DATAINDEX, DATATYPE, drc);
+				template.delete(dataIndex, DATATYPE, drc);
 				return new SuccessResponse(String.format( "Deleted data record %s from elastic search", dr.getDataId() ),
 						"ElasticSearch");
 			}
@@ -290,7 +295,7 @@ public class Controller {
 	public Boolean updateDataDocById(@RequestBody(required = true) DataResource dr) throws InvalidInputException, IOException {
 
 		try {
-			DataResourceContainer drc = template.findOne(DATAINDEX, DATATYPE, dr.getDataId(),
+			DataResourceContainer drc = template.findOne(dataIndex, DATATYPE, dr.getDataId(),
 					DataResourceContainer.class);
 			String reconJSONdoc;
 			try {
@@ -311,13 +316,13 @@ public class Controller {
 				logger.log(String.format("Unable to locate JSON Doc: %s", reconJSONdoc), Severity.ERROR);
 				return false;
 			} else {
-				if (!template.delete(DATAINDEX, DATATYPE, drc)) {
+				if (!template.delete(dataIndex, DATATYPE, drc)) {
 					String message = String.format("Unable to delete JSON Doc: %s", reconJSONdoc);
 					logger.log(message, Severity.ERROR);
 					throw new IOException(message);
 				}
 				drc = new DataResourceContainer(dr);
-				return template.index(DATAINDEX, DATATYPE, drc);
+				return template.index(dataIndex, DATATYPE, drc);
 			}
 
 		} catch (Exception exception) {
@@ -363,7 +368,7 @@ public class Controller {
 		try {
 			ServiceContainer sc = new ServiceContainer(objService);
 			// servicerepository.save(sc);
-			template.index(SERVICESINDEX, SERVICESTYPE, sc);
+			template.index(serviceIndex, SERVICESTYPE, sc);
 
 			logger.log(
 					String.format("Ingested new service object into elastic search id %s", objService.getServiceId()),
@@ -391,12 +396,12 @@ public class Controller {
 	@RequestMapping(value = API_ROOT + "/servicedeleteid", method = RequestMethod.POST, consumes = "application/json")
 	public PiazzaResponse deleteServiceDocById(@RequestBody(required = true) Service objService) throws IOException {
 		try {
-			ServiceContainer serviceContainer = template.findOne(SERVICESINDEX, SERVICESTYPE, objService.getServiceId(),
+			ServiceContainer serviceContainer = template.findOne(serviceIndex, SERVICESTYPE, objService.getServiceId(),
 					ServiceContainer.class);
 			if (serviceContainer == null) {
 				return new ErrorResponse("Unable to find service in elastic search.", "ElasticSearch");
 			} else {
-				template.delete(SERVICESINDEX, SERVICESTYPE, serviceContainer);
+				template.delete(serviceIndex, SERVICESTYPE, serviceContainer);
 				logger.log(String.format("Deleted service metadata from elastic search %s", objService.getServiceId()),
 						Severity.INFORMATIONAL,
 						new AuditElement("searchMetadataIngest", "searchDeleteServiceMetadata", objService.getServiceId()));
@@ -426,7 +431,7 @@ public class Controller {
 	public Boolean updateServiceDocById(@RequestBody(required = true) Service objService) throws InvalidInputException, IOException {
 
 		try {
-			ServiceContainer sc = template.findOne(SERVICESINDEX, SERVICESTYPE, objService.getServiceId(),
+			ServiceContainer sc = template.findOne(serviceIndex, SERVICESTYPE, objService.getServiceId(),
 					new ServiceContainer().getClass());
 
 			String reconJSONdoc;
@@ -447,7 +452,7 @@ public class Controller {
 				logger.log(String.format("Unable to locate JSON Doc: %s", reconJSONdoc), Severity.ERROR);
 				return false;
 			} else {
-				if (!template.delete(SERVICESINDEX, SERVICESTYPE, sc)) {
+				if (!template.delete(serviceIndex, SERVICESTYPE, sc)) {
 					String message = String.format("Unable to delete JSON Doc: %s", reconJSONdoc);
 					logger.log(message, Severity.ERROR);
 					throw new IOException(message);
@@ -458,7 +463,7 @@ public class Controller {
 						Severity.INFORMATIONAL,
 						new AuditElement("searchMetadataIngest", "searchIngest", objService.getServiceId()));
 
-				return template.index(SERVICESINDEX, SERVICESTYPE, sc);
+				return template.index(serviceIndex, SERVICESTYPE, sc);
 			}
 
 		} catch (Exception exception) {
