@@ -176,17 +176,6 @@ public class ControllerTests {
 
 		// Verify that error is sent.
 		Assert.assertTrue(response instanceof ErrorResponse);
-
-		// Mock Template so that a ServiceContainer is returned
-		ServiceContainer mockContainer = new ServiceContainer(mockService);
-		Mockito.doReturn(mockContainer).when(template).findOne(Mockito.eq("pzservices"), Mockito.eq("ServiceContainer"),
-				Mockito.eq("123456"), Mockito.any());
-
-		// Re-test
-		response = controller.deleteServiceDocById(mockService);
-
-		// Verify correct
-		Assert.assertTrue(response instanceof SuccessResponse);
 	}
 
 	/**
@@ -204,11 +193,9 @@ public class ControllerTests {
 		mockService.getResourceMetadata().setName("Test Service");
 		ServiceContainer mockContainer = new ServiceContainer(mockService);
 
-		Mockito.doReturn(mockContainer).when(template).findOne(Mockito.eq("pzservices"), Mockito.eq("ServiceContainer"),
-				Mockito.eq("123456"), Mockito.any());
-		Mockito.doReturn(new Boolean(true)).when(template).index(Mockito.eq("pzservices"), Mockito.eq("ServiceContainer"), Mockito.any());
-		Mockito.doReturn(true).when(template).delete(Mockito.eq("pzservices"), Mockito.eq("ServiceContainer"),
-				Mockito.any(ServiceContainer.class));
+		Mockito.doReturn(mockContainer).when(template).findOne(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+		Mockito.doReturn(new Boolean(true)).when(template).index(Mockito.any(), Mockito.any(), Mockito.any());
+		Mockito.doReturn(true).when(template).delete(Mockito.any(), Mockito.any(),Mockito.any(ServiceContainer.class));
 
 		// Test
 		Boolean isSuccess = controller.updateServiceDocById(mockService);
