@@ -95,10 +95,6 @@ public class NativeElasticsearchTemplate {
 	 */
 	public boolean createIndexWithMappingFromShellScript(String indexName, String type) throws IOException {
 		try {
-System.out.println(" aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: " + osValidator.isWindows());
-System.out.println(elasticPort + " bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb " + elasticHostname );
-
-
 			String filename = (osValidator.isWindows()) ? ("initial_pzmetadataIndex.bat") : ("initial_pzmetadataIndex.sh");
 			String appCurrentDirectory = new java.io.File(".").getCanonicalPath();
 			String path = String.format("%s%s%s%s%s%s%s", appCurrentDirectory, File.separator, "db", File.separator,
