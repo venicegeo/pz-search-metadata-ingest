@@ -93,16 +93,18 @@ public class NativeElasticsearchTemplate {
 	 * @return boolean for success/fail.
 	 * @throws IOException
 	 */
-	public boolean createIndexWithMappingFromShellScript(String indexName, String type) throws IOException {
+	public boolean createIndexWithMappingFromShellScript(String indexName, String aliasName, String indexDataType) throws IOException {
 		try {
 			String filename = (osValidator.isWindows()) ? ("initial_pzmetadataIndex.bat") : ("initial_pzmetadataIndex.sh");
 			String appCurrentDirectory = new java.io.File(".").getCanonicalPath();
 			String path = String.format("%s%s%s%s%s%s%s", appCurrentDirectory, File.separator, "db", File.separator,
 					"000-Create-Initial_Indexes", File.separator, filename);
-			String url = String.format("%s:%s/%s/", elasticHostname, elasticPort, indexName);
+			String baseUrl = String.format("%s:%s", elasticHostname, elasticPort);
+			String indexCreationUrl = String.format("%s/%s/", baseUrl, indexName);
+			String aliasCreationUrl = String.format("%s/_aliases/", baseUrl);
 
 			// run the shell script file with parameters
-			ProcessBuilder pb = new ProcessBuilder(path, type, url);
+			ProcessBuilder pb = new ProcessBuilder(path, indexDataType, indexCreationUrl, indexName, aliasName, aliasCreationUrl);
 			Process p = pb.start();
 			p.waitFor();
 		} catch (IOException | InterruptedException e) {
