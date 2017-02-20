@@ -98,8 +98,9 @@ public class Controller {
 
 	public void init() throws IOException {
 		try {
-			if (!template.indexExists(dataIndexAlias)){
-				template.createIndexWithMappingFromShellScript(dataIndex, dataIndexAlias, DATATYPE);
+			if (!template.indexExists(dataIndex)){
+				//template.createIndexWithMappingFromShellScript(dataIndex, dataIndex, DATATYPE);
+				template.createIndexWithMapping(dataIndex, DATATYPE, mappingJSON);
 			}
 		} catch (Exception exception) {
 			String message = "Error considering pre-exisitence of ES index";
@@ -170,7 +171,7 @@ public class Controller {
 			}
 
 			// repository.save(drc);
-			template.index(dataIndexAlias, DATATYPE, drc);
+			template.index(dataIndex, DATATYPE, drc);
 			
 			logger.log(
 					String.format("Ingesting data into elastic search containing data/metadata resource object id %s",
@@ -249,7 +250,7 @@ public class Controller {
 		}
 
 		try {
-			template.index(dataIndexAlias, DATATYPE, drc);
+			template.index(dataIndex, DATATYPE, drc);
 			return drc;
 		} catch (org.elasticsearch.client.transport.NoNodeAvailableException exception) {
 			String message = String.format("Error attempting index of data", exception.getMessage());
@@ -269,12 +270,12 @@ public class Controller {
 	@RequestMapping(value = API_ROOT + "/datadeleteid", method = RequestMethod.POST, consumes = "application/json")
 	public PiazzaResponse deleteDataDocById(@RequestBody(required = true) DataResource dr) throws IOException {
 		try {
-			DataResourceContainer drc = template.findOne(dataIndexAlias, DATATYPE, dr.getDataId(),
+			DataResourceContainer drc = template.findOne(dataIndex, DATATYPE, dr.getDataId(),
 					DataResourceContainer.class);
 			if (drc == null) {
 				return new ErrorResponse("Unable to find data record in elastic search.", "ElasticSearch");
 			} else {
-				template.delete(dataIndexAlias, DATATYPE, drc);
+				template.delete(dataIndex, DATATYPE, drc);
 				return new SuccessResponse(String.format( "Deleted data record %s from elastic search", dr.getDataId() ),
 						"ElasticSearch");
 			}
@@ -299,7 +300,7 @@ public class Controller {
 	public Boolean updateDataDocById(@RequestBody(required = true) DataResource dr) throws InvalidInputException, IOException {
 
 		try {
-			DataResourceContainer drc = template.findOne(dataIndexAlias, DATATYPE, dr.getDataId(),
+			DataResourceContainer drc = template.findOne(dataIndex, DATATYPE, dr.getDataId(),
 					DataResourceContainer.class);
 			String reconJSONdoc;
 			try {
@@ -320,13 +321,13 @@ public class Controller {
 				logger.log(String.format("Unable to locate JSON Doc: %s", reconJSONdoc), Severity.ERROR);
 				return false;
 			} else {
-				if (!template.delete(dataIndexAlias, DATATYPE, drc)) {
+				if (!template.delete(dataIndex, DATATYPE, drc)) {
 					String message = String.format("Unable to delete JSON Doc: %s", reconJSONdoc);
 					logger.log(message, Severity.ERROR);
 					throw new IOException(message);
 				}
 				drc = new DataResourceContainer(dr);
-				return template.index(dataIndexAlias, DATATYPE, drc);
+				return template.index(dataIndex, DATATYPE, drc);
 			}
 
 		} catch (Exception exception) {

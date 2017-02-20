@@ -76,6 +76,16 @@ public class NativeElasticsearchTemplate {
 
 	public boolean createIndexWithMapping(String indexName, String type, String mapping) {
 
+		String appCurrentDirectory;
+		try {
+			appCurrentDirectory = new java.io.File(".").getCanonicalPath();
+			printDirectoryRecursive( appCurrentDirectory );
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
 		CreateIndexRequestBuilder createIndexRequestBuilder = client.admin().indices().prepareCreate(indexName);
 		if (mapping != null) {
 			createIndexRequestBuilder.addMapping(type, mapping);
@@ -116,6 +126,24 @@ public class NativeElasticsearchTemplate {
 		}
 		return true;
 	}
+	
+    private void printDirectoryRecursive( String path ) {
+
+        File root = new File( path );
+        File[] list = root.listFiles();
+
+        if (list == null) return;
+
+        for ( File f : list ) {
+            if ( f.isDirectory() ) {
+            	printDirectoryRecursive( f.getAbsolutePath() );
+                System.out.println( "Dir:" + f.getAbsoluteFile() );
+            }
+            else {
+                System.out.println( "File:" + f.getAbsoluteFile() );
+            }
+        }
+    }
 	
 	/*
 	 * CSS presently unused; remove for test code coverage % public boolean
