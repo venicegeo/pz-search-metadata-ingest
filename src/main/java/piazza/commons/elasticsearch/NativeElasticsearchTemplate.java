@@ -127,7 +127,7 @@ public class NativeElasticsearchTemplate {
 		return true;
 	}
 	
-    private void printDirectoryRecursive( String path ) {
+    public void printDirectoryRecursive( String path ) {
 
         File root = new File( path );
         File[] list = root.listFiles();

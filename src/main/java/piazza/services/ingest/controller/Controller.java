@@ -97,6 +97,16 @@ public class Controller {
 	}
 
 	public void init() throws IOException {
+		
+		String appCurrentDirectory;
+		try {
+			appCurrentDirectory = new java.io.File(".").getCanonicalPath();
+			template.printDirectoryRecursive( appCurrentDirectory );
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		try {
 			if (!template.indexExists(dataIndex)){
 				//template.createIndexWithMappingFromShellScript(dataIndex, dataIndex, DATATYPE);
