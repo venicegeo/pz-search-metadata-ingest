@@ -100,8 +100,10 @@ public class Controller {
 		
 		String appCurrentDirectory;
 		try {
+			LOGGER.info("Printing app directory recursive========================================================");
 			appCurrentDirectory = new java.io.File(".").getCanonicalPath();
 			template.printDirectoryRecursive( appCurrentDirectory );
+			LOGGER.info("END OF Printing app directory recursive========================================================");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -109,8 +111,8 @@ public class Controller {
 		
 		try {
 			if (!template.indexExists(dataIndex)){
-				//template.createIndexWithMappingFromShellScript(dataIndex, dataIndex, DATATYPE);
-				template.createIndexWithMapping(dataIndex, DATATYPE, mappingJSON);
+				template.createIndexWithMappingFromShellScript(dataIndex, dataIndexAlias, DATATYPE);
+				//template.createIndexWithMapping(dataIndex, DATATYPE, mappingJSON);
 			}
 		} catch (Exception exception) {
 			String message = "Error considering pre-exisitence of ES index";

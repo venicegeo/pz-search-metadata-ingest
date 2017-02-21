@@ -107,8 +107,8 @@ public class NativeElasticsearchTemplate {
 		try {
 			String filename = (osValidator.isWindows()) ? ("initial_pzmetadataIndex.bat") : ("initial_pzmetadataIndex.sh");
 			String appCurrentDirectory = new java.io.File(".").getCanonicalPath();
-			String path = String.format("%s%s%s%s%s%s%s", appCurrentDirectory, File.separator, "db", File.separator,
-					"000-Create-Initial_Indexes", File.separator, filename);
+
+			String path = String.format("%s%s%s%s%s", "db", File.separator, "000-Create-Initial_Indexes", File.separator, filename);
 			String baseUrl = String.format("%s:%s", elasticHostname, elasticPort);
 			String indexCreationUrl = String.format("%s/%s/", baseUrl, indexName);
 			String aliasCreationUrl = String.format("%s/_aliases/", baseUrl);
