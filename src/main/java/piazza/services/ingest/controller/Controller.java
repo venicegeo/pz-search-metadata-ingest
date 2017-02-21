@@ -102,6 +102,7 @@ public class Controller {
 		try {
 			LOGGER.info("Printing app directory recursive========================================================");
 			appCurrentDirectory = new java.io.File(".").getCanonicalPath();
+			LOGGER.info("APP current directory========================================================: " + appCurrentDirectory);
 			template.printDirectoryRecursive( appCurrentDirectory );
 			LOGGER.info("END OF Printing app directory recursive========================================================");
 		} catch (IOException e) {
