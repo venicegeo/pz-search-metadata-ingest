@@ -17,12 +17,14 @@ package piazza.commons.elasticsearch;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
@@ -112,24 +114,27 @@ public class NativeElasticsearchTemplate {
 		try {
 			String filename = (osValidator.isWindows()) ? ("initial_pzmetadataIndex.bat") : ("initial_pzmetadataIndex.sh");
 			String appCurrentDirectory = new java.io.File(".").getCanonicalPath();
+			String scriptPath = String.format("%s%s%s%s%s%s%s%s%s%s%s", appCurrentDirectory, File.separator, "BOOT-INF", File.separator, "classes", File.separator, "db", File.separator, "000-Create-Initial_Indexes", File.separator, filename);
+
+			ClassLoader classLoader = getClass().getClassLoader();
+			scriptPath = classLoader.getResource(filename).getPath();
+
+			LOGGER.info("SCRIPT FILE LOCATION: " + scriptPath);
 			
-			String path = String.format("%s%s%s%s%s%s%s%s%s%s%s", appCurrentDirectory, File.separator, "BOOT-INF", File.separator, "classes", File.separator, "db", File.separator, "000-Create-Initial_Indexes", File.separator, filename);
+			// Change script execute permissions
+			File file = new File(scriptPath);
+			file.createNewFile();
+			Set<PosixFilePermission> perms = new HashSet<>();
+			perms.add(PosixFilePermission.GROUP_EXECUTE);
+			Files.setPosixFilePermissions(file.toPath(), perms);
 
-File file = new File(path);
-file.createNewFile();
-Set<PosixFilePermission> perms = new HashSet<>();
-perms.add(PosixFilePermission.OWNER_READ);
-perms.add(PosixFilePermission.OWNER_WRITE);
-perms.add(PosixFilePermission.OWNER_EXECUTE);
-perms.add(PosixFilePermission.GROUP_EXECUTE);
-Files.setPosixFilePermissions(file.toPath(), perms);
-
+			// Initialize urls
 			String baseUrl = String.format("%s:%s", elasticHostname, elasticPort);
 			String indexCreationUrl = String.format("%s/%s/", baseUrl, indexName);
 			String aliasCreationUrl = String.format("%s/_aliases/", baseUrl);
 
-			// run the shell script file with parameters
-			ProcessBuilder pb = new ProcessBuilder(path, indexDataType, indexCreationUrl, indexName, aliasName, aliasCreationUrl);
+			// Run the shell script with parameters
+			ProcessBuilder pb = new ProcessBuilder(scriptPath, indexDataType, indexCreationUrl, indexName, aliasName, aliasCreationUrl);
 			Process p = pb.start();
 			p.waitFor();
 		} catch (IOException | InterruptedException e) {
