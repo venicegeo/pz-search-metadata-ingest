@@ -17,7 +17,12 @@ package piazza.commons.elasticsearch;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
@@ -109,6 +114,15 @@ public class NativeElasticsearchTemplate {
 			String appCurrentDirectory = new java.io.File(".").getCanonicalPath();
 			
 			String path = String.format("%s%s%s%s%s%s%s%s%s%s%s", appCurrentDirectory, File.separator, "BOOT-INF", File.separator, "classes", File.separator, "db", File.separator, "000-Create-Initial_Indexes", File.separator, filename);
+
+File file = new File(path);
+file.createNewFile();
+Set<PosixFilePermission> perms = new HashSet<>();
+perms.add(PosixFilePermission.OWNER_READ);
+perms.add(PosixFilePermission.OWNER_WRITE);
+perms.add(PosixFilePermission.OWNER_EXECUTE);
+perms.add(PosixFilePermission.GROUP_EXECUTE);
+Files.setPosixFilePermissions(file.toPath(), perms);
 
 			String baseUrl = String.format("%s:%s", elasticHostname, elasticPort);
 			String indexCreationUrl = String.format("%s/%s/", baseUrl, indexName);
