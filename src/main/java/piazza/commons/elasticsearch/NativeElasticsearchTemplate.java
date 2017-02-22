@@ -17,14 +17,12 @@ package piazza.commons.elasticsearch;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
@@ -42,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import model.logger.Severity;
 import util.OsValidator;
@@ -103,7 +100,7 @@ public class NativeElasticsearchTemplate {
 	}
 
 	/**
-	 * Creates the initial index from a script file located in db folder of the app.
+	 * Creates the initial index from a script file located in resources/db folder of the app.
 	 * 
 	 * @param indexName the index to be passed on to script file
 	 * @param type the type of index to be created
@@ -112,21 +109,24 @@ public class NativeElasticsearchTemplate {
 	 */
 	public boolean createIndexWithMappingFromShellScript(String indexName, String aliasName, String indexDataType) throws IOException {
 		try {
+			// Build path to script file
 			String filename = (osValidator.isWindows()) ? ("initial_pzmetadataIndex.bat") : ("initial_pzmetadataIndex.sh");
 			String appCurrentDirectory = new java.io.File(".").getCanonicalPath();
 			String scriptPath = String.format("%s%s%s%s%s%s%s%s%s%s%s", appCurrentDirectory, File.separator, "BOOT-INF", File.separator, "classes", File.separator, "db", File.separator, "000-Create-Initial_Indexes", File.separator, filename);
-
-			ClassLoader classLoader = getClass().getClassLoader();
-			scriptPath = classLoader.getResource(filename).getPath();
-
-			LOGGER.info("SCRIPT FILE LOCATION: " + scriptPath);
 			
-			// Change script execute permissions
-			File file = new File(scriptPath);
-			file.createNewFile();
-			Set<PosixFilePermission> perms = new HashSet<>();
-			perms.add(PosixFilePermission.GROUP_EXECUTE);
-			Files.setPosixFilePermissions(file.toPath(), perms);
+			// Only for local initialization for windows developers
+			if (osValidator.isWindows()) {
+				scriptPath = String.format("%s%s%s%s%s%s%s%s%s%s%s%s%s", appCurrentDirectory, File.separator, "src",
+						File.separator, "main", File.separator, "resources", File.separator, "db", File.separator,
+						"000-Create-Initial_Indexes", File.separator, filename);
+			} else {
+				// Change script execute permissions
+				File file = new File(scriptPath);
+				file.createNewFile();
+				Set<PosixFilePermission> perms = new HashSet<>();
+				perms.add(PosixFilePermission.GROUP_EXECUTE);
+				Files.setPosixFilePermissions(file.toPath(), perms);
+			}
 
 			// Initialize urls
 			String baseUrl = String.format("%s:%s", elasticHostname, elasticPort);

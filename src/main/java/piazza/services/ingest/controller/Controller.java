@@ -71,7 +71,7 @@ public class Controller {
 	
 	// CSS 1/12/17 if also-indexed geohash is desired
 	//static final String mappingJSON = "{ \"DataResourceContainer\": { \"properties\" : { \"locationCenterPoint\": { \"type\": \"geo_point\", \"geohash\": \"true\" }, \"boundingArea\": { \"type\": \"geo_shape\" } } } }";
-	static final String mappingJSON = "{ \"DataResourceContainer\": { \"properties\" : { \"locationCenterPoint\": { \"type\": \"geo_point\" }, \"boundingArea\": { \"type\": \"geo_shape\" } } } }";
+	//static final String mappingJSON = "{ \"DataResourceContainer\": { \"properties\" : { \"locationCenterPoint\": { \"type\": \"geo_point\" }, \"boundingArea\": { \"type\": \"geo_shape\" } } } }";
 	private final static Logger LOGGER = LoggerFactory.getLogger(Controller.class);
 
 	@Autowired
@@ -98,22 +98,9 @@ public class Controller {
 
 	public void init() throws IOException {
 		
-		String appCurrentDirectory;
 		try {
-			LOGGER.info("Printing app directory recursive========================================================");
-			appCurrentDirectory = new java.io.File(".").getCanonicalPath();
-			LOGGER.info("APP current ========================================================: " + appCurrentDirectory);
-			template.printDirectoryRecursive( appCurrentDirectory );
-			LOGGER.info("END OF Printing app directory recursive========================================================");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		try {
-			if (!template.indexExists(dataIndex)){
+			if (!template.indexExists(dataIndexAlias)){
 				template.createIndexWithMappingFromShellScript(dataIndex, dataIndexAlias, DATATYPE);
-				//template.createIndexWithMapping(dataIndex, DATATYPE, mappingJSON);
 			}
 		} catch (Exception exception) {
 			String message = "Error considering pre-exisitence of ES index";
@@ -184,7 +171,7 @@ public class Controller {
 			}
 
 			// repository.save(drc);
-			template.index(dataIndex, DATATYPE, drc);
+			template.index(dataIndexAlias, DATATYPE, drc);
 			
 			logger.log(
 					String.format("Ingesting data into elastic search containing data/metadata resource object id %s",
@@ -263,7 +250,7 @@ public class Controller {
 		}
 
 		try {
-			template.index(dataIndex, DATATYPE, drc);
+			template.index(dataIndexAlias, DATATYPE, drc);
 			return drc;
 		} catch (org.elasticsearch.client.transport.NoNodeAvailableException exception) {
 			String message = String.format("Error attempting index of data", exception.getMessage());
@@ -283,12 +270,12 @@ public class Controller {
 	@RequestMapping(value = API_ROOT + "/datadeleteid", method = RequestMethod.POST, consumes = "application/json")
 	public PiazzaResponse deleteDataDocById(@RequestBody(required = true) DataResource dr) throws IOException {
 		try {
-			DataResourceContainer drc = template.findOne(dataIndex, DATATYPE, dr.getDataId(),
+			DataResourceContainer drc = template.findOne(dataIndexAlias, DATATYPE, dr.getDataId(),
 					DataResourceContainer.class);
 			if (drc == null) {
 				return new ErrorResponse("Unable to find data record in elastic search.", "ElasticSearch");
 			} else {
-				template.delete(dataIndex, DATATYPE, drc);
+				template.delete(dataIndexAlias, DATATYPE, drc);
 				return new SuccessResponse(String.format( "Deleted data record %s from elastic search", dr.getDataId() ),
 						"ElasticSearch");
 			}
@@ -313,7 +300,7 @@ public class Controller {
 	public Boolean updateDataDocById(@RequestBody(required = true) DataResource dr) throws InvalidInputException, IOException {
 
 		try {
-			DataResourceContainer drc = template.findOne(dataIndex, DATATYPE, dr.getDataId(),
+			DataResourceContainer drc = template.findOne(dataIndexAlias, DATATYPE, dr.getDataId(),
 					DataResourceContainer.class);
 			String reconJSONdoc;
 			try {
@@ -334,13 +321,13 @@ public class Controller {
 				logger.log(String.format("Unable to locate JSON Doc: %s", reconJSONdoc), Severity.ERROR);
 				return false;
 			} else {
-				if (!template.delete(dataIndex, DATATYPE, drc)) {
+				if (!template.delete(dataIndexAlias, DATATYPE, drc)) {
 					String message = String.format("Unable to delete JSON Doc: %s", reconJSONdoc);
 					logger.log(message, Severity.ERROR);
 					throw new IOException(message);
 				}
 				drc = new DataResourceContainer(dr);
-				return template.index(dataIndex, DATATYPE, drc);
+				return template.index(dataIndexAlias, DATATYPE, drc);
 			}
 
 		} catch (Exception exception) {
