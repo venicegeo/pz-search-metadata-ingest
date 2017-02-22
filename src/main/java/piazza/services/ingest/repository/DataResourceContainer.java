@@ -28,10 +28,10 @@ import piazza.services.ingest.util.GeoJsonSerializer;
 /*
  * Shell containing object for DataResource annotated for ElasticSearch _mapping
  * @author C. Smith
- * @Document(indexName = "pzmetadata", type = "DataResourceContainer")
+ * @Document(indexName = "pzmetadataalias", type = "DataResourceContainer")
  */
 
-//@Document(indexName = "pzmetadata", type = "DataResourceContainer")
+//@Document(indexName = "pzmetadataalias", type = "DataResourceContainer")
 public class DataResourceContainer implements piazza.commons.elasticsearch.ESModel {
 	// @Id
 	public String dataResourceContainerId;

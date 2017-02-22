@@ -20,7 +20,7 @@ import model.service.metadata.Service;
 /*
  * Shell containing object for DataResource annotated for ElasticSearch _mapping
  * @author C. Smith
- * @Document(indexName = "pzmetadata", type = "DataResource")
+ * @Document(indexName = "pzmetadataalias", type = "DataResource")
  */
 
 //@Document(indexName = "pzservices", type = "ServiceContainer")
