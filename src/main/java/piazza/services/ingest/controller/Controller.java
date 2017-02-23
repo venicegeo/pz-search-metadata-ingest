@@ -99,7 +99,9 @@ public class Controller {
 	public void init() throws IOException {
 		
 		try {
-			if (!template.indexExists(dataIndexAlias)){
+			boolean indexExists = template.indexExists(dataIndexAlias);
+			LOGGER.info(String.format("%s: %s", "Metadata alias exists", indexExists));
+			if (!indexExists){
 				template.createIndexWithMappingFromShellScript(dataIndex, dataIndexAlias, DATATYPE);
 			}
 		} catch (Exception exception) {
