@@ -124,6 +124,9 @@ public class NativeElasticsearchTemplate {
 				File file = new File(scriptPath);
 				file.createNewFile();
 				Set<PosixFilePermission> perms = new HashSet<>();
+				perms.add(PosixFilePermission.OWNER_READ);
+				perms.add(PosixFilePermission.OWNER_WRITE);
+				perms.add(PosixFilePermission.OWNER_EXECUTE);
 				perms.add(PosixFilePermission.GROUP_EXECUTE);
 				Files.setPosixFilePermissions(file.toPath(), perms);
 			}
@@ -134,7 +137,7 @@ public class NativeElasticsearchTemplate {
 			String aliasCreationUrl = String.format("%s/_aliases/", baseUrl);
 
 			String scriptParameters = String.format("\n ScriptPath: %s \n IndexDataType: %s \n IndexUrl: %s \n IndexName: %s \n AliasName: %s \n AliasUrl: %s", scriptPath, indexDataType, indexCreationUrl, indexName, aliasName, aliasCreationUrl);
-			LOGGER.info("Running piazza metadata index creation with following parameters: " + scriptParameters);
+			LOGGER.debug("Running piazza metadata index creation with following parameters: " + scriptParameters);
 			
 			// Run the shell script with parameters
 			ProcessBuilder pb = new ProcessBuilder(scriptPath, indexDataType, indexCreationUrl, indexName, aliasName, aliasCreationUrl);

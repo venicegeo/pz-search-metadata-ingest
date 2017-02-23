@@ -100,7 +100,7 @@ public class Controller {
 		
 		try {
 			boolean indexExists = template.indexExists(dataIndexAlias);
-			LOGGER.info(String.format("%s: %s", "Metadata alias exists", indexExists));
+			LOGGER.debug(String.format("%s: %s", "Metadata alias exists", indexExists));
 			if (!indexExists){
 				template.createIndexWithMappingFromShellScript(dataIndex, dataIndexAlias, DATATYPE);
 			}
