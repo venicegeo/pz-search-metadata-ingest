@@ -133,6 +133,9 @@ public class NativeElasticsearchTemplate {
 			String indexCreationUrl = String.format("%s/%s/", baseUrl, indexName);
 			String aliasCreationUrl = String.format("%s/_aliases/", baseUrl);
 
+			String scriptParameters = String.format("%s - %s - %s - %s - %s - %s", scriptPath, indexDataType, indexCreationUrl, indexName, aliasName, aliasCreationUrl);
+			LOGGER.info("Running piazza metadata index creation with following parameters: " + scriptParameters);
+			
 			// Run the shell script with parameters
 			ProcessBuilder pb = new ProcessBuilder(scriptPath, indexDataType, indexCreationUrl, indexName, aliasName, aliasCreationUrl);
 			Process p = pb.start();
