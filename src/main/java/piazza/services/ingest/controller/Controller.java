@@ -142,33 +142,39 @@ public class Controller {
 			DataResource dr;
 			dr = mdingestJob.getData();
 			DataResourceContainer drc = new DataResourceContainer(dr);
-			try {
-				SpatialMetadata sm = dr.getSpatialMetadata().getProjectedSpatialMetadata();
-				Double minX = sm.getMinX();
-				Double maxX = sm.getMaxX();
-				Double minY = sm.getMinY();
-				Double maxY = sm.getMaxY();
-				//GeoPoint gp = new GeoPoint((maxY + minY) / 2, (maxX + minX) / 2);
-				//drc.setLocationCenterPoint(gp);
-				Double[] lcp = new Double[]{ (maxX + minX) / 2, (maxY + minY) / 2 };  //lon then lat!
-				drc.setLocationCenterPoint(lcp);
+			if (dr.getSpatialMetadata() != null) {
+				try {
+					SpatialMetadata sm = dr.getSpatialMetadata().getProjectedSpatialMetadata();
+					Double minX = sm.getMinX();
+					Double maxX = sm.getMaxX();
+					Double minY = sm.getMinY();
+					Double maxY = sm.getMaxY();
+					// GeoPoint gp = new GeoPoint((maxY + minY) / 2, (maxX +
+					// minX) / 2);
+					// drc.setLocationCenterPoint(gp);
+					Double[] lcp = new Double[] { (maxX + minX) / 2, (maxY + minY) / 2 }; // lon
+																							// then
+																							// lat!
+					drc.setLocationCenterPoint(lcp);
 
-				Coordinate NW = new Coordinate(minX, maxY);
-				Coordinate SE = new Coordinate(maxX, minY);
-				Geometry bboxGeometry = GeometryUtils.createBoundingBox(NW, SE);
-				drc.setBoundingArea(bboxGeometry);
+					Coordinate NW = new Coordinate(minX, maxY);
+					Coordinate SE = new Coordinate(maxX, minY);
+					Geometry bboxGeometry = GeometryUtils.createBoundingBox(NW, SE);
+					drc.setBoundingArea(bboxGeometry);
 
-			} catch (Exception exception) {
-				LOGGER.error("Error Augmenting JSON", exception);
-				try { // in case test or for some other reason null metadata values
-					String message = String.format(
-							"Error Augmenting JSON Doc with geolocation info, DataId: %s, possible null values input or unrecognized SRS: %s",
-							dr.getDataId(), dr.getSpatialMetadata().getCoordinateReferenceSystem());
-					logger.log(message, Severity.WARNING);
-				} catch (Exception e2) {
-					String message = "Error Augmenting JSON Doc with geolocation info";
-					LOGGER.error(message, e2);
-					logger.log(message, Severity.ERROR);
+				} catch (Exception exception) {
+					LOGGER.error("Error Augmenting JSON", exception);
+					try { // in case test or for some other reason null metadata
+							// values
+						String message = String.format(
+								"Error Augmenting JSON Doc with geolocation info, DataId: %s, possible null values input or unrecognized SRS: %s",
+								dr.getDataId(), dr.getSpatialMetadata().getCoordinateReferenceSystem());
+						logger.log(message, Severity.WARNING);
+					} catch (Exception e2) {
+						String message = "Error Augmenting JSON Doc with geolocation info";
+						LOGGER.error(message, e2);
+						logger.log(message, Severity.ERROR);
+					}
 				}
 			}
 
