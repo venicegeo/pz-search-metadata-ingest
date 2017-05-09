@@ -1,11 +1,11 @@
-# pz-search-metadata-ingest
-Web Service for Piazza metadata ingest
+To run the pz-search-metadata-ingest service locally, perhaps through Eclipse or through CLI, navigate to the project directory and run
 
-5/14/16 NOTE- migration to ES 2.x API; mid-stream migration build exceptions (temporary) partitionManager not functional
+mvn clean install -U spring-boot:run
 
-Service to accept JSON structure for metadata ingest to Piazza Elasticsearch cluster.  
-Endpoint accepts POST of DataResource object https://github.com/venicegeo/pz-jobcommon/blob/master/src/main/java/model/data/DataResource.java
-URL: https://pz-search-metadata-ingest.stage.geointservices.io/api/v1/data - returns/echoes ingested document 
+This will run a Tomcat server locally with the pz-search-metadata-ingest service running on port 8580.
 
-Please reference Wiki page at:
-https://github.com/venicegeo/venice/wiki/Pz-Search-Services
+To run local Elasticsearch cluster, you may navigate to pz-search-metadata-ingest/config and run:
+
+vagrant up search
+
+This will bring up a vagrant box with running Elasticsearch. Localhost can access this instance via ports 9200 or 9300.
