@@ -1,0 +1,10 @@
+ci/
+config/
+scripts/
+src/
+target/
+JenkinsFile
+jenkins.properties
+manifest.*.yml
+.*
+*.properties
