@@ -100,7 +100,7 @@ public class Controller {
 		
 		try {
 			boolean indexExists = template.indexExists(dataIndexAlias);
-			LOGGER.debug(String.format("%s: %s", "Metadata alias exists", indexExists));
+			LOGGER.debug("Metadata alias exists: {}", indexExists);
 			if (!indexExists){
 				template.createIndexWithMappingFromShellScript(dataIndex, dataIndexAlias, DATATYPE);
 			}
@@ -261,9 +261,8 @@ public class Controller {
 			template.index(dataIndexAlias, DATATYPE, drc);
 			return drc;
 		} catch (org.elasticsearch.client.transport.NoNodeAvailableException exception) {
-			String message = String.format("Error attempting index of data", exception.getMessage());
-			//System.out.println(message);
-			LOGGER.error(message, exception);
+			final String message = exception.getMessage();
+			LOGGER.error("Error attempting index of data: {}", message, exception);
 			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "searchIngest", "DataResource"));
 			throw new IOException(message);
 		}
@@ -444,8 +443,7 @@ public class Controller {
 	public Boolean updateServiceDocById(@RequestBody(required = true) Service objService) throws InvalidInputException, IOException {
 
 		try {
-			ServiceContainer sc = template.findOne(serviceIndex, SERVICESTYPE, objService.getServiceId(),
-					new ServiceContainer().getClass());
+			ServiceContainer sc = template.findOne(serviceIndex, SERVICESTYPE, objService.getServiceId(), ServiceContainer.class);
 
 			String reconJSONdoc;
 			try {
