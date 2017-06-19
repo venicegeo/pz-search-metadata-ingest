@@ -85,7 +85,7 @@ public class NativeElasticsearchTemplate {
 			appCurrentDirectory = new java.io.File(".").getCanonicalPath();
 			printDirectoryRecursive( appCurrentDirectory );
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			LOGGER.error("Could not create Index with Mapping", e);
 			e.printStackTrace();
 		}
 
@@ -136,8 +136,8 @@ public class NativeElasticsearchTemplate {
 			String indexCreationUrl = String.format("%s/%s/", baseUrl, indexName);
 			String aliasCreationUrl = String.format("%s/_aliases/", baseUrl);
 
-			String scriptParameters = String.format("\n ScriptPath: %s \n IndexDataType: %s \n IndexUrl: %s \n IndexName: %s \n AliasName: %s \n AliasUrl: %s", scriptPath, indexDataType, indexCreationUrl, indexName, aliasName, aliasCreationUrl);
-			LOGGER.debug("Running piazza metadata index creation with following parameters: " + scriptParameters);
+			String scriptParameters = String.format("%n ScriptPath: %s %n IndexDataType: %s %n IndexUrl: %s %n IndexName: %s %n AliasName: %s %n AliasUrl: %s", scriptPath, indexDataType, indexCreationUrl, indexName, aliasName, aliasCreationUrl);
+			LOGGER.debug("Running piazza metadata index creation with following parameters: {}", scriptParameters);
 			
 			// Run the shell script with parameters
 			ProcessBuilder pb = new ProcessBuilder(scriptPath, indexDataType, indexCreationUrl, indexName, aliasName, aliasCreationUrl);
