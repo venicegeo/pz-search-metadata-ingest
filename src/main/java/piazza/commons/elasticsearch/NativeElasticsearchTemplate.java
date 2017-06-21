@@ -47,7 +47,7 @@ import util.PiazzaLogger;
 
 //@Component
 public class NativeElasticsearchTemplate {
-	private final static Logger LOGGER = LoggerFactory.getLogger(NativeElasticsearchTemplate.class);
+	private static final Logger LOG = LoggerFactory.getLogger(NativeElasticsearchTemplate.class);
 
 	@Value("${vcap.services.pz-elasticsearch.credentials.hostname}")
 	private String elasticHostname;
@@ -64,6 +64,7 @@ public class NativeElasticsearchTemplate {
 	private ObjectMapper mapper;
 
 	public NativeElasticsearchTemplate() {
+		// Expected for Component instantiation
 	}
 
 	public NativeElasticsearchTemplate(Client client, ObjectMapper mapper) {
@@ -85,10 +86,9 @@ public class NativeElasticsearchTemplate {
 			appCurrentDirectory = new java.io.File(".").getCanonicalPath();
 			printDirectoryRecursive( appCurrentDirectory );
 		} catch (IOException e) {
-			LOGGER.error("Could not create Index with Mapping", e);
+			LOG.error("Could not create Index with Mapping", e);
 			e.printStackTrace();
 		}
-
 
 		CreateIndexRequestBuilder createIndexRequestBuilder = client.admin().indices().prepareCreate(indexName);
 		if (mapping != null) {
@@ -137,7 +137,7 @@ public class NativeElasticsearchTemplate {
 			String aliasCreationUrl = String.format("%s/_aliases/", baseUrl);
 
 			String scriptParameters = String.format("%n ScriptPath: %s %n IndexDataType: %s %n IndexUrl: %s %n IndexName: %s %n AliasName: %s %n AliasUrl: %s", scriptPath, indexDataType, indexCreationUrl, indexName, aliasName, aliasCreationUrl);
-			LOGGER.debug("Running piazza metadata index creation with following parameters: {}", scriptParameters);
+			LOG.debug("Running piazza metadata index creation with following parameters: {}", scriptParameters);
 			
 			// Run the shell script with parameters
 			ProcessBuilder pb = new ProcessBuilder(scriptPath, indexDataType, indexCreationUrl, indexName, aliasName, aliasCreationUrl);
@@ -147,7 +147,7 @@ public class NativeElasticsearchTemplate {
 			String error = String.format("Unable to run index creation scripts for index %s. %s", indexName,
 					e.getMessage());
 			logger.log(error, Severity.ERROR);
-			LOGGER.error(error, e);
+			LOG.error(error, e);
 			return false;
 		}
 		return true;
@@ -158,29 +158,20 @@ public class NativeElasticsearchTemplate {
         File root = new File( path );
         File[] list = root.listFiles();
 
-        if (list == null) return;
+        if (list == null) {
+        	return;
+        }
 
         for ( File f : list ) {
             if ( f.isDirectory() ) {
             	printDirectoryRecursive( f.getAbsolutePath() );
-                System.out.println( "Dir:" + f.getAbsoluteFile() );
+            	LOG.info("Dir: {}", f.getAbsoluteFile());            	
             }
             else {
-                System.out.println( "File:" + f.getAbsoluteFile() );
+            	LOG.info("File: {}", f.getAbsoluteFile());
             }
         }
     }
-	
-	/*
-	 * CSS presently unused; remove for test code coverage % public boolean
-	 * createAlias( String indexName, String aliasName ) {
-	 * 
-	 * IndicesAliasesResponse createAliasResponse =
-	 * client.admin().indices().prepareAliases().addAlias( indexName,
-	 * aliasName).execute().actionGet();
-	 * 
-	 * return createAliasResponse.isAcknowledged(); }
-	 */
 
 	public boolean indexExists(String indexName) {
 		return client.admin().indices().prepareExists(indexName).execute().actionGet().isExists();
@@ -198,74 +189,12 @@ public class NativeElasticsearchTemplate {
 				o.setId(response.getId());
 			}
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
+			LOG.error(e.getMessage(), e);
 			logger.log(e.getMessage(), Severity.ERROR);
-			// log.error(
-			// e.getMessage(),
-			// e);
 		}
 
 		return created;
 	}
-
-	/*
-	 * CSS presently unused; remove for test code coverage % public <T extends
-	 * ESModel> void bulkIndex( String indexName, String type, Collection<T>
-	 * objects ) { try { BulkRequestBuilder bulkRequest = client.prepareBulk();
-	 * 
-	 * for (T object : objects) { String source = mapper.writeValueAsString(
-	 * object); bulkRequest.add( client.prepareIndex( indexName, type,
-	 * object.getId()).setSource( source)); }
-	 * 
-	 * BulkResponse response = bulkRequest.execute().get();
-	 * 
-	 * // not so friendly way of allowing collections // unfortunately
-	 * collection does not implement get(index) if (objects instanceof List) {
-	 * List<T> l = (List<T>) objects;
-	 * 
-	 * for (BulkItemResponse item : response.getItems()) { if (!item.isFailed())
-	 * { l.get( item.getItemId()).setId( item.getId()); } } }
-	 * 
-	 * } catch (Exception e) { logger.log(e.getMessage(), PiazzaLogger.ERROR); }
-	 * }
-	 */
-
-	/*
-	 * CSS presently unused; remove for test code coverage % public <T extends
-	 * ESModel> List<T> queryForList( SearchRequestBuilder searchQuery, Class<T>
-	 * clazz ) {
-	 * 
-	 * SearchResponse response = searchQuery.setSize(
-	 * Integer.MAX_VALUE).execute().actionGet();
-	 * 
-	 * List<T> results = new ArrayList<T>( response.getHits().getHits().length);
-	 * 
-	 * for (int i = 0; i < response.getHits().getHits().length; ++i) { try {
-	 * SearchHit hit = response.getHits().getHits()[i]; T result =
-	 * mapper.readValue( hit.getSourceAsString(), clazz); result.setId(
-	 * hit.getId()); results.add( result); } catch (Exception e) {
-	 * logger.log(e.getMessage(), PiazzaLogger.ERROR); } }
-	 * 
-	 * return results; }
-	 * 
-	 * public <T extends ESModel> List<T> queryForPage( SearchRequestBuilder
-	 * searchQuery, int pageNumber, int pageSize, Class<T> clazz ) {
-	 * 
-	 * SearchResponse response = searchQuery .setFrom( pageNumber * pageSize)
-	 * .setSize( pageSize) .execute() .actionGet();
-	 * 
-	 * List<T> results = new ArrayList<T>( response.getHits().getHits().length);
-	 * 
-	 * for (int i = 0; i < response.getHits().getHits().length; ++i) { try {
-	 * SearchHit hit = response.getHits().getHits()[i]; T result =
-	 * mapper.readValue( hit.getSourceAsString(), clazz); result.setId(
-	 * hit.getId()); results.add( result); } catch (Exception e) {
-	 * logger.log(e.getMessage(), PiazzaLogger.ERROR); } }
-	 * 
-	 * results.removeAll( Arrays.asList( "", null));
-	 * 
-	 * return results; }
-	 */
 
 	public <T extends ESModel> T findOne(String index, String type, String id, Class<T> clazz) {
 
@@ -277,27 +206,12 @@ public class NativeElasticsearchTemplate {
 				result.setId(response.getId());
 			}
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
+			LOG.error(e.getMessage(), e);
 			logger.log(e.getMessage(), Severity.ERROR);
 		}
 
 		return result;
 	}
-
-	/*
-	 * CSS presently unused; remove for test code coverage % public <T extends
-	 * ESModel> T queryForOne( SearchRequestBuilder searchQuery, Class<T> clazz
-	 * ) { SearchResponse response = searchQuery.execute().actionGet();
-	 * 
-	 * T result = null;
-	 * 
-	 * try { if (response.getHits().getTotalHits() > 0L) { result =
-	 * mapper.readValue( response.getHits().getHits()[0].getSourceAsString(),
-	 * clazz); result.setId(response.getHits().getHits()[0].getId()); } } catch
-	 * (Exception e) { logger.log(e.getMessage(), PiazzaLogger.ERROR); }
-	 * 
-	 * return result; }
-	 */
 
 	public long count(SearchRequestBuilder searchQuery) {
 
@@ -306,11 +220,6 @@ public class NativeElasticsearchTemplate {
 		return response.getHits().getTotalHits();
 	}
 
-	/*
-	 * 2.x changes query builders CSS 5/14/16 public SearchRequestBuilder
-	 * NativeSearchQueryBuilder() { return new SearchRequestBuilder(
-	 * this.client); }
-	 */
 	public SearchRequestBuilder NativeSearchQueryBuilder() {
 		return new SearchRequestBuilder(this.client, null);
 	}
@@ -322,7 +231,7 @@ public class NativeElasticsearchTemplate {
 			DeleteResponse response = client.prepareDelete(index, type, instance.getId()).execute().get();
 			result = response.isFound();
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
+			LOG.error(e.getMessage(), e);
 			logger.log(e.getMessage(), Severity.ERROR);
 		}
 
@@ -333,8 +242,6 @@ public class NativeElasticsearchTemplate {
 		int result = 0;
 
 		try {
-			// DeleteResponse response = client.prepareDelete(index, type,
-			// instance.getId()).execute().get();
 
 			BulkRequestBuilder bulkRequest = client.prepareBulk();
 
@@ -345,22 +252,31 @@ public class NativeElasticsearchTemplate {
 			BulkResponse response = bulkRequest.execute().get();
 
 			if (response.hasFailures()) {
-				for (BulkItemResponse item : response.getItems()) {
-					if (!item.isFailed())
-						++result;
-				}
-			} else {
+				result = countNumResponseFailures(response.getItems());
+			} 
+			else {
 				result = objects.size();
 			}
 
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
+			LOG.error(e.getMessage(), e);
 			logger.log(e.getMessage(), Severity.ERROR);
 		}
 
 		return result;
 	}
+	
+	private int countNumResponseFailures(BulkItemResponse[] items) {
+		int numResponseFailures = 0;
+		
+		for (BulkItemResponse item : items) {
+			if (!item.isFailed())
+				++numResponseFailures;
+		}
 
+		return numResponseFailures;
+	}
+	
 	public boolean refresh(String index) {
 		boolean success = false;
 
@@ -368,7 +284,7 @@ public class NativeElasticsearchTemplate {
 			RefreshResponse result = client.admin().indices().prepareRefresh(index).execute().get();
 			success = (result.getShardFailures().length == 0);
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
+			LOG.error(e.getMessage(), e);
 			logger.log(e.getMessage(), Severity.ERROR);
 		}
 

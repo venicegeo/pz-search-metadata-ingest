@@ -19,7 +19,6 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.elasticsearch.common.geo.GeoPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,10 +69,16 @@ public class Controller {
 	static final String SERVICESTYPE = "ServiceContainer";
 	
 	// CSS 1/12/17 if also-indexed geohash is desired
-	//static final String mappingJSON = "{ \"DataResourceContainer\": { \"properties\" : { \"locationCenterPoint\": { \"type\": \"geo_point\", \"geohash\": \"true\" }, \"boundingArea\": { \"type\": \"geo_shape\" } } } }";
-	//static final String mappingJSON = "{ \"DataResourceContainer\": { \"properties\" : { \"locationCenterPoint\": { \"type\": \"geo_point\" }, \"boundingArea\": { \"type\": \"geo_shape\" } } } }";
-	private final static Logger LOGGER = LoggerFactory.getLogger(Controller.class);
-
+	private static final Logger LOG = LoggerFactory.getLogger(Controller.class);
+	private static final String JSON_DOC_ERR = "The Re-Constituted JSON Doc:\n";
+	private static final String JSON_AUG_ERR = "Error Augmenting JSON Doc with geolocation info";
+	private static final String SEARCH_METADATA_INGEST = "searchMetadataIngest";
+	private static final String SEARCH_INGEST = "searchIngest";
+	private static final String DATA_RESOURCE = "DataResource";
+	private static final String ELASTIC_SEARCH = "ElasticSearch";
+	private static final String SERVICE = "Service";
+	
+	
 	@Autowired
 	private PiazzaLogger logger;
 
@@ -100,14 +105,14 @@ public class Controller {
 		
 		try {
 			boolean indexExists = template.indexExists(dataIndexAlias);
-			LOGGER.debug("Metadata alias exists: {}", indexExists);
+			LOG.debug("Metadata alias exists: {}", indexExists);
 			if (!indexExists){
 				template.createIndexWithMappingFromShellScript(dataIndex, dataIndexAlias, DATATYPE);
 			}
 		} catch (Exception exception) {
 			String message = "Error considering pre-exisitence of ES index";
 			logger.log(message, Severity.ERROR);
-			LOGGER.error(message, exception);
+			LOG.error(message, exception);
 			throw new IOException(message);
 		}
 	}
@@ -127,14 +132,13 @@ public class Controller {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			reconJSONdoc = mapper.writeValueAsString(mdingestJob.getData());
-			//System.out.println(reconJSONdoc);
-			logger.log("The Re-Constituted JSON Doc:\n", Severity.INFORMATIONAL);
+
+			logger.log(JSON_DOC_ERR, Severity.INFORMATIONAL);
 			logger.log(reconJSONdoc, Severity.INFORMATIONAL);
 		} catch (Exception exception) {
 			String message = String.format("Error Reconstituting JSON Doc from SearchMetadataIngestJob: %s", exception.getMessage());
-			//System.out.println(message);
 			logger.log(message, Severity.ERROR);
-			LOGGER.error(message, exception);
+			LOG.error(message, exception);
 			throw new InvalidInputException(message);
 		}
 
@@ -149,12 +153,7 @@ public class Controller {
 					Double maxX = sm.getMaxX();
 					Double minY = sm.getMinY();
 					Double maxY = sm.getMaxY();
-					// GeoPoint gp = new GeoPoint((maxY + minY) / 2, (maxX +
-					// minX) / 2);
-					// drc.setLocationCenterPoint(gp);
-					Double[] lcp = new Double[] { (maxX + minX) / 2, (maxY + minY) / 2 }; // lon
-																							// then
-																							// lat!
+					Double[] lcp = new Double[] { (maxX + minX) / 2, (maxY + minY) / 2 }; // lon, then lat!
 					drc.setLocationCenterPoint(lcp);
 
 					Coordinate NW = new Coordinate(minX, maxY);
@@ -163,7 +162,7 @@ public class Controller {
 					drc.setBoundingArea(bboxGeometry);
 
 				} catch (Exception exception) {
-					LOGGER.error("Error Augmenting JSON", exception);
+					LOG.error("Error Augmenting JSON", exception);
 					try { // in case test or for some other reason null metadata
 							// values
 						String message = String.format(
@@ -171,31 +170,29 @@ public class Controller {
 								dr.getDataId(), dr.getSpatialMetadata().getCoordinateReferenceSystem());
 						logger.log(message, Severity.WARNING);
 					} catch (Exception e2) {
-						String message = "Error Augmenting JSON Doc with geolocation info";
-						LOGGER.error(message, e2);
+						String message = JSON_AUG_ERR;
+						LOG.error(message, e2);
 						logger.log(message, Severity.ERROR);
 					}
 				}
 			}
 
-			// repository.save(drc);
 			template.index(dataIndexAlias, DATATYPE, drc);
 			
 			logger.log(
 					String.format("Ingesting data into elastic search containing data/metadata resource object id %s",
 							dr.getDataId()),
-					Severity.INFORMATIONAL, new AuditElement("searchMetadataIngest", "searchIngest", dr.getDataId()));
+					Severity.INFORMATIONAL, new AuditElement(SEARCH_METADATA_INGEST, SEARCH_INGEST, dr.getDataId()));
 			
 			return new DataResourceResponse(dr);
 
 		} catch (Exception exception) {
 			String message = String.format("Error completing JSON Doc indexing in Elasticsearch from SearchMetadataIngestJob: %s", exception.getMessage());
-			LOGGER.error(message, exception);
+			LOG.error(message, exception);
 			logger.log(message, Severity.ERROR);
-			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "searchIngest", "searchMetadataIngestJob"));
+			logger.log(message, Severity.ERROR, new AuditElement(SEARCH_METADATA_INGEST, SEARCH_INGEST, "searchMetadataIngestJob"));
 			throw new IOException(message);
 		}
-
 	}
 
 	/**
@@ -216,8 +213,6 @@ public class Controller {
 			Double maxX = sm.getMaxX();
 			Double minY = sm.getMinY();
 			Double maxY = sm.getMaxY();
-			//GeoPoint gp = new GeoPoint((maxY + minY) / 2, (maxX + minX) / 2);
-			//drc.setLocationCenterPoint(gp);
 			Double[] lcp = new Double[]{ (maxX + minX) / 2, (maxY + minY) / 2 };  //lon then lat!
 			drc.setLocationCenterPoint(lcp);
 
@@ -229,13 +224,11 @@ public class Controller {
 			try{  // in case test or for some other reason null metadata values
 				String message = String.format("Error Augmenting JSON Doc with geolocation info, DataId: %s, possible null values input or unrecognized SRS: %s",
 						entry.getDataId(), entry.getSpatialMetadata().getCoordinateReferenceSystem());
-				//System.out.println(message);
 				logger.log(message, Severity.INFORMATIONAL);
-				LOGGER.error(message, exception);
+				LOG.error(message, exception);
 			} catch (Exception e2) {
-				//System.out.println(e2.getMessage());
-				LOGGER.error("Error Augmenting JSON Doc with geolocation info", e2);
-				logger.log("Error Augmenting JSON Doc with geolocation info", Severity.ERROR, new AuditElement("searchMetadataIngest", "searchIngest", "DataResource"));
+				LOG.error(JSON_AUG_ERR, e2);
+				logger.log(JSON_AUG_ERR, Severity.ERROR, new AuditElement(SEARCH_METADATA_INGEST, SEARCH_INGEST, DATA_RESOURCE));
 			}
 		}
 
@@ -246,14 +239,12 @@ public class Controller {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			reconJSONdoc = mapper.writeValueAsString(drc);
-			//System.out.println(reconJSONdoc);
-			logger.log("The Re-Constituted JSON Doc:\n", Severity.INFORMATIONAL);
+			logger.log(JSON_DOC_ERR, Severity.INFORMATIONAL);
 			logger.log(reconJSONdoc, Severity.INFORMATIONAL);
 		} catch (Exception exception) {
 			String message = String.format("Error Reconstituting JSON Doc from SearchMetadataIngestJob: %s", exception.getMessage());
-			//System.out.println(message);
-			LOGGER.error(message, exception);
-			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "searchIngest", "DataResource"));
+			LOG.error(message, exception);
+			logger.log(message, Severity.ERROR, new AuditElement(SEARCH_METADATA_INGEST, SEARCH_INGEST, DATA_RESOURCE));
 			throw new IOException(message);
 		}
 
@@ -262,8 +253,8 @@ public class Controller {
 			return drc;
 		} catch (org.elasticsearch.client.transport.NoNodeAvailableException exception) {
 			final String message = exception.getMessage();
-			LOGGER.error("Error attempting index of data: {}", message, exception);
-			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "searchIngest", "DataResource"));
+			LOG.error("Error attempting index of data: {}", message, exception);
+			logger.log(message, Severity.ERROR, new AuditElement(SEARCH_METADATA_INGEST, SEARCH_INGEST, DATA_RESOURCE));
 			throw new IOException(message);
 		}
 	}
@@ -280,17 +271,17 @@ public class Controller {
 			DataResourceContainer drc = template.findOne(dataIndexAlias, DATATYPE, dr.getDataId(),
 					DataResourceContainer.class);
 			if (drc == null) {
-				return new ErrorResponse("Unable to find data record in elastic search.", "ElasticSearch");
+				return new ErrorResponse("Unable to find data record in elastic search.", ELASTIC_SEARCH);
 			} else {
 				template.delete(dataIndexAlias, DATATYPE, drc);
 				return new SuccessResponse(String.format( "Deleted data record %s from elastic search", dr.getDataId() ),
-						"ElasticSearch");
+						ELASTIC_SEARCH);
 			}
 		} catch (Exception exception) {
 			String message = String.format("Error deleting in Elasticsearch from DataResource object: %s", exception.getMessage());
 			logger.log(message, Severity.ERROR);
-			LOGGER.error(message, exception);
-			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "deleteDataResourceObject", "DataResource"));
+			LOG.error(message, exception);
+			logger.log(message, Severity.ERROR, new AuditElement(SEARCH_METADATA_INGEST, "deleteDataResourceObject", DATA_RESOURCE));
 			throw new IOException(message);
 		}
 	}
@@ -318,8 +309,8 @@ public class Controller {
 			} catch (Exception exception) {
 				String message = String.format("Error Reconstituting JSON Doc from Data obj: %s", exception.getMessage());
 				logger.log(message, Severity.ERROR);
-				LOGGER.error(message, exception);
-				logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "ingestDataResourceObjectWithDataId", "DataResource"));
+				LOG.error(message, exception);
+				logger.log(message, Severity.ERROR, new AuditElement(SEARCH_METADATA_INGEST, "ingestDataResourceObjectWithDataId", DATA_RESOURCE));
 				throw new InvalidInputException(message);
 			}
 
@@ -341,8 +332,8 @@ public class Controller {
 			String message = String.format("Error completing JSON Doc updating in Elasticsearch from Data object: %s",
 					exception.getMessage());
 			logger.log(message, Severity.ERROR);
-			LOGGER.error(message, exception);
-			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "ingestDataResourceObjectWithDataId", "DataResource"));
+			LOG.error(message, exception);
+			logger.log(message, Severity.ERROR, new AuditElement(SEARCH_METADATA_INGEST, "ingestDataResourceObjectWithDataId", DATA_RESOURCE));
 			throw new IOException(message);
 		}
 	}
@@ -362,38 +353,37 @@ public class Controller {
 		logger.log(
 				String.format("Trying to new service object into elastic search id %s", objService.getServiceId()),
 				Severity.INFORMATIONAL,
-				new AuditElement("searchMetadataIngest", "searchIngestService", objService.getServiceId()));
+				new AuditElement(SEARCH_METADATA_INGEST, "searchIngestService", objService.getServiceId()));
 		
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			reconJSONdoc = mapper.writeValueAsString(objService);
-			logger.log("The Re-Constituted JSON Doc:\n", Severity.INFORMATIONAL);
+			logger.log(JSON_DOC_ERR, Severity.INFORMATIONAL);
 			logger.log(reconJSONdoc, Severity.INFORMATIONAL);
 		} catch (Exception exception) {
 			String message = String.format("Error Reconstituting JSON Doc from Service obj: %s", exception.getMessage());
 			logger.log(message, Severity.ERROR);
-			LOGGER.error(message, exception);
-			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "ingestServiceObject", "Service"));
+			LOG.error(message, exception);
+			logger.log(message, Severity.ERROR, new AuditElement(SEARCH_METADATA_INGEST, "ingestServiceObject", SERVICE));
 			throw new InvalidInputException(message);
 		}
 
 		try {
 			ServiceContainer sc = new ServiceContainer(objService);
-			// servicerepository.save(sc);
 			template.index(serviceIndex, SERVICESTYPE, sc);
 
 			logger.log(
 					String.format("Ingested new service object into elastic search id %s", objService.getServiceId()),
 					Severity.INFORMATIONAL,
-					new AuditElement("searchMetadataIngest", "searchIngestService", objService.getServiceId()));
+					new AuditElement(SEARCH_METADATA_INGEST, "searchIngestService", objService.getServiceId()));
 
 			return new ServiceResponse(objService);
 
 		} catch (Exception exception) {
 			String message = String.format("Error completing JSON Doc indexing in Elasticsearch from Service object: %s", exception.getMessage());
 			logger.log(message, Severity.ERROR);
-			LOGGER.error(message, exception);
-			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "ingestServiceObject", "Service"));
+			LOG.error(message, exception);
+			logger.log(message, Severity.ERROR, new AuditElement(SEARCH_METADATA_INGEST, "ingestServiceObject", SERVICE));
 			throw new IOException(message);
 		}
 
@@ -411,22 +401,22 @@ public class Controller {
 			ServiceContainer serviceContainer = template.findOne(serviceIndex, SERVICESTYPE, objService.getServiceId(),
 					ServiceContainer.class);
 			if (serviceContainer == null) {
-				return new ErrorResponse("Unable to find service in elastic search.", "ElasticSearch");
+				return new ErrorResponse("Unable to find service in elastic search.", ELASTIC_SEARCH);
 			} else {
 				template.delete(serviceIndex, SERVICESTYPE, serviceContainer);
 				logger.log(String.format("Deleted service metadata from elastic search %s", objService.getServiceId()),
 						Severity.INFORMATIONAL,
-						new AuditElement("searchMetadataIngest", "searchDeleteServiceMetadata", objService.getServiceId()));
+						new AuditElement(SEARCH_METADATA_INGEST, "searchDeleteServiceMetadata", objService.getServiceId()));
 
 				return new SuccessResponse(
 						String.format("Deleted service %s from elastic search", objService.getServiceId()),
-						"ElasticSearch");
+						ELASTIC_SEARCH);
 			}
 		} catch (Exception exception) {
 			String message = String.format("Error deleting in Elasticsearch from Service object: %s", exception.getMessage());
 			logger.log(message, Severity.ERROR);
-			LOGGER.error(message, exception);
-			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "deleteServiceObject", "Service"));
+			LOG.error(message, exception);
+			logger.log(message, Severity.ERROR, new AuditElement(SEARCH_METADATA_INGEST, "deleteServiceObject", SERVICE));
 			throw new IOException(message);
 		}
 	}
@@ -454,8 +444,8 @@ public class Controller {
 			} catch (Exception exception) {
 				String message = String.format("Error Reconstituting JSON Doc from Service obj: %s", exception.getMessage());
 				logger.log(message, Severity.ERROR);
-				LOGGER.error(message, exception);
-				logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "ingestServiceObjectWithServiceId", "Service"));
+				LOG.error(message, exception);
+				logger.log(message, Severity.ERROR, new AuditElement(SEARCH_METADATA_INGEST, "ingestServiceObjectWithServiceId", SERVICE));
 				throw new InvalidInputException(message);
 			}
 
@@ -472,7 +462,7 @@ public class Controller {
 				
 				logger.log(String.format("Ingesting service metadata into elastic search using only service id %s", objService.getServiceId()),
 						Severity.INFORMATIONAL,
-						new AuditElement("searchMetadataIngest", "searchIngest", objService.getServiceId()));
+						new AuditElement(SEARCH_METADATA_INGEST, SEARCH_INGEST, objService.getServiceId()));
 
 				return template.index(serviceIndex, SERVICESTYPE, sc);
 			}
@@ -480,8 +470,8 @@ public class Controller {
 		} catch (Exception exception) {
 			String message = String.format("Error completing JSON Doc updating in Elasticsearch from Service object: %s", exception.getMessage());
 			logger.log(message, Severity.ERROR);
-			LOGGER.error(message, exception);
-			logger.log(message, Severity.ERROR, new AuditElement("searchMetadataIngest", "ingestServiceObjectWithServiceId", "Service"));
+			LOG.error(message, exception);
+			logger.log(message, Severity.ERROR, new AuditElement(SEARCH_METADATA_INGEST, "ingestServiceObjectWithServiceId", SERVICE));
 			throw new IOException(message);
 		}
 	}

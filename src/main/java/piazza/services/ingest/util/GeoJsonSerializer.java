@@ -20,9 +20,6 @@ import java.text.DecimalFormat;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -41,10 +38,11 @@ import util.PiazzaLogger;
 
 public class GeoJsonSerializer extends JsonSerializer<Geometry> {
 	
-	//private final Logger log = LoggerFactory.getLogger(this.getClass());
 	@Autowired
 	private PiazzaLogger logger;
 	
+	private static final String COORDINATES = "coordinates";
+
     @Override
     public Class<Geometry> handledType() {
         return Geometry.class;
@@ -100,7 +98,7 @@ public class GeoJsonSerializer extends JsonSerializer<Geometry> {
             throws IOException {
         jgen.writeStartObject();
         jgen.writeStringField("type", "MultiPoint");
-        jgen.writeArrayFieldStart("coordinates");
+        jgen.writeArrayFieldStart(COORDINATES);
 
         for (int i = 0; i != value.getNumGeometries(); ++i) {
             writePointCoords(jgen, (Point) value.getGeometryN(i));
@@ -114,7 +112,7 @@ public class GeoJsonSerializer extends JsonSerializer<Geometry> {
             throws IOException {
         jgen.writeStartObject();
         jgen.writeStringField("type", "MultiLineString");
-        jgen.writeArrayFieldStart("coordinates");
+        jgen.writeArrayFieldStart(COORDINATES);
 
         for (int i = 0; i != value.getNumGeometries(); ++i) {
             writeLineStringCoords(jgen, (LineString) value.getGeometryN(i));
@@ -128,7 +126,7 @@ public class GeoJsonSerializer extends JsonSerializer<Geometry> {
             throws IOException {
         jgen.writeStartObject();
         jgen.writeStringField("type", "MultiPolygon");
-        jgen.writeArrayFieldStart("coordinates");
+        jgen.writeArrayFieldStart(COORDINATES);
 
         for (int i = 0; i != value.getNumGeometries(); ++i) {
             writePolygonCoordinates(jgen, (Polygon) value.getGeometryN(i));
@@ -142,7 +140,7 @@ public class GeoJsonSerializer extends JsonSerializer<Geometry> {
             throws IOException {
         jgen.writeStartObject();
         jgen.writeStringField("type", "Polygon");
-        jgen.writeFieldName("coordinates");
+        jgen.writeFieldName(COORDINATES);
         writePolygonCoordinates(jgen, value);
 
         jgen.writeEndObject();
@@ -173,7 +171,7 @@ public class GeoJsonSerializer extends JsonSerializer<Geometry> {
             throws IOException {
         jgen.writeStartObject();
         jgen.writeStringField("type", "LineString");
-        jgen.writeFieldName("coordinates");
+        jgen.writeFieldName(COORDINATES);
         writeLineStringCoords(jgen, lineString);
         jgen.writeEndObject();
     }
@@ -182,7 +180,7 @@ public class GeoJsonSerializer extends JsonSerializer<Geometry> {
             throws IOException {
         jgen.writeStartObject();
         jgen.writeStringField("type", "Point");
-        jgen.writeFieldName("coordinates");
+        jgen.writeFieldName(COORDINATES);
         writePointCoords(jgen, p);
         jgen.writeEndObject();
     }

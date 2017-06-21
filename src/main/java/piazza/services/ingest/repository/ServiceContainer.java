@@ -32,6 +32,7 @@ public class ServiceContainer implements piazza.commons.elasticsearch.ESModel {
 	public Service service;
 
 	public ServiceContainer() {
+		// Empty constructor required by Jackson
 	}
 
 	public ServiceContainer(Service s) {
