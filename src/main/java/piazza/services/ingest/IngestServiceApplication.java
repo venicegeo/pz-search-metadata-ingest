@@ -25,15 +25,10 @@ import org.springframework.context.annotation.ComponentScan;
 
 import piazza.services.ingest.controller.Controller;
 
-//import piazza.commons.elasticsearch.NativeElasticsearchTemplateConfiguration;
-
-//@Configuration
-//@EnableAutoConfiguration 
-//@ContextConfiguration(classes = NativeElasticsearchTemplateConfiguration.class)
 @SpringBootApplication
 @ComponentScan({"piazza, util"})
 public class IngestServiceApplication {
-	private final static Logger LOGGER = LoggerFactory.getLogger(IngestServiceApplication.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(IngestServiceApplication.class);
 
 	@Autowired
 	private Controller cont;
@@ -41,10 +36,9 @@ public class IngestServiceApplication {
 	public static void main(String[] args) {
 
 		ConfigurableApplicationContext context = SpringApplication.run(IngestServiceApplication.class, args); //NOSONAR
-		//Controller cont = new Controller();
+
 		try {
 			context.getBean(Controller.class).init();
-			//cont.init();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 		}

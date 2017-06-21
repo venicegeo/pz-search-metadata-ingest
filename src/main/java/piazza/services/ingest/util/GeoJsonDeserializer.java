@@ -17,8 +17,6 @@ package piazza.services.ingest.util;
 
 import java.io.IOException;
 
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -40,10 +38,12 @@ import util.PiazzaLogger;
 public class GeoJsonDeserializer extends JsonDeserializer<Geometry> {
 	
 	private GeometryFactory gf = new GeometryFactory();
-//	private final Logger log = LoggerFactory.getLogger(this.getClass());
+
 	@Autowired
 	private PiazzaLogger logger;
 
+	private static final String COORDINATES = "coordinates";
+	
     @Override
     public Geometry deserialize(JsonParser jp, DeserializationContext ctxt)
             throws IOException
@@ -57,25 +57,24 @@ public class GeoJsonDeserializer extends JsonDeserializer<Geometry> {
         String typeName = root.get("type").asText();
         if ("Point".equals(typeName)) {
             return gf.createPoint(parseCoordinate((ArrayNode) root
-                    .get("coordinates")));
+                    .get(COORDINATES)));
         } else if("MultiPoint".equals(typeName)) {
-            return gf.createMultiPoint(parseLineString(root.get("coordinates")));
+            return gf.createMultiPoint(parseLineString(root.get(COORDINATES)));
         } else if("LineString".equals(typeName)) {
-            return gf.createLineString(parseLineString(root.get("coordinates")));
+            return gf.createLineString(parseLineString(root.get(COORDINATES)));
         } else if ("MultiLineString".equals(typeName)) {
             return gf.createMultiLineString(parseLineStrings(root
-                    .get("coordinates")));
+                    .get(COORDINATES)));
         } else if("Polygon".equals(typeName)) {
-            JsonNode arrayOfRings = root.get("coordinates");
+            JsonNode arrayOfRings = root.get(COORDINATES);
             return parsePolygonCoordinates(arrayOfRings);
         } else if ("MultiPolygon".equals(typeName)) {
-            JsonNode arrayOfPolygons = root.get("coordinates");
+            JsonNode arrayOfPolygons = root.get(COORDINATES);
             return gf.createMultiPolygon(parsePolygons(arrayOfPolygons));
         } else if ("GeometryCollection".equals(typeName)) {
             return gf.createGeometryCollection(parseGeometries(root
                     .get("geometries")));
         } else {
-        	//log.error("Failed to deserialize GeoJSON, unsupported type.");
 			logger.log("Failed to deserialize GeoJSON, unsupported type.", Severity.ERROR);
             throw new UnsupportedOperationException();
         }

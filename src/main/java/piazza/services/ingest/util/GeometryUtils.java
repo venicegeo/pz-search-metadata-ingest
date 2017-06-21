@@ -27,7 +27,9 @@ import com.vividsolutions.jts.geom.Polygon;
  * @author Chris.Smith
  *
  */
-public class GeometryUtils {
+public enum GeometryUtils {
+	;
+	
 	public static final GeometryFactory G = new GeometryFactory();
 
 	public static Geometry createBoundingBox(Coordinate topLeft, Coordinate bottomRight) {
