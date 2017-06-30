@@ -87,7 +87,6 @@ public class NativeElasticsearchTemplate {
 			printDirectoryRecursive( appCurrentDirectory );
 		} catch (IOException e) {
 			LOG.error("Could not create Index with Mapping", e);
-			e.printStackTrace();
 		}
 
 		CreateIndexRequestBuilder createIndexRequestBuilder = client.admin().indices().prepareCreate(indexName);
