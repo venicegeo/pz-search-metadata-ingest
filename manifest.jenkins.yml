@@ -3,7 +3,6 @@ applications:
   host: pz-search-metadata-ingest
   path: pz-search-metadata-ingest.jar
   buildpack: 'https://github.com/cloudfoundry/java-buildpack.git#v3.9'
-  domain: int.geointservices.io
   memory: 512M
   instances: 1
   timeout: 180
