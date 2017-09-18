@@ -26,10 +26,10 @@ import model.service.metadata.Service;
 //@Document(indexName = "pzservices", type = "ServiceContainer")
 public class ServiceContainer implements piazza.commons.elasticsearch.ESModel {
 	// @Id
-	public String serviceContainerId;
+	private String serviceContainerId;
 
 	// @Field(type = FieldType.Nested)
-	public Service service;
+	private Service service;
 
 	public ServiceContainer() {
 		// Empty constructor required by Jackson

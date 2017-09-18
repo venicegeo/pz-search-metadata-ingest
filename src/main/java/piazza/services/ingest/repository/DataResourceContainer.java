@@ -32,21 +32,21 @@ import piazza.services.ingest.util.GeoJsonSerializer;
 //@Document(indexName = "pzmetadataalias", type = "DataResourceContainer")
 public class DataResourceContainer implements piazza.commons.elasticsearch.ESModel {
 	// @Id
-	public String dataResourceContainerId;
+	private String dataResourceContainerId;
 
 	// 8/9/16 need representation of <lat>,<lon> for correct entry,
 	// without geohash, into Elasticsearch mapping of geo_point
 	// 1/12/17 ObjectMapper serializes into lat,lon AND geohash (added!)
 	// thus, GeoPoint in ES mapping, array representation in Java
-	public Double[] locationCenterPoint; // lon, lat  - note order!
+	private Double[] locationCenterPoint; // lon, lat  - note order!
 	
 	// serialize into ES GeoShape
 	@JsonSerialize(using = GeoJsonSerializer.class)
 	@JsonDeserialize(using = GeoJsonDeserializer.class)
-	public Geometry boundingArea = null;
+	private Geometry boundingArea = null;
 
 	// @Field(type = FieldType.Nested)
-	public DataResource dataResource;
+	private DataResource dataResource;
 
 	public DataResourceContainer() {
 		// Empty constructor required by Jackson

@@ -121,7 +121,10 @@ public class NativeElasticsearchTemplate {
 			} else {
 				// Change script execute permissions
 				File file = new File(scriptPath);
-				file.createNewFile();
+				boolean wasCreated = file.createNewFile();
+				if (!wasCreated) {
+					logger.log(String.format("Could not create file %s because it already exists. Overwriting.", scriptPath), Severity.INFORMATIONAL);
+				}
 				Set<PosixFilePermission> perms = new HashSet<>();
 				perms.add(PosixFilePermission.OWNER_READ);
 				perms.add(PosixFilePermission.OWNER_WRITE);
