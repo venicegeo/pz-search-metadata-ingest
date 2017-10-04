@@ -50,20 +50,20 @@ public class ServiceContainer implements piazza.commons.elasticsearch.ESModel {
 		serviceContainerId = id;
 	}
 
-	public String getServiceContainerId() {
-		return serviceContainerId;
-	}
-
-	public void setServiceContainerId(String serviceContainerId) {
-		this.serviceContainerId = serviceContainerId;
-	}
-
 	public Service getService() {
 		return service;
 	}
 
 	public void setService(Service service) {
 		this.service = service;
+	}
+
+	public String getServiceContainerId() {
+		return serviceContainerId;
+	}
+
+	public void setServiceContainerId(String serviceContainerId) {
+		this.serviceContainerId = serviceContainerId;
 	}
 
 }
