@@ -33,9 +33,10 @@ import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.Requests;
+import org.elasticsearch.cluster.metadata.IndexMetaData;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +57,7 @@ public class NativeElasticsearchTemplate {
 	
 	@Autowired
 	private PiazzaLogger logger;
-	//@Autowired
+	@Autowired
 	private Client client;
 	@Autowired
 	OsValidator osValidator;
@@ -184,8 +185,8 @@ public class NativeElasticsearchTemplate {
 
 		try {
 			String source = mapper.writeValueAsString(o);
-			IndexResponse response = client.prepareIndex(indexName, type, o.getId()).setSource(source).get();
-			created = response.isCreated();
+			IndexResponse response = client.prepareIndex(indexName, type, o.getId()).setSource(source, XContentType.JSON).get();
+			created = checkIfIndexExists(indexName);
 
 			if (created) {
 				o.setId(response.getId());
@@ -197,6 +198,78 @@ public class NativeElasticsearchTemplate {
 
 		return created;
 	}
+
+	/**
+	 * Checking index existence 
+	 * 
+	 * @param index
+	 * @return boolean
+	 */
+	private boolean checkIfIndexExists(String index) {
+		IndexMetaData indexMetaData = client.admin().cluster().state(Requests.clusterStateRequest()).actionGet().getState().getMetaData()
+				.index(index);
+
+		return (indexMetaData != null);
+	}
+	
+	/*
+	 * CSS presently unused; remove for test code coverage % public <T extends
+	 * ESModel> void bulkIndex( String indexName, String type, Collection<T>
+	 * objects ) { try { BulkRequestBuilder bulkRequest = client.prepareBulk();
+	 * 
+	 * for (T object : objects) { String source = mapper.writeValueAsString(
+	 * object); bulkRequest.add( client.prepareIndex( indexName, type,
+	 * object.getId()).setSource( source)); }
+	 * 
+	 * BulkResponse response = bulkRequest.execute().get();
+	 * 
+	 * // not so friendly way of allowing collections // unfortunately
+	 * collection does not implement get(index) if (objects instanceof List) {
+	 * List<T> l = (List<T>) objects;
+	 * 
+	 * for (BulkItemResponse item : response.getItems()) { if (!item.isFailed())
+	 * { l.get( item.getItemId()).setId( item.getId()); } } }
+	 * 
+	 * } catch (Exception e) { logger.log(e.getMessage(), PiazzaLogger.ERROR); }
+	 * }
+	 */
+
+	/*
+	 * CSS presently unused; remove for test code coverage % public <T extends
+	 * ESModel> List<T> queryForList( SearchRequestBuilder searchQuery, Class<T>
+	 * clazz ) {
+	 * 
+	 * SearchResponse response = searchQuery.setSize(
+	 * Integer.MAX_VALUE).execute().actionGet();
+	 * 
+	 * List<T> results = new ArrayList<T>( response.getHits().getHits().length);
+	 * 
+	 * for (int i = 0; i < response.getHits().getHits().length; ++i) { try {
+	 * SearchHit hit = response.getHits().getHits()[i]; T result =
+	 * mapper.readValue( hit.getSourceAsString(), clazz); result.setId(
+	 * hit.getId()); results.add( result); } catch (Exception e) {
+	 * logger.log(e.getMessage(), PiazzaLogger.ERROR); } }
+	 * 
+	 * return results; }
+	 * 
+	 * public <T extends ESModel> List<T> queryForPage( SearchRequestBuilder
+	 * searchQuery, int pageNumber, int pageSize, Class<T> clazz ) {
+	 * 
+	 * SearchResponse response = searchQuery .setFrom( pageNumber * pageSize)
+	 * .setSize( pageSize) .execute() .actionGet();
+	 * 
+	 * List<T> results = new ArrayList<T>( response.getHits().getHits().length);
+	 * 
+	 * for (int i = 0; i < response.getHits().getHits().length; ++i) { try {
+	 * SearchHit hit = response.getHits().getHits()[i]; T result =
+	 * mapper.readValue( hit.getSourceAsString(), clazz); result.setId(
+	 * hit.getId()); results.add( result); } catch (Exception e) {
+	 * logger.log(e.getMessage(), PiazzaLogger.ERROR); } }
+	 * 
+	 * results.removeAll( Arrays.asList( "", null));
+	 * 
+	 * return results; }
+	 */
 
 	public <T extends ESModel> T findOne(String index, String type, String id, Class<T> clazz) {
 
@@ -215,29 +288,24 @@ public class NativeElasticsearchTemplate {
 		return result;
 	}
 
-	public long count(SearchRequestBuilder searchQuery) {
-
-		SearchResponse response = searchQuery.setSearchType(SearchType.COUNT).execute().actionGet();
-
-		return response.getHits().getTotalHits();
-	}
-
+	/*
+	 * 2.x changes query builders CSS 5/14/16 public SearchRequestBuilder
+	 * NativeSearchQueryBuilder() { return new SearchRequestBuilder(
+	 * this.client); }
+	 */
 	public SearchRequestBuilder NativeSearchQueryBuilder() {
 		return new SearchRequestBuilder(this.client, null);
 	}
 
 	public <T extends ESModel> boolean delete(String index, String type, T instance) {
-		boolean result = false;
-
 		try {
 			DeleteResponse response = client.prepareDelete(index, type, instance.getId()).execute().get();
-			result = response.isFound();
+			return true;
 		} catch (Exception e) {
 			LOG.error(e.getMessage(), e);
 			logger.log(e.getMessage(), Severity.ERROR);
 		}
-
-		return result;
+		return false;
 	}
 
 	public <T extends ESModel> int delete(String index, String type, Collection<T> objects) {
