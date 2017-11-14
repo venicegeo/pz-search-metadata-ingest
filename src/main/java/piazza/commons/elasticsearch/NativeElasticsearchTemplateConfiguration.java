@@ -15,15 +15,7 @@
  **/
 package piazza.commons.elasticsearch;
 
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
-
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,21 +25,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Configuration
 @EnableAutoConfiguration
 public class NativeElasticsearchTemplateConfiguration {
-	@Value("${elasticsearch.clustername}")
-	private String clustername;
-	@Value("${vcap.services.pz-elasticsearch.credentials.hostname}")
-	private String cfhostname;
-	@Value("${vcap.services.pz-elasticsearch.credentials.transportClientPort}")
-	private Integer port;
-
-	@Bean
-	public Client client() throws UnknownHostException {
-		Settings settings = Settings.builder().put("cluster.name", clustername).build();
-		TransportClient transportClient = new PreBuiltTransportClient(settings);
-		transportClient.addTransportAddress(new InetSocketTransportAddress(new InetSocketAddress(cfhostname, port)));
-
-		return transportClient;
-	}
 
 	@Bean
 	public NativeElasticsearchTemplate template(Client client, ObjectMapper mapper) {
