@@ -52,7 +52,7 @@ public class NativeElasticsearchTemplate {
 
 	@Value("${vcap.services.pz-elasticsearch.credentials.hostname}")
 	private String elasticHostname;
-	@Value("${vcap.services.pz-elasticsearch.credentials.port}")
+	@Value("${elasticsearch.transportClientPort}")
 	private Integer elasticPort;
 	
 	@Autowired
