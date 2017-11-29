@@ -50,7 +50,7 @@ import util.PiazzaLogger;
 public class NativeElasticsearchTemplate {
 	private static final Logger LOG = LoggerFactory.getLogger(NativeElasticsearchTemplate.class);
 
-	@Value("${vcap.services.pz-elasticsearch.credentials.hostname}")
+	@Value("${vcap.services.pz-elasticsearch.credentials.host}")
 	private String elasticHostname;
 	@Value("${elasticsearch.transportClientPort}")
 	private Integer elasticPort;
