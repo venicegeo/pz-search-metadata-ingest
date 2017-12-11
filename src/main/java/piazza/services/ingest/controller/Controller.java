@@ -58,10 +58,8 @@ public class Controller {
 	private String dataIndex;
 	@Value("${elasticsearch.dataindexalias}")
 	private String dataIndexAlias;
-	
 	@Value("${elasticsearch.serviceindex}")
 	private String serviceIndex;
-	
 	
 	private final String API_ROOT = "${api.basepath}";
 
