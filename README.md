@@ -54,6 +54,6 @@ This will bring up a vagrant box with running Elasticsearch. Localhost can acces
 
 ### Running Unit Tests
 
-To run the ServiceController unit tests from the main directory, run the following command:
+To run the search metadata ingest unit tests from the main directory, run the following command:
 
 	$ mvn test
